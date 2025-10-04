@@ -17,9 +17,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using VLB;
 
-[AddComponentMenu("")]
 [ExecuteInEditMode]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
+[AddComponentMenu("")]
 public class BeamGeometry : MonoBehaviour
 {
 	private VolumetricLightBeam m_Master;
@@ -357,9 +357,9 @@ public class Config : ScriptableObject
 	private Shader beamShader1Pass;
 
 	[FormerlySerializedAs("BeamShader")]
-	[FormerlySerializedAs("beamShader")]
-	[HighlightNull]
 	[SerializeField]
+	[HighlightNull]
+	[FormerlySerializedAs("beamShader")]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides = 24;
@@ -607,10 +607,10 @@ using System;
 using UnityEngine;
 using VLB;
 
-[RequireComponent(typeof(VolumetricLightBeam))]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
 [ExecuteInEditMode]
 [DisallowMultipleComponent]
+[RequireComponent(typeof(VolumetricLightBeam))]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
 public class DynamicOcclusion : MonoBehaviour
 {
 	private enum Direction
@@ -1921,9 +1921,9 @@ using UnityEngine.Serialization;
 using VLB;
 
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
-[ExecuteInEditMode]
-[DisallowMultipleComponent]
 [SelectionBase]
+[DisallowMultipleComponent]
+[ExecuteInEditMode]
 public class VolumetricLightBeam : MonoBehaviour
 {
 	public bool colorFromLight = true;
@@ -1939,8 +1939,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[Range(0f, 1f)]
 	public float alphaInside = 1f;
 
-	[Range(0f, 1f)]
 	[FormerlySerializedAs("alpha")]
+	[Range(0f, 1f)]
 	public float alphaOutside = 1f;
 
 	public BlendingMode blendingMode;
@@ -2012,8 +2012,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[SerializeField]
 	private int pluginVersion = -1;
 
-	[FormerlySerializedAs("trackChangesDuringPlaytime")]
 	[SerializeField]
+	[FormerlySerializedAs("trackChangesDuringPlaytime")]
 	private bool _TrackChangesDuringPlaytime;
 
 	[SerializeField]
@@ -10499,8 +10499,8 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	private IKBone[] IKBones;
 
 	[Range(0f, 1f)]
-	[Tooltip("Blend value for goal position")]
 	[Space(4f)]
+	[Tooltip("Blend value for goal position")]
 	public float IKPositionWeight = 1f;
 
 	[Range(0f, 1f)]
@@ -13303,16 +13303,16 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 
 	private Vector2 animatedSphericRotation = new Vector2(0f, 0f);
 
-	[Space(10f)]
 	[Tooltip("Sensitivity value for rotating camera around following object")]
+	[Space(10f)]
 	public float RotationSensitivity = 10f;
 
 	[Header("If you want camera rotation to be smooth")]
 	[Range(0.1f, 1f)]
 	public float RotationSpeed = 1f;
 
-	[Range(0f, 1f)]
 	[Header("If you want camera to follow target with some smoothness")]
+	[Range(0f, 1f)]
 	public float HardFollowValue = 1f;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]
@@ -13938,10 +13938,10 @@ using UnityEngine;
 
 public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
-	[Tooltip("Texture identificator in shader")]
-	[Header("something in script to apply")]
-	[Header("When you scale object change")]
 	[Space(10f)]
+	[Tooltip("Texture identificator in shader")]
+	[Header("When you scale object change")]
+	[Header("something in script to apply")]
 	public string TextureProperty = "_MainTex";
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]
@@ -17257,12 +17257,12 @@ public class PrefabReference
 
 	public static bool StopReloadLayoutOptions;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected Mesh _refMesh;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected Collider _refCol;
 
 	public GameObject CoreGameObject => Prefab;
@@ -17514,9 +17514,9 @@ using FIMSpace.FTools;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[AddComponentMenu("FImpossible Creations/Tail Animator 2")]
-[DefaultExecutionOrder(-4)]
 [HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
+[DefaultExecutionOrder(-4)]
+[AddComponentMenu("FImpossible Creations/Tail Animator 2")]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -18180,8 +18180,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float CollisionSlippery = 1f;
 
-	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
 	[Range(0f, 1f)]
+	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
 	public float ReflectCollision;
 
 	public AnimationCurve CollidersScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
@@ -18300,8 +18300,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Inverting ik iteration order to generate different pose results - more straight towards target")]
 	public bool IkInvertOrder;
 
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float IKBlend = 1f;
 
 	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
@@ -18368,8 +18368,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Spread gravity weight over tail segments")]
 	public bool UseGravityCurve;
 
-	[Tooltip("Spread gravity weight over tail segments")]
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
+	[Tooltip("Spread gravity weight over tail segments")]
 	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]
@@ -18462,8 +18462,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Max distance to main camera / target object to smoothly turn off tail animator.")]
 	public float MaximumDistance = 35f;
 
-	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery enabled - disable switching")]
 	[Range(0f, 1f)]
+	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery enabled - disable switching")]
 	public float MaxOutDistanceFactor;
 
 	[Tooltip("If distance should be measured not using Up (y) axis")]

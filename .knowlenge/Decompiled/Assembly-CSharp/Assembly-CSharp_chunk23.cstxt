@@ -8144,8 +8144,8 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	[SerializeField]
 	private NavMeshAgent agent;
 
-	[SerializeField]
 	[Header("Speed")]
+	[SerializeField]
 	private float sneakSpeed = 0.6f;
 
 	[SerializeField]
@@ -12334,8 +12334,8 @@ using UnityEngine.Video;
 
 public class UI_Hero_Store : UI_Hero_InfoBox
 {
-	[SerializeField]
 	[Header("Hero Store")]
+	[SerializeField]
 	private VideoPlayer _video;
 
 	[SerializeField]
@@ -12356,8 +12356,8 @@ public class UI_Hero_Store : UI_Hero_InfoBox
 	[SerializeField]
 	private List<Image> _progressBarHolders;
 
-	[Header("On Hover Animation")]
 	[SerializeField]
+	[Header("On Hover Animation")]
 	private CanvasGroup _menuBlurGroup;
 
 	[SerializeField]
@@ -14799,8 +14799,8 @@ public class UI_Store : UI_Page
 
 	private const string CART_KEY = "STORE_CART_ITEMS";
 
-	[SerializeField]
 	[Header("Search")]
+	[SerializeField]
 	private UI_StoreItemGrid searchGrid;
 
 	[SerializeField]
@@ -14906,8 +14906,8 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private UI_StoreCartButtonAnimation animationSequence;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Rust.UI.SteamInventoryItem autoInitItem;
 }
 
@@ -15045,8 +15045,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 {
 	public RustButton button;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RustText titleText;
 
 	[SerializeField]
@@ -15059,8 +15059,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gaugeParent;
 
 	[SerializeField]
@@ -15104,8 +15104,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -15691,8 +15691,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private RustText itemTypeText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private CanvasGroup imageGroup;
 
 	[SerializeField]
@@ -15718,8 +15718,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject ownedTag;
 
 	[SerializeField]
@@ -15965,8 +15965,8 @@ using UnityEngine;
 
 public class UI_Popup : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform buttonsParent;
 
 	[SerializeField]
@@ -15992,15 +15992,15 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[SerializeField]
 	[Header("Window - Transitions")]
+	[SerializeField]
 	private FlexTransition _openTransition;
 
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[SerializeField]
 	[Header("Window - Canvas")]
+	[SerializeField]
 	protected CanvasGroup _group;
 
 	[SerializeField]

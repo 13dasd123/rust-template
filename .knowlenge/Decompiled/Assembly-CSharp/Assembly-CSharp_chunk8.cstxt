@@ -1072,8 +1072,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1140,8 +1140,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server]
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqTakeAll(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1174,9 +1174,9 @@ public class WeaponRack : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1218,9 +1218,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -1252,8 +1252,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -8134,21 +8134,23 @@ public class DroneStorage : StorageContainer
 
 	public Vector3 ReleaseVelocity;
 
-	public const Flags Flag_Cooldown = Flags.Reserved1;
+	public float GrenadeWeaponDelayMod = 3f;
+
+	public float ThrownWeaponDelayMod = 1f;
 
 	public Drone Drone { get; set; }
 
 	public void UpdateFlags()
 	{
-		if (HasFlag(Flags.Reserved1))
+		if (Drone.HasFlag(Flags.Reserved5))
 		{
 			if (!TryGetItem(out var item) || !TryGetHeldEntity(item, out var held) || !(held is ThrownWeapon thrownWeapon))
 			{
-				SetFlag(Flags.Reserved1, b: false);
+				Drone.SetFlag(Flags.Reserved5, b: false);
 			}
 			else
 			{
-				SetFlag(Flags.Reserved1, thrownWeapon.HasAttackCooldown());
+				Drone.SetFlag(Flags.Reserved5, thrownWeapon.HasAttackCooldown());
 			}
 		}
 	}
@@ -8225,13 +8227,22 @@ public class DroneStorage : StorageContainer
 		Vector3 throwVelocityOverride = GetInheritedThrowVelocity(val * Vector3.down) + ReleaseVelocity;
 		BasePlayer owningPlayer = Drone.ToPlayer();
 		weapon.DoThrowImpl(eyePos, val * Vector3.down, owningPlayer, out var thrownEntity, 1f, throwVelocityOverride, item);
+		if (weapon is GrenadeWeapon)
+		{
+			weapon.StartAttackCooldown(weapon.repeatDelay * GrenadeWeaponDelayMod);
+		}
+		else
+		{
+			weapon.StartAttackCooldown(weapon.repeatDelay * ThrownWeaponDelayMod);
+		}
 		item.UseItem();
 		TempIgnoreParent(thrownEntity);
 		Drone.MarkHostileFor();
 		if (weapon.HasAttackCooldown())
 		{
-			SetFlag(Flags.Reserved1, b: true);
+			Drone.SetFlag(Flags.Reserved5, b: true);
 		}
+		SendNetworkUpdateImmediate();
 		return true;
 	}
 
@@ -11713,8 +11724,8 @@ public class NPCVendingOrder : ScriptableObject
 	{
 		public bool useRandom;
 
-		[Tooltip("The higher this number, the more likely this will be chosen")]
 		[Range(0f, 1f)]
+		[Tooltip("The higher this number, the more likely this will be chosen")]
 		public float weight;
 
 		[Tooltip("Minimum price for the currency item")]
@@ -11723,8 +11734,8 @@ public class NPCVendingOrder : ScriptableObject
 		[Tooltip("Maximum price for the currency item")]
 		public int maxPrice;
 
-		[Tooltip("Chance for a very low price to occur (0 to 1)")]
 		[Range(0f, 1f)]
+		[Tooltip("Chance for a very low price to occur (0 to 1)")]
 		public float veryLowPriceChance;
 
 		[Tooltip("Minimum very low price")]
@@ -11845,8 +11856,8 @@ public struct EntryRandom
 {
 	public bool useRandom;
 
-	[Tooltip("The higher this number, the more likely this will be chosen")]
 	[Range(0f, 1f)]
+	[Tooltip("The higher this number, the more likely this will be chosen")]
 	public float weight;
 
 	[Tooltip("Minimum price for the currency item")]
@@ -11855,8 +11866,8 @@ public struct EntryRandom
 	[Tooltip("Maximum price for the currency item")]
 	public int maxPrice;
 
-	[Tooltip("Chance for a very low price to occur (0 to 1)")]
 	[Range(0f, 1f)]
+	[Tooltip("Chance for a very low price to occur (0 to 1)")]
 	public float veryLowPriceChance;
 
 	[Tooltip("Minimum very low price")]
@@ -21042,8 +21053,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 		}
 	}
 
-	[ExecuteInEditMode]
 	[ContextMenu("Test Grid")]
+	[ExecuteInEditMode]
 	public void GenerateGrid()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -31455,8 +31466,8 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 	[Help("How many miliseconds to budget for processing AI entities per server frame")]
 	public static float framebudgetms = 2.5f;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
+	[ServerVar]
 	public static float animalframebudgetms = 2.5f;
 
 	[ServerVar]

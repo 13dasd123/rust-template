@@ -2389,12 +2389,12 @@ public class EffectRecycle : BaseMonoBehaviour, IClientComponent, IRagdollInhert
 		DetachWaitDestroy
 	}
 
-	[FormerlySerializedAs("lifeTime")]
 	[ReadOnly]
+	[FormerlySerializedAs("lifeTime")]
 	public float detachTime;
 
-	[FormerlySerializedAs("lifeTime")]
 	[ReadOnly]
+	[FormerlySerializedAs("lifeTime")]
 	public float recycleTime;
 
 	public PlayMode playMode;
@@ -2592,8 +2592,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	[field: SerializeField]
 	public Vector3 FalloffPositive { get; private set; } = Vector3.zero;
 
-	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	[field: SerializeField]
+	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	public Vector3 FalloffNegative { get; private set; } = Vector3.zero;
 
 	[field: SerializeField]
@@ -3119,8 +3119,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 
 	public Vector3 endPointOffset;
 
-	[Header("Settings")]
 	[Range(2f, 100f)]
+	[Header("Settings")]
 	public int linePoints = 10;
 
 	[Tooltip("Value highly dependent on use case, a metal cable would have high stiffness, a rubber rope would have a low one")]
@@ -3135,8 +3135,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 	[Tooltip("The Rope width set at start (changing this value during run time will produce no effect)")]
 	public float ropeWidth = 0.1f;
 
-	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	[Range(1f, 15f)]
+	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	public float midPointWeight = 1f;
 
 	[Tooltip("Use local positions instead of world positions (relative to this object)")]
@@ -3282,14 +3282,14 @@ public class FoliagePlacement : ScriptableObject
 	[Header("Randomization")]
 	public float RandomScaling = 0.2f;
 
-	[Header("Placement Range")]
 	[MinMax(0f, 1f)]
+	[Header("Placement Range")]
 	public MinMax Range = new MinMax(0f, 1f);
 
 	public float RangeFade = 0.1f;
 
-	[Range(0f, 1f)]
 	[Header("LOD")]
+	[Range(0f, 1f)]
 	public float DistanceDensity;
 
 	[Range(1f, 2f)]
@@ -6487,8 +6487,8 @@ public class CopyLODValues : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private LODGroup destination;
 
-	[SerializeField]
 	[Tooltip("Is false, exact values are copied. If true, values are scaled based on LODGroup size, so the changeover point will match.")]
+	[SerializeField]
 	private bool scale = true;
 
 	public bool CanCopy()
@@ -10495,10 +10495,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
-	[FormerlySerializedAs("TargetDensity")]
-	[Tooltip("Usually per square km")]
-	[Header("Spawn Info")]
 	[SerializeField]
+	[Header("Spawn Info")]
+	[Tooltip("Usually per square km")]
+	[FormerlySerializedAs("TargetDensity")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -11487,8 +11487,8 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 	public SpawnPointType spawnPointType;
 
 	[SerializeField]
-	[Range(1f, 25f)]
 	[Tooltip("Min distance between the spawn area and any human players")]
+	[Range(1f, 25f)]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();
@@ -12109,8 +12109,8 @@ using UnityEngine;
 
 public class RadialSpawnPoint : BaseSpawnPoint
 {
-	[Tooltip("Circle to spawn within")]
 	[SerializeField]
+	[Tooltip("Circle to spawn within")]
 	public float radius = 10f;
 
 	public override void GetLocation(out Vector3 pos, out Quaternion rot)
@@ -15603,9 +15603,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class TriggerParent : TriggerBase, IServerComponent
 {
-	[Header("General")]
-	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	[SerializeField]
+	[Tooltip("Deparent if the parented entity clips into an obstacle")]
+	[Header("General")]
 	public bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -15626,8 +15626,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("When parenting an NPC don't check if they are shop keepers or mission providers.")]
 	public bool SkipNPCChecks;
 
-	[Tooltip("If the player is already parented to something else, they'll switch over to another parent only if this is true")]
 	[Header("Other")]
+	[Tooltip("If the player is already parented to something else, they'll switch over to another parent only if this is true")]
 	public bool overrideOtherTriggers;
 
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
@@ -16536,18 +16536,18 @@ public class TriggerRadiation : TriggerBase
 
 	public bool BypassArmor;
 
-	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
-	[Min(0f)]
 	[Space]
+	[Min(0f)]
+	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
 
 	public Vector3 falloffPerAxis;
 
-	[Space]
-	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	[FormerlySerializedAs("UseColliderRadius")]
+	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
+	[Space]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -17330,8 +17330,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Range(3f, 64f)]
 	[Header("Settings")]
+	[Range(3f, 64f)]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;
@@ -21725,8 +21725,8 @@ public class MaterialOverlay : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [AddComponentMenu("Image Effects/Natural Bloom and Dirty Lens")]
+[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
 public class NaturalBloomAndDirtyLens : MonoBehaviour
 {
@@ -26366,8 +26366,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	[Header("Unlocking")]
+	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;
