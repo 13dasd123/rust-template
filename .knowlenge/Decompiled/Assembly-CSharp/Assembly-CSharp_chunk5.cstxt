@@ -24020,19 +24020,27 @@ public class ExcavatorArm : BaseEntity
 
 	public void BeginMining()
 	{
-		if (IsPowered())
+		if (!IsPowered())
 		{
-			SetFlag(Flags.On, b: true);
-			((FacepunchBehaviour)this).InvokeRepeating((Action)ProduceResources, resourceProductionTickRate, resourceProductionTickRate);
-			if (Time.time > nextNotificationTime)
+			return;
+		}
+		SetFlag(Flags.On, b: true);
+		((FacepunchBehaviour)this).InvokeRepeating((Action)ProduceResources, resourceProductionTickRate, resourceProductionTickRate);
+		if (Time.time > nextNotificationTime)
+		{
+			if (Global.legacymonumentnotifications)
+			{
+				ClientRPC(RpcTarget.NetworkGroup("Client_DoLegacyMonumentNotification"));
+			}
+			else
 			{
 				ClientRPC(RpcTarget.NetworkGroup("Client_DoMonumentNotification"));
-				nextNotificationTime = Time.time + 60f;
 			}
-			ExcavatorServerEffects.SetMining(isMining: true);
-			excavatorStartTime = GetNetworkTime();
-			Interface.CallHook("OnExcavatorMiningToggled", (object)this);
+			nextNotificationTime = Time.time + 60f;
 		}
+		ExcavatorServerEffects.SetMining(isMining: true);
+		excavatorStartTime = GetNetworkTime();
+		Interface.CallHook("OnExcavatorMiningToggled", (object)this);
 	}
 
 	public void StopMining()

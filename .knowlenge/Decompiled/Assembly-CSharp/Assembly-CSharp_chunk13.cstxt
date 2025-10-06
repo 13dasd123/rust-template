@@ -4353,7 +4353,11 @@ public class MonumentNotificationSoundConfig : BaseScriptableObject
 		{
 			if (_instance == null)
 			{
-				_instance = Resources.Load<MonumentNotificationSoundConfig>("MonumentNotificationSoundConfig");
+				_instance = FileSystem.Load<MonumentNotificationSoundConfig>("assets/content/sound/monuments/monumentnotificationsoundconfig.asset", true);
+			}
+			if (_instance == null)
+			{
+				Debug.LogError((object)"Failed to load MonumentNotificationSoundConfig");
 			}
 			return _instance;
 		}

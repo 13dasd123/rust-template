@@ -19152,16 +19152,19 @@ public class OilRigResetNotification : BaseEntity
 
 	public void OnPuzzleReset()
 	{
-		if (Debugging.printoilrignotificationdebug)
-		{
-			Debug.Log((object)("[OilRigNotificationDebug] server puzzle reset on " + ((Object)this).name), (Object)(object)this);
-		}
 		Server_HandlePuzzleReset();
 	}
 
 	public void Server_HandlePuzzleReset()
 	{
-		ClientRPC(RpcTarget.NetworkGroup("Client_PuzzleResetRPC"), (byte)oilRigType);
+		if (Global.legacymonumentnotifications)
+		{
+			ClientRPC(RpcTarget.NetworkGroup("Client_DoLegacyMonumentNotification"), (byte)oilRigType);
+		}
+		else
+		{
+			ClientRPC(RpcTarget.NetworkGroup("Client_PuzzleResetRPC"), (byte)oilRigType);
+		}
 	}
 }
 
