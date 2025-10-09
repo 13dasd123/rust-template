@@ -357,9 +357,9 @@ public class Config : ScriptableObject
 	private Shader beamShader1Pass;
 
 	[FormerlySerializedAs("BeamShader")]
-	[SerializeField]
-	[HighlightNull]
 	[FormerlySerializedAs("beamShader")]
+	[HighlightNull]
+	[SerializeField]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides = 24;
@@ -2012,8 +2012,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[SerializeField]
 	private int pluginVersion = -1;
 
-	[SerializeField]
 	[FormerlySerializedAs("trackChangesDuringPlaytime")]
+	[SerializeField]
 	private bool _TrackChangesDuringPlaytime;
 
 	[SerializeField]
@@ -10498,9 +10498,9 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[Tooltip("3-Bones limb array")]
 	private IKBone[] IKBones;
 
+	[Tooltip("Blend value for goal position")]
 	[Range(0f, 1f)]
 	[Space(4f)]
-	[Tooltip("Blend value for goal position")]
 	public float IKPositionWeight = 1f;
 
 	[Range(0f, 1f)]
@@ -13154,8 +13154,8 @@ using UnityEngine;
 
 public class FBasic_FreeCameraBehaviour : MonoBehaviour
 {
-	[Tooltip("How fast camera should fly")]
 	[Header("> Hold right mouse button to rotate camera <")]
+	[Tooltip("How fast camera should fly")]
 	public float SpeedMultiplier = 10f;
 
 	[Tooltip("Value of acceleration smoothness")]
@@ -13311,8 +13311,8 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	[Range(0.1f, 1f)]
 	public float RotationSpeed = 1f;
 
-	[Header("If you want camera to follow target with some smoothness")]
 	[Range(0f, 1f)]
+	[Header("If you want camera to follow target with some smoothness")]
 	public float HardFollowValue = 1f;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]
@@ -13938,10 +13938,10 @@ using UnityEngine;
 
 public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
-	[Space(10f)]
-	[Tooltip("Texture identificator in shader")]
 	[Header("When you scale object change")]
 	[Header("something in script to apply")]
+	[Tooltip("Texture identificator in shader")]
+	[Space(10f)]
 	public string TextureProperty = "_MainTex";
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]
@@ -17257,8 +17257,8 @@ public class PrefabReference
 
 	public static bool StopReloadLayoutOptions;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected Mesh _refMesh;
 
 	[SerializeField]
@@ -18462,8 +18462,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Max distance to main camera / target object to smoothly turn off tail animator.")]
 	public float MaximumDistance = 35f;
 
-	[Range(0f, 1f)]
 	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery enabled - disable switching")]
+	[Range(0f, 1f)]
 	public float MaxOutDistanceFactor;
 
 	[Tooltip("If distance should be measured not using Up (y) axis")]
@@ -18709,8 +18709,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Making tail animate also roll rotation like it was done in Tail Animator V1 ! Use Rotation Relevancy Parameter (set lower than 0.5) !")]
 	public bool AnimateRoll;
 
-	[Range(0f, 1f)]
 	[Tooltip("Overriding keyframe animation with just Tail Animator option (keyframe animation treated as t-pose bones rotations)")]
+	[Range(0f, 1f)]
 	public float OverrideKeyframeAnimation;
 
 	private Transform _baseTransform;

@@ -2588,8 +2588,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 
 	public Vector3 Size = Vector3.one;
 
-	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
 	[field: SerializeField]
+	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
 	public Vector3 FalloffPositive { get; private set; } = Vector3.zero;
 
 	[field: SerializeField]
@@ -3119,8 +3119,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 
 	public Vector3 endPointOffset;
 
-	[Range(2f, 100f)]
 	[Header("Settings")]
+	[Range(2f, 100f)]
 	public int linePoints = 10;
 
 	[Tooltip("Value highly dependent on use case, a metal cable would have high stiffness, a rubber rope would have a low one")]
@@ -3135,8 +3135,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 	[Tooltip("The Rope width set at start (changing this value during run time will produce no effect)")]
 	public float ropeWidth = 0.1f;
 
-	[Range(1f, 15f)]
 	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
+	[Range(1f, 15f)]
 	public float midPointWeight = 1f;
 
 	[Tooltip("Use local positions instead of world positions (relative to this object)")]
@@ -3282,8 +3282,8 @@ public class FoliagePlacement : ScriptableObject
 	[Header("Randomization")]
 	public float RandomScaling = 0.2f;
 
-	[MinMax(0f, 1f)]
 	[Header("Placement Range")]
+	[MinMax(0f, 1f)]
 	public MinMax Range = new MinMax(0f, 1f);
 
 	public float RangeFade = 0.1f;
@@ -6487,8 +6487,8 @@ public class CopyLODValues : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private LODGroup destination;
 
-	[Tooltip("Is false, exact values are copied. If true, values are scaled based on LODGroup size, so the changeover point will match.")]
 	[SerializeField]
+	[Tooltip("Is false, exact values are copied. If true, values are scaled based on LODGroup size, so the changeover point will match.")]
 	private bool scale = true;
 
 	public bool CanCopy()
@@ -10497,8 +10497,8 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 {
 	[SerializeField]
 	[Header("Spawn Info")]
-	[Tooltip("Usually per square km")]
 	[FormerlySerializedAs("TargetDensity")]
+	[Tooltip("Usually per square km")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -11487,8 +11487,8 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 	public SpawnPointType spawnPointType;
 
 	[SerializeField]
-	[Tooltip("Min distance between the spawn area and any human players")]
 	[Range(1f, 25f)]
+	[Tooltip("Min distance between the spawn area and any human players")]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();
@@ -12109,8 +12109,8 @@ using UnityEngine;
 
 public class RadialSpawnPoint : BaseSpawnPoint
 {
-	[SerializeField]
 	[Tooltip("Circle to spawn within")]
+	[SerializeField]
 	public float radius = 10f;
 
 	public override void GetLocation(out Vector3 pos, out Quaternion rot)
@@ -15603,9 +15603,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class TriggerParent : TriggerBase, IServerComponent
 {
-	[SerializeField]
 	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	[Header("General")]
+	[SerializeField]
 	public bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -16537,17 +16537,17 @@ public class TriggerRadiation : TriggerBase
 	public bool BypassArmor;
 
 	[Space]
-	[Min(0f)]
 	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
+	[Min(0f)]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
 
 	public Vector3 falloffPerAxis;
 
+	[Space]
 	[FormerlySerializedAs("UseColliderRadius")]
 	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
-	[Space]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -17330,8 +17330,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Header("Settings")]
 	[Range(3f, 64f)]
+	[Header("Settings")]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;
@@ -26366,8 +26366,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Header("Unlocking")]
 	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
+	[Header("Unlocking")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;
@@ -26591,8 +26591,8 @@ public class ItemDefinition : MonoBehaviour
 		NucleusGrades
 	}
 
-	[Header("Item")]
 	[ReadOnly]
+	[Header("Item")]
 	public int itemid;
 
 	[Tooltip("The shortname should be unique. A hash will be generated from it to identify the item type. If this name changes at any point it will make all saves incompatible")]

@@ -6513,8 +6513,8 @@ public class FGroundFitter_Movement : MonoBehaviour
 	[Tooltip("Protecting from going through walls when slope is very big and ground fitter is jumping into it")]
 	public bool NotFallingThrough;
 
-	[Header("(experimental)")]
 	[Tooltip("You need collider and rigidbody on object to make it work right - ALSO CHANGE YOUR CAMERA UPDATE CLOCK TO FIXED UPDATE AND USE TIME.fixedDeltaTime - ! For now it can cause errors when jumping, character can go through floor sometimes ! - Will be upgraded in future versions")]
+	[Header("(experimental)")]
 	public bool UsePhysics;
 
 	[Tooltip("Disabling translating object from code and running animation without need to hold minimum movement speed")]
@@ -6570,8 +6570,8 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	private float? yAdjustPos;
 
-	[Tooltip("If you want to set some animator parameter during being grounded")]
 	[HideInInspector]
+	[Tooltip("If you want to set some animator parameter during being grounded")]
 	public string SetIsGroundedParam = "";
 
 	[Tooltip("If you want to set some animator parameter during accelerating moving")]
@@ -7254,10 +7254,10 @@ using UnityEngine;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
+	[Space(4f, order = 1)]
+	[Range(1f, 30f)]
 	[Header("> Main Variables <", order = 0)]
 	[Tooltip("How quick rotation should be corrected to target")]
-	[Range(1f, 30f)]
-	[Space(4f, order = 1)]
 	public float FittingSpeed = 6f;
 
 	[Tooltip("Smoothing whole rotation motion")]
@@ -7269,32 +7269,32 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[HideInInspector]
 	public Transform TransformToRotate;
 
-	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	[Space(3f)]
+	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
-	[Space(4f, order = 1)]
-	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
-	[Range(0f, 1f)]
 	[Header("> Tweaking Settings <", order = 0)]
+	[Space(4f, order = 1)]
+	[Range(0f, 1f)]
+	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	public float MildForwardValue;
 
-	[Range(0f, 90f)]
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
+	[Range(0f, 90f)]
 	public float MaxForwardRotation = 90f;
 
-	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
-	[Range(0f, 1f)]
 	[Space(5f)]
+	[Range(0f, 1f)]
+	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
 	public float MildHorizontalValue;
 
 	[Range(0f, 90f)]
 	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	public float MaxHorizontalRotation = 90f;
 
-	[Header("> Advanced settings <", order = 0)]
 	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
 	[Space(4f, order = 1)]
+	[Header("> Advanced settings <", order = 0)]
 	public float RaycastHeightOffset = 0.5f;
 
 	[Tooltip("How far ray should cast to check if ground is under feet")]
@@ -7738,16 +7738,16 @@ using UnityEngine;
 
 public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 {
-	[HideInInspector]
 	[Tooltip("Making ground fitter translate with root motion")]
+	[HideInInspector]
 	public bool HandleRootMotion;
 
 	[SerializeField]
 	[HideInInspector]
 	protected Transform parentTransform;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected CharacterController optionalCharContr;
 
 	[SerializeField]
@@ -19679,8 +19679,8 @@ internal struct OceanTraceJob : IJobParallelForDefer
 
 	public float OneOverOctave0Scale;
 
-	[NativeDisableParallelForRestriction]
 	[ReadOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeOceanDisplacementShort3 SimData;
 
 	public int Spectrum0;
@@ -20478,8 +20478,8 @@ using Unity.Mathematics;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 internal struct TileCalculateAngleMap : IJobParallelFor
 {
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> AngleMap;
 
 	[ReadOnly]
@@ -20751,8 +20751,8 @@ internal struct RefillOceanJob : IJobParallelFor
 
 	public ReadOnly<float> HeightMap;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> WaterMap;
 
 	public float OceanLevel;
@@ -23104,8 +23104,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Min(0f)]
 		[Tooltip("Adjusts the overall exposure of the scene.")]
+		[Min(0f)]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -23157,8 +23157,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Tooltip("Blending factor.")]
 		[Range(0f, 1f)]
+		[Tooltip("Blending factor.")]
 		public float contribution;
 
 		public static LUTSettings defaultSettings
@@ -23348,8 +23348,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
-		[Space]
 		[IndentedGroup]
+		[Space]
 		public BasicsSettings basics;
 
 		[Space]
@@ -23394,8 +23394,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SettingsGroup]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private TonemappingSettings m_Tonemapping = TonemappingSettings.defaultSettings;
 
 	[SerializeField]
@@ -23541,8 +23541,8 @@ public struct TonemappingSettings
 	[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 	public Tonemapper tonemapper;
 
-	[Min(0f)]
 	[Tooltip("Adjusts the overall exposure of the scene.")]
+	[Min(0f)]
 	public float exposure;
 
 	[Tooltip("Custom tonemapping curve.")]
@@ -23598,8 +23598,8 @@ public struct LUTSettings
 	[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 	public Texture texture;
 
-	[Tooltip("Blending factor.")]
 	[Range(0f, 1f)]
+	[Tooltip("Blending factor.")]
 	public float contribution;
 
 	public static LUTSettings defaultSettings
@@ -23810,8 +23810,8 @@ public struct ColorGradingSettings
 	[ColorWheelGroup]
 	public ColorWheelsSettings colorWheels;
 
-	[Space]
 	[IndentedGroup]
+	[Space]
 	public BasicsSettings basics;
 
 	[Space]
@@ -27884,20 +27884,20 @@ public class UICircle : UIPrimitiveBase
 	[Tooltip("The Arc Invert property will invert the construction of the Arc.")]
 	public bool ArcInvert = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
+	[Range(0f, 1f)]
 	public float Arc = 1f;
 
-	[Range(0f, 1000f)]
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
+	[Range(0f, 1000f)]
 	public int ArcSteps = 100;
 
 	[Range(0f, 360f)]
 	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	public int ArcRotation;
 
-	[Tooltip("The Progress property allows the primitive to be used as a progression indicator.")]
 	[Range(0f, 1f)]
+	[Tooltip("The Progress property allows the primitive to be used as a progression indicator.")]
 	public float Progress;
 
 	private float _progress;

@@ -275,7 +275,7 @@
   {
     "HookSignature": "OnOpenVendingAdmin(VendingMachine vendingMachine, BasePlayer player)",
     "MethodSignature": "RPC_OpenAdmin(RPCMessage msg)",
-    "MethodSourseCode": "\n\t[RPC_Server.IsVisible(3f)]\n\t[RPC_Server]\n\tpublic void RPC_OpenAdmin(RPCMessage msg)\n\t{\n\t\tBasePlayer player = msg.player;\n\t\tif (CanPlayerAdmin(player))\n\t\t{\n\t\t\tOpenShop(player);\n\t\t\tClientRPC(RpcTarget.Player(\u0022CLIENT_OpenAdminMenu\u0022, player));\n\t\t\tInterface.CallHook(\u0022OnOpenVendingAdmin\u0022, this, player);\n\t\t}\n\t}\n",
+    "MethodSourseCode": "\n\t[RPC_Server]\n\t[RPC_Server.IsVisible(3f)]\n\tpublic void RPC_OpenAdmin(RPCMessage msg)\n\t{\n\t\tBasePlayer player = msg.player;\n\t\tif (CanPlayerAdmin(player))\n\t\t{\n\t\t\tOpenShop(player);\n\t\t\tClientRPC(RpcTarget.Player(\u0022CLIENT_OpenAdminMenu\u0022, player));\n\t\t\tInterface.CallHook(\u0022OnOpenVendingAdmin\u0022, this, player);\n\t\t}\n\t}\n",
     "ClassName": "VendingMachine",
     "HookLineInvoke": 10
   },

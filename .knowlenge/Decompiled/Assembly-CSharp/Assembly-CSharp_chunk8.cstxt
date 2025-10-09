@@ -1072,8 +1072,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1140,8 +1140,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqTakeAll(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1174,9 +1174,9 @@ public class WeaponRack : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1218,9 +1218,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -1252,8 +1252,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -21053,8 +21053,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 		}
 	}
 
-	[ContextMenu("Test Grid")]
 	[ExecuteInEditMode]
+	[ContextMenu("Test Grid")]
 	public void GenerateGrid()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

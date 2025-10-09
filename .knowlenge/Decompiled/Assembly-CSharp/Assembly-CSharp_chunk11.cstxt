@@ -876,8 +876,8 @@ using UnityEngine;
 
 public class TravellingVendorSounds : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private EngineAudioSet EngineAudioSet;
 
 	[SerializeField]
@@ -917,8 +917,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve suspensionUpAngleDeltaGain;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -8010,8 +8010,8 @@ public class SiegeWeaponVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float movementRattleGainChangeSpeed = 1f;
 
-	[Header("Wheels")]
 	[SerializeField]
+	[Header("Wheels")]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]
@@ -8226,8 +8226,8 @@ public class CatapultSounds : GroundVehicleAudio
 
 	public SoundDefinition reloadStopDef;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -11259,8 +11259,8 @@ using UnityEngine;
 
 public class BikeVehicleAudio : GroundVehicleAudio
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private EngineAudioSet engineAudioSet;
 
 	[Header("Suspension")]
@@ -11273,8 +11273,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[SerializeField]
 	[Header("Tires")]
+	[SerializeField]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -11289,8 +11289,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[Header("Skid")]
 	[SerializeField]
+	[Header("Skid")]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -11414,8 +11414,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[ServerVar]
 	[Help("Shore drift speed in metres per second")]
+	[ServerVar]
 	public static float drift_speed = 1f;
 
 	[NonSerialized]
@@ -11432,8 +11432,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[ServerVar]
 	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
+	[ServerVar]
 	public static int seconds_until_shore_drift(Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -13042,8 +13042,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float lastChainRattle;
 
-	[SerializeField]
 	[Header("Horn")]
+	[SerializeField]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]
@@ -13058,8 +13058,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	private float maxHornTime;
 
 	[Min(0f)]
-	[SerializeField]
 	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
+	[SerializeField]
 	private int hornTokenCapacity = 3;
 
 	[SerializeField]
@@ -13086,8 +13086,8 @@ using UnityEngine;
 [Serializable]
 public class CarSettings
 {
-	[Header("Vehicle Setup")]
 	[Range(0f, 1f)]
+	[Header("Vehicle Setup")]
 	public float rollingResistance = 0.05f;
 
 	[Range(0f, 1f)]
@@ -14349,8 +14349,8 @@ using UnityEngine;
 
 public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntity, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[Header("GroundVehicle")]
 	[SerializeField]
+	[Header("GroundVehicle")]
 	public GroundVehicleAudio gvAudio;
 
 	[SerializeField]
@@ -14676,8 +14676,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected GroundVehicle groundVehicle;
 
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -18043,8 +18043,8 @@ public class ScrapTransportHelicopter : PlayerHelicopter, TriggerHurtNotChild.IH
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[SerializeField]
 	[Header("Damage Effects")]
+	[SerializeField]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]
@@ -18641,9 +18641,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
+	[SerializeField]
 	[Header("Head")]
 	[Range(0f, 1f)]
-	[SerializeField]
 	private float headBlend = 1f;
 
 	[ReadOnly]
@@ -18683,16 +18683,16 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[ReadOnly]
 	private Quaternion[] targetNeckRotations;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetSpineRotations;
 
 	[ReadOnly]
 	[SerializeField]
 	private Vector3[] localSpinePositions;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Vector3 originalHipPosition;
 
 	[SerializeField]

@@ -12255,8 +12255,8 @@ public class UI_Hero_InfoBox : FacepunchBehaviour
 	[SerializeField]
 	protected Image _blackout;
 
-	[SerializeField]
 	[Header("Settings")]
+	[SerializeField]
 	private Phrase _titlePhrase;
 
 	[SerializeField]
@@ -12356,8 +12356,8 @@ public class UI_Hero_Store : UI_Hero_InfoBox
 	[SerializeField]
 	private List<Image> _progressBarHolders;
 
-	[SerializeField]
 	[Header("On Hover Animation")]
+	[SerializeField]
 	private CanvasGroup _menuBlurGroup;
 
 	[SerializeField]
@@ -12386,8 +12386,8 @@ using UnityEngine;
 
 public class UI_NotificationEntry : MonoBehaviour
 {
-	[Header("Icons")]
 	[SerializeField]
+	[Header("Icons")]
 	private RustIcon _basicIcon;
 
 	[SerializeField]
@@ -14569,8 +14569,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform itemParent;
 
 	[SerializeField]
@@ -14654,8 +14654,8 @@ using UnityEngine;
 
 public class UI_StoreFeaturedTab : UI_StoreTabBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCountdown countdown;
 }
 
@@ -14681,8 +14681,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 		public RustButton Button;
 	}
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ScrollRect scrollRect;
 
 	[SerializeField]
@@ -14722,8 +14722,8 @@ using UnityEngine.UI;
 
 public class UI_StoreLimitedTab : UI_StoreTabBase
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemGrid itemGrid;
 
 	[SerializeField]
@@ -15059,8 +15059,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gaugeParent;
 
 	[SerializeField]
@@ -15097,8 +15097,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RustText itemSubtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCheckoutResultButton carrouselButtonPrefab;
 
 	[SerializeField]
@@ -15132,9 +15132,9 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private UI_StoreTakeover localTakeovers;
 
-	[SerializeField]
 	[Space]
 	[Header("Skin Viewer")]
+	[SerializeField]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -15965,8 +15965,8 @@ using UnityEngine;
 
 public class UI_Popup : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private Transform buttonsParent;
 
 	[SerializeField]
@@ -15992,8 +15992,8 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[Header("Window - Transitions")]
 	[SerializeField]
+	[Header("Window - Transitions")]
 	private FlexTransition _openTransition;
 
 	[SerializeField]

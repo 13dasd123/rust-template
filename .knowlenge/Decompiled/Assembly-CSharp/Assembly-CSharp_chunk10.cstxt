@@ -16397,8 +16397,8 @@ public class Compass : HeldEntity
 	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	private float needleYawAngleOffset;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float needleStiffness = 50f;
 
 	[Range(0f, 1f)]
@@ -19639,8 +19639,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 
 	public RustText[] paginationTexts;
 
-	[Header("BLOCKS")]
 	[Space]
+	[Header("BLOCKS")]
 	public GameObject[] blocksType;
 
 	public RustText blockCountText;
@@ -19692,8 +19692,8 @@ using UnityEngine;
 
 public class DoorWithLock : Door
 {
-	[Header("Lock Settings")]
 	[ItemSelector]
+	[Header("Lock Settings")]
 	public GameObjectRef lockObject;
 }
 
@@ -20624,12 +20624,12 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public BaseEntity.Flags flag;
 
-	[SerializeField]
 	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
+	[SerializeField]
 	private FlagCheck flagCheck;
 
-	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
 	[SerializeField]
+	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
 	private BaseEntity.Flags notFlag;
 
 	[SerializeField]
