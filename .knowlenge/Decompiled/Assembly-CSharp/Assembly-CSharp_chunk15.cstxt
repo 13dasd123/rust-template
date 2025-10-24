@@ -1757,7 +1757,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			{
 				text9 = ConVar.Server.ping_region_code_override;
 			}
-			SteamServer.GameTags = ServerTagCompressor.CompressTags($"mp{ConVar.Server.maxplayers},cp{BasePlayer.activePlayerList.Count},pt{Net.sv.ProtocolId},qp{SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued},$r{text9},v{2602}{text4}{text6},{text2},{text3},cs{text7}{text8},ts{RelationshipManager.maxTeamSize}");
+			SteamServer.GameTags = ServerTagCompressor.CompressTags($"mp{ConVar.Server.maxplayers},cp{BasePlayer.activePlayerList.Count},pt{Net.sv.ProtocolId},qp{SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued},$r{text9},v{2603}{text4}{text6},{text2},{text3},cs{text7}{text8},ts{RelationshipManager.maxTeamSize}");
 			if (ConVar.Server.description != null && ConVar.Server.description.Length > 100)
 			{
 				string[] array = StringEx.SplitToChunks(ConVar.Server.description, 100).ToArray();
@@ -2180,7 +2180,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		ServerInfo result = default(ServerInfo);
-		result.NetworkVersion = 2602;
+		result.NetworkVersion = 2603;
 		BuildInfo current = BuildInfo.Current;
 		object obj;
 		if (current == null)
@@ -2796,14 +2796,14 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their branch is '" + text + "' not '" + branch + "'"), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Steam Beta: Requires '" + branch + "' branch!", false);
 		}
-		else if (packet.connection.protocol > 2602)
+		else if (packet.connection.protocol > 2603)
 		{
-			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2602), (StackTraceLogType)0);
+			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2603), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!", false);
 		}
-		else if (packet.connection.protocol < 2602)
+		else if (packet.connection.protocol < 2603)
 		{
-			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2602), (StackTraceLogType)0);
+			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2603), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!", false);
 		}
 		else
@@ -9262,8 +9262,8 @@ public class UIChat : PriorityListComponent<UIChat>
 
 	public UIFriendsList friendsList;
 
-	[Header("Disable Settings")]
 	[Tooltip("Disable the text input field rather than hiding it.")]
+	[Header("Disable Settings")]
 	public bool useDisable;
 
 	public RustInput rustInput;
@@ -11048,8 +11048,8 @@ public class CardGameUI : UIDialog
 		void UpdateInGameUI_NoPlayer(CardGameUI ui);
 	}
 
-	[Header("Card Game")]
 	[SerializeField]
+	[Header("Card Game")]
 	private InfoTextUI primaryInfo;
 
 	[SerializeField]
@@ -11260,8 +11260,8 @@ public class TexasHoldEmUI : MonoBehaviour
 	[SerializeField]
 	private Image[] holeCardBackings;
 
-	[FormerlySerializedAs("flopCardImages")]
 	[SerializeField]
+	[FormerlySerializedAs("flopCardImages")]
 	private Image[] communityCardImages;
 
 	[SerializeField]
@@ -17222,8 +17222,8 @@ public class VehicleEditingPanel : LootPanel
 		}
 	}
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float disabledAlpha = 0.25f;
 
 	[Header("Edit Vehicle")]
@@ -17637,8 +17637,8 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 
 	public bool ShowDebugData;
 
-	[ReadOnly]
 	[Tooltip("Automatically filled in by prefab preprocess")]
+	[ReadOnly]
 	public EntityNameToItemDefinition[] EntityNameToItemDefinitions;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => true;
@@ -18291,8 +18291,8 @@ public class LoadingScreen : SingletonComponent<LoadingScreen>
 	[Header("Loading Screen References - Audio")]
 	public AudioSource music;
 
-	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	[Header("Loading Screen References - Settings")]
+	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	public int minPingDiffToShowWarning = 50;
 
 	[Tooltip("Ping must be this many times higher than the server browser ping")]
@@ -19574,7 +19574,7 @@ public class ServerBrowserList : ServerBrowserListBase, VirtualScroll.IDataSourc
 
 	public QueryType queryType;
 
-	public static string VersionTag = "v" + 2602;
+	public static string VersionTag = "v" + 2603;
 
 	public ServerKeyvalues[] keyValues = new ServerKeyvalues[0];
 
@@ -20096,8 +20096,8 @@ public class UnreadMessages : SingletonComponent<UnreadMessages>
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteAlways]
 [RequireComponent(typeof(RawImage))]
+[ExecuteAlways]
 public class RawImagePreserveAspect : MonoBehaviour, IClientComponent
 {
 	public RawImage rawImage;
@@ -20143,15 +20143,15 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float responseCurve = 1.5f;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay = 5f;
 
 	[SerializeField]
 	private float rotationSpeed = 300f;
 
-	[SerializeField]
 	[Header("Pan")]
+	[SerializeField]
 	private Vector2 panLimitX = new Vector2(-1f, 1f);
 
 	[SerializeField]
@@ -20160,8 +20160,8 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float panSpeed = 0.005f;
 
-	[SerializeField]
 	[Header("Zoom")]
+	[SerializeField]
 	private float zoomSpeed = 0.1f;
 
 	[SerializeField]
@@ -21639,8 +21639,8 @@ public class StatusPanel : MonoBehaviour
 	[SerializeField]
 	private Image onStatusImage;
 
-	[Header("Off Status")]
 	[SerializeField]
+	[Header("Off Status")]
 	private RustText offStatusText;
 
 	[SerializeField]
@@ -22230,14 +22230,14 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 
 	public Phrase phrase;
 
-	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
 	[Header("Additional Settings - Delay")]
+	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
 	[Space(10f)]
 	public DelayType delayBeforeAppearing;
 
-	[Space(10f)]
-	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
 	[Header("Advanced Settings - Position")]
+	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
+	[Space(10f)]
 	public TooltipContainer.PositionMode positionMode;
 
 	[Tooltip("Spawn the tooltip relative to the mouse position rather than the objects.")]
@@ -25252,12 +25252,12 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 
 	public bool includeLights;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private ParticleSystemGroup[] particleGroups;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Light[] lights;
 
 	[HideInInspector]
@@ -34443,8 +34443,8 @@ public class RustLog : ConsoleSystem
 
 	public static readonly int[] Levels = new int[names.Length];
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void Level(Arg args)
 	{
 		if (args.Args.Length == 0 || args.Args.Length > 2)
@@ -35549,6 +35549,69 @@ public class RandomParameterNumberFloat : StateMachineBehaviour
 
 using System;
 using UnityEngine;
+
+public class RotaryGunCylinderViewmodelComponent : MonoBehaviour, IViewmodelComponent, IAnimationEventReceiver
+{
+	[Serializable]
+	public class AmmoVisualSwapData
+	{
+		public ItemDefinition AmmoItem;
+
+		public GameObject[] AmmoVisualRoots;
+	}
+
+	public enum RotationType
+	{
+		Reload,
+		GunFired
+	}
+
+	public Transform AmmoCylinderRoot;
+
+	[Tooltip("Root GameObject for the ammo piece which is visible in the midst of a reload.")]
+	public GameObject MainReloadingAmmoRoot;
+
+	[Tooltip("Root GameObjects for the ammo pieces visible inside the cylinder.")]
+	public GameObject[] AmmoLocationRoots;
+
+	public AmmoVisualSwapData[] AmmoVisualSwapSetups;
+
+	[Min(0f)]
+	public float AmmoEjectionVisibleDuration;
+
+	[Min(0f)]
+	public float ReloadRotationDuration;
+
+	[Min(0f)]
+	public float FiredRotationDuration;
+
+	public LeanTweenType ReloadRotationEaseType = (LeanTweenType)1;
+
+	public LeanTweenType FiredRotationEaseType = (LeanTweenType)1;
+}
+
+
+using System;
+using UnityEngine;
+
+[Serializable]
+public class AmmoVisualSwapData
+{
+	public ItemDefinition AmmoItem;
+
+	public GameObject[] AmmoVisualRoots;
+}
+
+
+public enum RotationType
+{
+	Reload,
+	GunFired
+}
+
+
+using System;
+using UnityEngine;
 using UnityEngine.Animations;
 
 public class SetParameterAnimatorBehaviour : StateMachineBehaviour
@@ -35579,8 +35642,8 @@ public class SetParameterAnimatorBehaviour : StateMachineBehaviour
 
 	public Timing SetParameterTiming;
 
-	[Range(0f, 1f)]
 	[Tooltip("Normalised time of animation")]
+	[Range(0f, 1f)]
 	public float ThresholdTiming;
 
 	private float lastNormalisedTime;
@@ -36257,25 +36320,25 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public float Radius = 2f;
 
 	[NonSerialized]
-	[Range(32f, 1024f)]
 	[Tooltip("Max sampling range in pixels.")]
+	[Range(32f, 1024f)]
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	[Range(0f, 2f)]
+	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity = 1f;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
+	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent = 1.8f;
 
 	[Range(0f, 0.99f)]
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -36291,8 +36354,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -36312,8 +36375,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Tooltip("Radius in screen pixels.")]
 	[Range(1f, 4f)]
+	[Tooltip("Radius in screen pixels.")]
 	public int BlurRadius = 3;
 
 	[Range(1f, 4f)]
@@ -36332,8 +36395,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	public float FilterResponse = 0.5f;
 
 	[NonSerialized]
@@ -36383,8 +36446,8 @@ public enum SampleCountLevel
 using UnityEngine;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(Camera))]
 [AddComponentMenu("Image Effects/Amplify Occlusion")]
+[RequireComponent(typeof(Camera))]
 public class AmplifyOcclusionEffect : AmplifyOcclusionBase
 {
 }
@@ -36922,252 +36985,6 @@ public class cui
 		args.ReplyWith("Ending Test!");
 		CommunityEntity.ServerInstance.ClientRPC(RpcTarget.Player("DestroyUI", args.Connection), "TestPanel7766");
 	}
-}
-
-
-using System;
-using System.Collections.Generic;
-using Unity.Collections;
-using UnityEngine;
-using UnityEngine.Rendering;
-
-[RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
-public class CoverageQueries : MonoBehaviour
-{
-	public class BufferSet
-	{
-		public int width;
-
-		public int height;
-
-		public Texture2D inputTexture;
-
-		public RenderTexture resultTexture;
-
-		public Color[] inputData = (Color[])(object)new Color[0];
-
-		public Color32[] resultData = (Color32[])(object)new Color32[0];
-
-		private Material coverageMat;
-
-		private const int MaxAsyncGPUReadbackRequests = 10;
-
-		private Queue<AsyncGPUReadbackRequest> asyncRequests = new Queue<AsyncGPUReadbackRequest>();
-
-		public void Attach(Material coverageMat)
-		{
-			this.coverageMat = coverageMat;
-		}
-
-		public void Dispose(bool data = true)
-		{
-			if ((Object)(object)inputTexture != (Object)null)
-			{
-				Object.DestroyImmediate((Object)(object)inputTexture);
-				inputTexture = null;
-			}
-			if ((Object)(object)resultTexture != (Object)null)
-			{
-				RenderTexture.active = null;
-				resultTexture.Release();
-				Object.DestroyImmediate((Object)(object)resultTexture);
-				resultTexture = null;
-			}
-			if (data)
-			{
-				inputData = (Color[])(object)new Color[0];
-				resultData = (Color32[])(object)new Color32[0];
-			}
-		}
-
-		public bool CheckResize(int count)
-		{
-			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0075: Expected O, but got Unknown
-			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b7: Expected O, but got Unknown
-			//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-			if (count > inputData.Length || ((Object)(object)resultTexture != (Object)null && !resultTexture.IsCreated()))
-			{
-				Dispose(data: false);
-				width = Mathf.CeilToInt(Mathf.Sqrt((float)count));
-				height = Mathf.CeilToInt((float)count / (float)width);
-				inputTexture = new Texture2D(width, height, (TextureFormat)20, false, true);
-				((Object)inputTexture).name = "_Input";
-				((Texture)inputTexture).filterMode = (FilterMode)0;
-				((Texture)inputTexture).wrapMode = (TextureWrapMode)1;
-				resultTexture = new RenderTexture(width, height, 0, (RenderTextureFormat)0, (RenderTextureReadWrite)1);
-				((Object)resultTexture).name = "_Result";
-				((Texture)resultTexture).filterMode = (FilterMode)0;
-				((Texture)resultTexture).wrapMode = (TextureWrapMode)1;
-				resultTexture.useMipMap = false;
-				resultTexture.Create();
-				int num = resultData.Length;
-				int num2 = width * height;
-				Array.Resize(ref inputData, num2);
-				Array.Resize(ref resultData, num2);
-				Color32 val = default(Color32);
-				((Color32)(ref val))..ctor(byte.MaxValue, (byte)0, (byte)0, (byte)0);
-				for (int i = num; i < num2; i++)
-				{
-					resultData[i] = val;
-				}
-				return true;
-			}
-			return false;
-		}
-
-		public void UploadData()
-		{
-			if (inputData.Length != 0)
-			{
-				inputTexture.SetPixels(inputData);
-				inputTexture.Apply();
-			}
-		}
-
-		public void Dispatch(int count)
-		{
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			if (inputData.Length != 0)
-			{
-				RenderBuffer activeColorBuffer = Graphics.activeColorBuffer;
-				RenderBuffer activeDepthBuffer = Graphics.activeDepthBuffer;
-				coverageMat.SetTexture("_Input", (Texture)(object)inputTexture);
-				Graphics.Blit((Texture)(object)inputTexture, resultTexture, coverageMat, 0);
-				Graphics.SetRenderTarget(activeColorBuffer, activeDepthBuffer);
-			}
-		}
-
-		public void IssueRead()
-		{
-			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			if (asyncRequests.Count < 10)
-			{
-				asyncRequests.Enqueue(AsyncGPUReadback.Request((Texture)(object)resultTexture, 0, (Action<AsyncGPUReadbackRequest>)null));
-			}
-		}
-
-		public void GetResults()
-		{
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-			if (resultData.Length == 0)
-			{
-				return;
-			}
-			while (asyncRequests.Count > 0)
-			{
-				AsyncGPUReadbackRequest val = asyncRequests.Peek();
-				if (((AsyncGPUReadbackRequest)(ref val)).hasError)
-				{
-					asyncRequests.Dequeue();
-					continue;
-				}
-				if (((AsyncGPUReadbackRequest)(ref val)).done)
-				{
-					NativeArray<Color32> data = ((AsyncGPUReadbackRequest)(ref val)).GetData<Color32>(0);
-					for (int i = 0; i < data.Length; i++)
-					{
-						resultData[i] = data[i];
-					}
-					asyncRequests.Dequeue();
-					continue;
-				}
-				break;
-			}
-		}
-	}
-
-	public enum RadiusSpace
-	{
-		ScreenNormalized,
-		World
-	}
-
-	public class Query
-	{
-		public struct Input
-		{
-			public Vector3 position;
-
-			public RadiusSpace radiusSpace;
-
-			public float radius;
-
-			public int sampleCount;
-
-			public float smoothingSpeed;
-		}
-
-		public struct Internal
-		{
-			public int id;
-
-			public void Reset()
-			{
-				id = -1;
-			}
-		}
-
-		public struct Result
-		{
-			public int passed;
-
-			public float coverage;
-
-			public float smoothCoverage;
-
-			public float weightedCoverage;
-
-			public float weightedSmoothCoverage;
-
-			public bool originOccluded;
-
-			public int frame;
-
-			public float originVisibility;
-
-			public float originSmoothVisibility;
-
-			public void Reset()
-			{
-				passed = 0;
-				coverage = 0f;
-				smoothCoverage = 0f;
-				weightedCoverage = 0f;
-				weightedSmoothCoverage = 0f;
-				originOccluded = true;
-				frame = -1;
-				originVisibility = 0f;
-				originSmoothVisibility = 0f;
-			}
-		}
-
-		public Input input;
-
-		public Internal intern;
-
-		public Result result;
-
-		public bool IsRegistered => intern.id >= 0;
-	}
-
-	public float depthBias = -0.1f;
-
-	public bool debug;
 }
 
 

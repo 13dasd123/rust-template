@@ -1535,10 +1535,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1757,8 +1757,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		SetFlag(Flags.Reserved4, b);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void FlipAim(RPCMessage rpc)
 	{
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
@@ -1797,8 +1797,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		RPCMessage rpc2 = rpc;
@@ -1852,8 +1852,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_Peacekeeper(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", (object)this, (object)rpc.player) == null)
@@ -1862,8 +1862,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SERVER_AttackAll(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", (object)this, (object)rpc.player) == null)
@@ -3160,8 +3160,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	private BaseProjectile.Magazine magazine;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform muzzle;
 
 	[SerializeField]
@@ -4109,11 +4109,11 @@ public class BallistaGun : BaseVehicleSeat
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.FromOwner(true)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.FromOwner(true)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
@@ -4332,11 +4332,11 @@ public class BallistaGun : BaseVehicleSeat
 		return signal == Signal.Attack;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.FromOwner(true)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.FromOwner(true)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
@@ -4355,11 +4355,11 @@ public class BallistaGun : BaseVehicleSeat
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.FromOwner(true)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -7488,9 +7488,9 @@ public class BaseArcadeMachine : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(7uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(7uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void BroadcastEntityMessage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -8227,8 +8227,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		GameController?.ReceivedInputFromPlayer(msg.player, msg.read.Int32(), countAsAction: true, msg.read.Int32());
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_LeaveTable(RPCMessage msg)
 	{
 		GameController?.LeaveTable(msg.player.userID);
@@ -8288,8 +8288,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Editor_MakeRandomMove(RPCMessage msg)
 	{
 		if (Application.isEditor)
@@ -8298,8 +8298,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_Play(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -18860,8 +18860,8 @@ public class BaseFishingRod : HeldEntity
 		Server_Cancel(FailReason.Success);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_Cancel(RPCMessage msg)
 	{
 		if (CurrentState != CatchState.Caught)
@@ -21649,8 +21649,8 @@ public class BaseLock : BaseEntity
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	public void RPC_TakeLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanRemove && Interface.CallHook("CanPickupLock", (object)rpc.player, (object)this) == null && !IsLocked())
@@ -22060,8 +22060,8 @@ public class BaseMelee : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void PlayerAttack(RPCMessage msg)
 	{
 		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
@@ -22610,9 +22610,9 @@ public class BaseMelee : AttackEntity
 		return player.GetInheritedThrowVelocity(direction);
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner(false)]
-	[RPC_Server]
 	private void CLEntityThrow(RPCMessage msg)
 	{
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
@@ -22712,8 +22712,8 @@ public class BaseMelee : AttackEntity
 	}
 
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.FromOwner(false)]
+	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
@@ -23141,9 +23141,9 @@ public class BaseMetalDetector : HeldEntity
 		inRangeSources.Clear();
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.FromOwner(false)]
+	[RPC_Server]
 	private void RPC_RequestFlag(RPCMessage rpc)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -23164,9 +23164,9 @@ public class BaseMetalDetector : HeldEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(6uL)]
+	[RPC_Server.FromOwner(false)]
+	[RPC_Server]
 	public void SV_SetSweetspotScanning(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetOwnerPlayer()))
@@ -27539,8 +27539,8 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		Interface.CallHook("OnFuelConsumed", (object)this, (object)fuel, (object)burnable);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	protected virtual void SVSwitch(RPCMessage msg)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)

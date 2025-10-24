@@ -11666,10 +11666,10 @@ public enum FishingTag
 
 using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(PostOpaqueDepth))]
+[RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(Camera))]
+[ExecuteInEditMode]
 public class WaterCamera : MonoBehaviour
 {
 }
@@ -13146,8 +13146,8 @@ public delegate void FillCommandBuffer(CommandBuffer cb);
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
+[ExecuteInEditMode]
 public class CommandBufferManager : MonoBehaviour
 {
 }
@@ -13740,8 +13740,8 @@ private struct SubsurfaceProfileEntry
 
 using UnityEngine;
 
-[RequireComponent(typeof(Renderer))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Renderer))]
 public class DeferredMeshDecal : MonoBehaviour, IClientComponent
 {
 }
@@ -13758,8 +13758,8 @@ public class DeferredMeshDecalRenderer : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 public class DeployGuideCamera : SingletonComponent<DeployGuideCamera>
 {
 	public DeployGuideMaterial GoodMaterial;
@@ -13962,9 +13962,9 @@ public class OceanParameters
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(DeferredIndirectLightingPass))]
+[ExecuteInEditMode]
 public class SpatialEnvironmentVolumePass : MonoBehaviour
 {
 	private const CameraEvent VOLUME_RENDERING_CAMERA_EVENT = 6;
@@ -14027,9 +14027,9 @@ public static class GraphicsMemory
 
 using UnityEngine;
 
+[RequireComponent(typeof(MeshFilter))]
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshRenderer))]
-[RequireComponent(typeof(MeshFilter))]
 public class Impostor : MonoBehaviour, IClientComponent, IPrefabPreProcess
 {
 	public ImpostorAsset asset;
@@ -14648,8 +14648,8 @@ public class ObjectMotionVectorFix : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(CommandBufferManager))]
 public class PostOpaqueDepth : MonoBehaviour
 {
 	public RenderTexture postOpaqueDepth;
@@ -15462,8 +15462,8 @@ public class SpatialEnvironmentVolumeRendererFeature : RustRendererFeature
 
 using UnityEngine;
 
-[ExecuteAlways]
 [RequireComponent(typeof(Camera))]
+[ExecuteAlways]
 public class SpatialBiomeFog : SingletonComponent<SpatialBiomeFog>
 {
 	public ComputeShader FogMarchShader;
@@ -15947,8 +15947,8 @@ public class VolumeCloudsConfig : ScriptableObject
 {
 	public VolumeCloudsWeatherLayerConfig WeatherLayer = new VolumeCloudsWeatherLayerConfig();
 
-	[Range(0f, 1f)]
 	[Header("Detail")]
+	[Range(0f, 1f)]
 	public float Billows = 1f;
 
 	[Range(0f, 3f)]
@@ -16475,8 +16475,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 	{
 	}
 
-	[ClientVar(Name = "pulse")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[ClientVar(Name = "pulse")]
 	public static void ConVar_Pulse(Arg args)
 	{
 	}
@@ -16516,7 +16516,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				ConVar.Server.queryport = Math.Max(ConVar.Server.port, RCon.Port) + 1;
 			}
-			return new ServerParameters("rust", "Rust", 2602.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
+			return new ServerParameters("rust", "Rust", 2603.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
 		}
 	}
 
@@ -20179,7 +20179,7 @@ public class ConnectionAuth : MonoBehaviour
 			Reject(connection, "Invalid SteamID");
 			return;
 		}
-		if (connection.protocol != 2602)
+		if (connection.protocol != 2603)
 		{
 			if (!DeveloperList.Contains(connection.userid))
 			{
@@ -24221,7 +24221,7 @@ public static class NexusServer
 		try
 		{
 			int valueOrDefault = (World.Config?.JsonString?.GetHashCode()).GetValueOrDefault();
-			string key = $"{2602}##{272}##{World.Name}##{World.Size}##{World.Seed}##{World.Salt}##{Nexus.mapImageScale}##{valueOrDefault}##{5}";
+			string key = $"{2603}##{272}##{World.Name}##{World.Size}##{World.Seed}##{World.Salt}##{Nexus.mapImageScale}##{valueOrDefault}##{5}";
 			if (!force && (await ZoneClient.CheckUploadedMap()).Key == key)
 			{
 				Debug.Log((object)"Nexus already has this map's image uploaded, will not render and upload again");

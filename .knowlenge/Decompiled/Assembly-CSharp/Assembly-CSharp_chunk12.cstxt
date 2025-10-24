@@ -2389,8 +2389,8 @@ public class EffectRecycle : BaseMonoBehaviour, IClientComponent, IRagdollInhert
 		DetachWaitDestroy
 	}
 
-	[ReadOnly]
 	[FormerlySerializedAs("lifeTime")]
+	[ReadOnly]
 	public float detachTime;
 
 	[ReadOnly]
@@ -2588,8 +2588,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 
 	public Vector3 Size = Vector3.one;
 
-	[field: SerializeField]
 	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
+	[field: SerializeField]
 	public Vector3 FalloffPositive { get; private set; } = Vector3.zero;
 
 	[field: SerializeField]
@@ -3282,8 +3282,8 @@ public class FoliagePlacement : ScriptableObject
 	[Header("Randomization")]
 	public float RandomScaling = 0.2f;
 
-	[Header("Placement Range")]
 	[MinMax(0f, 1f)]
+	[Header("Placement Range")]
 	public MinMax Range = new MinMax(0f, 1f);
 
 	public float RangeFade = 0.1f;
@@ -6228,8 +6228,8 @@ public class LevelInfo : SingletonComponent<LevelInfo>
 	[Tooltip("A background image to be shown when loading the map")]
 	public Texture2D image;
 
-	[Tooltip("You should incrememnt this version when you make changes to the map that will invalidate old saves")]
 	[Space(10f)]
+	[Tooltip("You should incrememnt this version when you make changes to the map that will invalidate old saves")]
 	public int version = 1;
 }
 
@@ -6487,8 +6487,8 @@ public class CopyLODValues : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private LODGroup destination;
 
-	[SerializeField]
 	[Tooltip("Is false, exact values are copied. If true, values are scaled based on LODGroup size, so the changeover point will match.")]
+	[SerializeField]
 	private bool scale = true;
 
 	public bool CanCopy()
@@ -10495,10 +10495,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
-	[SerializeField]
-	[Header("Spawn Info")]
 	[FormerlySerializedAs("TargetDensity")]
 	[Tooltip("Usually per square km")]
+	[Header("Spawn Info")]
+	[SerializeField]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -11486,9 +11486,9 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 
 	public SpawnPointType spawnPointType;
 
-	[SerializeField]
 	[Range(1f, 25f)]
 	[Tooltip("Min distance between the spawn area and any human players")]
+	[SerializeField]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();
@@ -12109,8 +12109,8 @@ using UnityEngine;
 
 public class RadialSpawnPoint : BaseSpawnPoint
 {
-	[Tooltip("Circle to spawn within")]
 	[SerializeField]
+	[Tooltip("Circle to spawn within")]
 	public float radius = 10f;
 
 	public override void GetLocation(out Vector3 pos, out Quaternion rot)
@@ -15603,9 +15603,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class TriggerParent : TriggerBase, IServerComponent
 {
-	[Tooltip("Deparent if the parented entity clips into an obstacle")]
-	[Header("General")]
 	[SerializeField]
+	[Header("General")]
+	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	public bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -16536,18 +16536,18 @@ public class TriggerRadiation : TriggerBase
 
 	public bool BypassArmor;
 
-	[Space]
 	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	[Min(0f)]
+	[Space]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
 
 	public Vector3 falloffPerAxis;
 
+	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	[Space]
 	[FormerlySerializedAs("UseColliderRadius")]
-	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -17330,8 +17330,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Range(3f, 64f)]
 	[Header("Settings")]
+	[Range(3f, 64f)]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;
@@ -19951,12 +19951,12 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 
 	public bool HideInEyesView;
 
-	[Header("First Person Legs")]
 	[Tooltip("If this is true, we'll hide this item in the first person view. Usually done for items that you definitely won't see in first person view, like facemasks and hats.")]
+	[Header("First Person Legs")]
 	public bool HideInFirstPerson;
 
-	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
 	[Range(0f, 5f)]
+	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
 	public float ExtraLeanBack;
 
 	[Tooltip("Enable this to check for BoneRetargets which need to be preserved in first person view")]
@@ -20151,7 +20151,7 @@ public struct PartCollection
 
 using UnityEngine;
 
-public class WearableEyeViewAdjustment : MonoBehaviour
+public abstract class WearableEyeViewAdjustment : MonoBehaviour
 {
 }
 
@@ -20165,6 +20165,10 @@ public class WearableEyeViewAdjustment_Submesh : WearableEyeViewAdjustment
 	public Material HideMaterial;
 
 	public Material DefaultMaterial;
+
+	public Mesh TargetMesh;
+
+	public WearableRandomMaterial Randomiser;
 }
 
 
@@ -21725,9 +21729,9 @@ public class MaterialOverlay : MonoBehaviour
 
 using UnityEngine;
 
-[AddComponentMenu("Image Effects/Natural Bloom and Dirty Lens")]
 [RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[AddComponentMenu("Image Effects/Natural Bloom and Dirty Lens")]
 public class NaturalBloomAndDirtyLens : MonoBehaviour
 {
 	public Shader shader;
@@ -26591,8 +26595,8 @@ public class ItemDefinition : MonoBehaviour
 		NucleusGrades
 	}
 
-	[ReadOnly]
 	[Header("Item")]
+	[ReadOnly]
 	public int itemid;
 
 	[Tooltip("The shortname should be unique. A hash will be generated from it to identify the item type. If this name changes at any point it will make all saves incompatible")]

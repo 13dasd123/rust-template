@@ -11969,6 +11969,8 @@ public class WorkshopRenderSettings : MonoBehaviour
 	[ItemSelector]
 	public ItemDefinition ItemDefinition;
 
+	public int itemID;
+
 	public bool ToggleLightingRig;
 
 	public Transform LightingRig;
@@ -21037,22 +21039,22 @@ public class Socket_Free_Snappable : Socket_Free
 	[ClientVar]
 	public static bool DebugSnapping = false;
 
-	[SerializeField]
 	[Header("Snapping - General")]
+	[SerializeField]
 	[Range(-1f, 1f)]
 	private float generalPadding;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	[Header("Snapping - Walls")]
 	private float snappingPadding;
 
-	[Header("Snapping - Corners")]
 	[SerializeField]
+	[Header("Snapping - Corners")]
 	private bool allowSnappingToCorners = true;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float cornerPadding = -0.01f;
 
 	[Header("Snapping - Same Deployable")]
@@ -23462,8 +23464,8 @@ public class OxygenOverlay : MonoBehaviour
 	[SerializeField]
 	private float smoothTime = 1f;
 
-	[SerializeField]
 	[Tooltip("If true, only show this effect when the player is mounted in a submarine.")]
+	[SerializeField]
 	private bool submarinesOnly;
 }
 

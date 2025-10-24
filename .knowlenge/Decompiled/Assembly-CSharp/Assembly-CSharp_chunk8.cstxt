@@ -1071,9 +1071,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1139,8 +1139,8 @@ public class WeaponRack : StorageContainer
 		Interface.CallHook("OnRackedWeaponTaken", (object)slot, (object)player, (object)this);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	private void ReqTakeAll(RPCMessage msg)
 	{
@@ -1174,9 +1174,9 @@ public class WeaponRack : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1218,8 +1218,8 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
@@ -1251,9 +1251,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -2548,8 +2548,8 @@ public class WireTool : HeldEntity
 
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner(false)]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
@@ -2598,10 +2598,10 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.FromOwner(false)]
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -2746,10 +2746,10 @@ public class WireTool : HeldEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner(false)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
@@ -4559,9 +4559,9 @@ public class ZiplineLaunchPoint : BaseEntity
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void MountPlayer(RPCMessage msg)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -6704,8 +6704,8 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
-[ExecuteInEditMode]
 [AddComponentMenu("Image Effects/NVG Effect")]
+[ExecuteInEditMode]
 public class NVGEffect : PostEffectsBase, IImageEffect
 {
 	[Serializable]
@@ -11724,8 +11724,8 @@ public class NPCVendingOrder : ScriptableObject
 	{
 		public bool useRandom;
 
-		[Range(0f, 1f)]
 		[Tooltip("The higher this number, the more likely this will be chosen")]
+		[Range(0f, 1f)]
 		public float weight;
 
 		[Tooltip("Minimum price for the currency item")]
@@ -11856,8 +11856,8 @@ public struct EntryRandom
 {
 	public bool useRandom;
 
-	[Range(0f, 1f)]
 	[Tooltip("The higher this number, the more likely this will be chosen")]
+	[Range(0f, 1f)]
 	public float weight;
 
 	[Tooltip("Minimum price for the currency item")]
@@ -16215,8 +16215,8 @@ public class JunkPileWater : JunkPile
 
 	public static JunkpileWaterWorkQueue junkpileWaterWorkQueue = new JunkpileWaterWorkQueue();
 
-	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	public static float framebudgetms = 0.25f;
 
 	public override void Spawn()
@@ -20403,7 +20403,7 @@ public class HalloweenDungeon : BasePortal
 	public EntityRef<ProceduralDynamicDungeon> dungeonInstance;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
-	public static float population = 0f;
+	public static float population = 1f;
 
 	[ServerVar(Help = "How long each active dungeon should last before dying", ShowInAdminUI = true)]
 	public static float lifetime = 600f;
@@ -21053,8 +21053,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 		}
 	}
 
-	[ExecuteInEditMode]
 	[ContextMenu("Test Grid")]
+	[ExecuteInEditMode]
 	public void GenerateGrid()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -26923,8 +26923,8 @@ public class EffectParent : EntityComponent<BaseEntity>, IClientComponent
 	[Tooltip("If true the effect isn't our direct child and is in another hierarchy - USE WITH CAUTION")]
 	public bool separatedEffect;
 
-	[Tooltip("If true the effect will be forced to the safe layer that doesn't interact with player colliders")]
 	[Header("USING COLLIDERS? - COLLIDER SAFETY")]
+	[Tooltip("If true the effect will be forced to the safe layer that doesn't interact with player colliders")]
 	public bool forceSafePlayerCollisionLayer;
 }
 
@@ -27455,6 +27455,91 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 using System;
 using UnityEngine;
 
+public class ChainsawAudioAdvanced : FacepunchBehaviour, IClientComponent
+{
+	[Serializable]
+	public class SoundLayer
+	{
+		public SoundDefinition loopDef;
+
+		public AnimationCurve gainCurve;
+
+		public AnimationCurve pitchCurve;
+
+		public Sound loop;
+
+		public SoundModulation.Modulator gainMod;
+
+		public SoundModulation.Modulator pitchMod;
+	}
+
+	public SoundLayer engineIdleLayer;
+
+	public SoundLayer engineLayer;
+
+	public SoundLayer mechanicsLayer;
+
+	public SoundDefinition engineStartDef;
+
+	public SoundDefinition engineStopDef;
+
+	public bool engineOn;
+
+	public bool active;
+
+	public bool hit;
+
+	public float engineChangeRateUp = 2f;
+
+	public float engineChangeRateDown = 1f;
+
+	public float mechanicsChangeRateUp = 2f;
+
+	public float mechanicsChangeRateDown = 0.25f;
+
+	public float runSpeedMaxActive = 1f;
+
+	public float runSpeedMaxHit = 0.8f;
+
+	public float runSpeed;
+
+	public float engine;
+
+	public float mechanics;
+
+	public float hitNoiseFrequency = 1f;
+
+	public float hitNoiseDepth = 0.3f;
+
+	public float activeNoiseFrequency = 1f;
+
+	public float activeNoiseDepth = 0.1f;
+}
+
+
+using System;
+using UnityEngine;
+
+[Serializable]
+public class SoundLayer
+{
+	public SoundDefinition loopDef;
+
+	public AnimationCurve gainCurve;
+
+	public AnimationCurve pitchCurve;
+
+	public Sound loop;
+
+	public SoundModulation.Modulator gainMod;
+
+	public SoundModulation.Modulator pitchMod;
+}
+
+
+using System;
+using UnityEngine;
+
 public class v_chainsaw : MonoBehaviour
 {
 	[NonSerialized]
@@ -27489,7 +27574,7 @@ public class v_chainsaw : MonoBehaviour
 
 	public float hitSoundFadeTime = 0.1f;
 
-	public ParticleSystem smokeEffect;
+	public ParticleSystem[] smokeEffects = Array.Empty<ParticleSystem>();
 
 	public Animator chainsawAnimator;
 
@@ -27788,8 +27873,8 @@ using UnityEngine.UI;
 
 public class HomingLauncherUIDialog : UIDialog
 {
-	[SerializeField]
 	[Header("Homing Launcher")]
+	[SerializeField]
 	private Canvas canvas;
 
 	[SerializeField]
@@ -30791,8 +30876,8 @@ public class BasePet : NPCPlayer, IThinker
 	[ServerVar]
 	public static bool onlyQueueBaseNavMovements = true;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing pet movements per frame")]
+	[ServerVar]
 	public static float movementupdatebudgetms = 1f;
 
 	public float BaseAttackRate = 2f;
@@ -31469,16 +31554,16 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 
 	public static ListHashSet<IThinker> _petRemovalQueue = new ListHashSet<IThinker>();
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing AI entities per server frame")]
+	[ServerVar]
 	public static float framebudgetms = 2.5f;
 
-	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
 	public static float animalframebudgetms = 2.5f;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
+	[ServerVar]
 	public static float petframebudgetms = 1f;
 
 	private static int lastIndex = 0;

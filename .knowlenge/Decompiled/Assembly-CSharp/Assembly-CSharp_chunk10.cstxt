@@ -3475,8 +3475,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void dump(Arg args)
 	{
 		if (Directory.Exists("diagnostics"))
@@ -7972,8 +7972,8 @@ public class TransformLineRenderer : MonoBehaviour, IClientComponent
 {
 	internal struct LineRendererUpdateJob : IJobParallelForTransform
 	{
-		[WriteOnly]
 		[NativeMatchesParallelForLength]
+		[WriteOnly]
 		public NativeArray<Vector3> ResultWorldPositions;
 
 		public void Execute(int index, [ReadOnly] TransformAccess transform)
@@ -8000,8 +8000,8 @@ using UnityEngine.Jobs;
 
 internal struct LineRendererUpdateJob : IJobParallelForTransform
 {
-	[WriteOnly]
 	[NativeMatchesParallelForLength]
+	[WriteOnly]
 	public NativeArray<Vector3> ResultWorldPositions;
 
 	public void Execute(int index, [ReadOnly] TransformAccess transform)
@@ -13777,8 +13777,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float wiggleIntensity = 1f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private LineRenderer[] lineRenderers;
 
 	[SerializeField]
@@ -16397,8 +16397,8 @@ public class Compass : HeldEntity
 	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	private float needleYawAngleOffset;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float needleStiffness = 50f;
 
 	[Range(0f, 1f)]
@@ -16409,13 +16409,13 @@ public class Compass : HeldEntity
 	[Min(0f)]
 	private float maxAcceleration = 1500f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float maxSpeed = 360f;
 
+	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
 	[SerializeField]
 	[MinMax(0f, 180f)]
-	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
 	private MinMax startingAngleDelta;
 
 	[SerializeField]
@@ -16424,9 +16424,9 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float wiggleFrequency = 1.5f;
 
+	[Tooltip("Velocity change when the admire animation taps the needle")]
 	[SerializeField]
 	[Min(0f)]
-	[Tooltip("Velocity change when the admire animation taps the needle")]
 	private float admireTapNeedleVelocity = 300f;
 }
 
@@ -18813,8 +18813,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[SerializeField]
 	[Header("Ragdolling")]
+	[SerializeField]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]
@@ -19623,8 +19623,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 	[SerializeField]
 	private CanvasGroup screenCanvas;
 
-	[Space]
 	[Header("PROTECTED TIME")]
+	[Space]
 	public RustText protectedTimeText;
 
 	public int decayWarningThreshold = 130;
@@ -19633,8 +19633,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 
 	public GameObject decayingGroup;
 
-	[Header("UPKEEP")]
 	[Space]
+	[Header("UPKEEP")]
 	public VirtualItemIcon[] costIcons;
 
 	public RustText[] paginationTexts;
@@ -19692,8 +19692,8 @@ using UnityEngine;
 
 public class DoorWithLock : Door
 {
-	[ItemSelector]
 	[Header("Lock Settings")]
+	[ItemSelector]
 	public GameObjectRef lockObject;
 }
 
@@ -20624,8 +20624,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public BaseEntity.Flags flag;
 
-	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	[SerializeField]
+	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	private FlagCheck flagCheck;
 
 	[SerializeField]

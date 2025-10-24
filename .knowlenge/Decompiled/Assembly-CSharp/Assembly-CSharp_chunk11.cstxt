@@ -526,8 +526,8 @@ using UnityEngine;
 
 public class TorpedoServerProjectile : ServerProjectile
 {
-	[SerializeField]
 	[Tooltip("Make sure to leave some allowance for waves, which affect the true depth.")]
+	[SerializeField]
 	private float minWaterDepth = 0.5f;
 
 	[SerializeField]
@@ -950,8 +950,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float brakeHissCooldown = 2f;
 
-	[Header("Misc")]
 	[SerializeField]
+	[Header("Misc")]
 	private SoundDefinition angryHornSoundDef;
 
 	[SerializeField]
@@ -7821,8 +7821,8 @@ public class Ballista : BaseSiegeWeapon
 
 	public Transform dismountPositionsParent;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	private GameObjectRef fireEffectPrefab;
 
 	public override float DriveWheelVelocity { get; }
@@ -7997,8 +7997,8 @@ public class SiegeWeaponVehicleAudio : GroundVehicleAudio
 
 	public SoundDefinition reloadCompleteDef;
 
-	[Header("Rattles")]
 	[SerializeField]
+	[Header("Rattles")]
 	private SoundDefinition movementRattleLoop;
 
 	[SerializeField]
@@ -8236,8 +8236,8 @@ public class CatapultSounds : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -9297,8 +9297,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	[Header("Water")]
 	public float underwaterExplosionDepth = 1f;
 
-	[Tooltip("Optional: Will fall back to underwaterExplosionEffect or explosionEffect if not assigned.")]
 	[MinMax(0f, 100f)]
+	[Tooltip("Optional: Will fall back to underwaterExplosionEffect or explosionEffect if not assigned.")]
 	public MinMax watersurfaceExplosionDepth = new MinMax(0.5f, 10f);
 
 	public bool waterCausesExplosion;
@@ -10625,8 +10625,8 @@ using UnityEngine;
 
 public class BaseVehicleMountPoint : BaseMountable
 {
-	[Header("BaseVehicleMountPoint")]
 	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
+	[Header("BaseVehicleMountPoint")]
 	public bool RequiresVehicleFixedUpdateOnSeat;
 
 	public override bool DirectlyMountable()
@@ -11021,8 +11021,8 @@ using UnityEngine;
 
 public class BicycleAudio : BikeVehicleAudio
 {
-	[Header("Bicycle")]
 	[SerializeField]
+	[Header("Bicycle")]
 	private SoundDefinition pedalActiveSoundDef;
 
 	[SerializeField]
@@ -11259,8 +11259,8 @@ using UnityEngine;
 
 public class BikeVehicleAudio : GroundVehicleAudio
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
 	[Header("Suspension")]
@@ -11273,8 +11273,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -11414,8 +11414,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[Help("Shore drift speed in metres per second")]
 	[ServerVar]
+	[Help("Shore drift speed in metres per second")]
 	public static float drift_speed = 1f;
 
 	[NonSerialized]
@@ -12931,8 +12931,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float soundCullDistanceSq;
 
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineLoopDef;
 
 	private Sound engineLoop;
@@ -12965,8 +12965,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Transform bridgeControlsTransform;
 
-	[Header("Water")]
 	[SerializeField]
+	[Header("Water")]
 	private SoundDefinition waterIdleDef;
 
 	[SerializeField]
@@ -13014,8 +13014,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector3 sideSoundLineBow;
 
-	[Header("Ambient")]
 	[SerializeField]
+	[Header("Ambient")]
 	private SoundDefinition ambientActiveLoopDef;
 
 	private Sound ambientActiveSound;
@@ -13042,8 +13042,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float lastChainRattle;
 
-	[Header("Horn")]
 	[SerializeField]
+	[Header("Horn")]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]
@@ -13052,9 +13052,9 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition hornStop;
 
-	[Min(0f)]
 	[SerializeField]
 	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
+	[Min(0f)]
 	private float maxHornTime;
 
 	[Min(0f)]
@@ -14286,8 +14286,8 @@ using UnityEngine;
 
 public class DiverPropulsionVehicleAudio : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -14315,8 +14315,8 @@ public class DiverPropulsionVehicleAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve propellerGainCurve;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterMovementLoopDef;
 
 	[SerializeField]
@@ -14715,8 +14715,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition brakeStopSoundDef;
 
-	[Header("Lights")]
 	[SerializeField]
+	[Header("Lights")]
 	protected SoundDefinition lightsToggleSound;
 }
 
@@ -18043,8 +18043,8 @@ public class ScrapTransportHelicopter : PlayerHelicopter, TriggerHurtNotChild.IH
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[Header("Damage Effects")]
 	[SerializeField]
+	[Header("Damage Effects")]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]
@@ -18631,8 +18631,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	public LegsAnimator legsAnimator;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform backHipTransform;
 
 	[SerializeField]
@@ -18641,9 +18641,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
-	[SerializeField]
 	[Header("Head")]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float headBlend = 1f;
 
 	[ReadOnly]
@@ -18665,9 +18665,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public Vector3 headLookOffset = Vector3.zero;
 
+	[SerializeField]
 	[Range(0f, 1f)]
 	[Header("Spine")]
-	[SerializeField]
 	private float spineBlend = 0.5f;
 
 	[ReadOnly]
@@ -18679,24 +18679,24 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public float spineYawInertiaFactor = 150f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetNeckRotations;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Quaternion[] targetSpineRotations;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3[] localSpinePositions;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3 originalHipPosition;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion originalHipRotation;
 
 	public Vector3 spineOffset;
@@ -18717,8 +18717,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private Animator animator;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	public SoundPlayer breathingSound;
 
 	[SerializeField]
@@ -18733,22 +18733,22 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private AnimationCurve saddleMovementGainCurve;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private MaterialEffect footstepEffects;
 
 	[SerializeField]
 	private Transform[] feet;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObjectRef swimmingSloshEffect;
 
 	[SerializeField]
 	private string BaseFolder;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]
@@ -21716,8 +21716,8 @@ public class SnowmobileAudio : GroundVehicleAudio
 	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
-	[SerializeField]
 	[Header("Skis")]
+	[SerializeField]
 	private AnimationCurve skiGainCurve;
 
 	[SerializeField]
@@ -21832,8 +21832,8 @@ using UnityEngine;
 
 public class SoccerBall : BaseCombatEntity
 {
-	[SerializeField]
 	[Header("Soccer Ball")]
+	[SerializeField]
 	private Rigidbody rigidBody;
 
 	[SerializeField]
@@ -22215,8 +22215,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private GameObject dashboardAudioPoint;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private SoundDefinition climbOrDiveLoopSound;
 
 	[SerializeField]
@@ -24676,8 +24676,8 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private float reflectionRayOffset = 0.5f;
 
-	[SerializeField]
 	[Header("Horn")]
+	[SerializeField]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]

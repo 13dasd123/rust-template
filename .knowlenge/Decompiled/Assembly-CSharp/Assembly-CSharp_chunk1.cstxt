@@ -2,8 +2,8 @@ using System;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 
-[Embedded]
 [CompilerGenerated]
+[Embedded]
 internal sealed class IsUnmanagedAttribute : Attribute
 {
 }
@@ -155,6 +155,7 @@ public class RustigeEggSkinViewer : MonoBehaviour
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Facepunch;
 using Rust.UI.MainMenu;
 using Rust.Workshop;
@@ -173,8 +174,7 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 	[SerializeField]
 	private GameObject defaultLightingRig;
 
-	[SerializeField]
-	private List<WorkshopRenderSettings> renderSettings;
+	public List<WorkshopRenderSettings> renderSettings;
 
 	private CoverImage targetImage;
 
@@ -224,7 +224,7 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 			{
 				continue;
 			}
-			if ((Object)(object)renderSetting.ItemDefinition == (Object)(object)itemDef)
+			if ((Object)(object)renderSetting.ItemDefinition == (Object)(object)itemDef || renderSetting.itemID == skinID)
 			{
 				val = ((Component)renderSetting).gameObject;
 				((Component)renderSetting).gameObject.SetActive(true);
@@ -356,11 +356,11 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 		{
 			text = "rifle.lr300";
 		}
-		if (Object.op_Implicit((Object)(object)ItemManager.FindItemDefinition(text)))
+		if ((Object)(object)ItemManager.FindItemDefinition(text) != (Object)null)
 		{
 			return true;
 		}
-		return false;
+		return (Object)(object)SingletonComponent<SkinViewer2>.Instance.renderSettings.FirstOrDefault((WorkshopRenderSettings x) => x.itemID == playerItemDef.DefinitionId) != (Object)null;
 	}
 
 	private void OnMenuOpenStateChanged()
@@ -3091,8 +3091,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector3 sideSoundLineBow;
 
-	[SerializeField]
 	[Header("Dock")]
+	[SerializeField]
 	private SoundDefinition dockArrivalSoundDef;
 
 	[SerializeField]
@@ -3670,8 +3670,8 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	private void SetShellFuseLength(RPCMessage rpc)
 	{
@@ -4130,8 +4130,8 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetMotionDetection(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -4612,8 +4612,8 @@ public class StrobeLight : IOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetStrobeSpeed(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -5509,8 +5509,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Next(RPCMessage msg)
 	{
 		if (TryShuntTrain(next: true, out var attemptStatus))
