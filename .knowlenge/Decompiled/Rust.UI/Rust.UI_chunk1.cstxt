@@ -758,6 +758,130 @@ public class RustUiTest : MonoBehaviour
 }
 
 
+using System.Collections.Generic;
+using Facepunch.Extend;
+using Rust.UI;
+using TMPro;
+using UnityEngine;
+
+public class FileDialogFavouritePathButton : MonoBehaviour
+{
+	[Header("Link reference, static or set through code.")]
+	public FileDialog fileDialog;
+
+	[Header("Static References")]
+	public RustText pathText;
+
+	public CanvasGroup buttonCanvasGroup;
+
+	[Header("Settings")]
+	public int buttonIndex;
+
+	public static readonly string PLAYERPREFS_KEY_PREFIX = "files_favpath_";
+
+	public static readonly string EMPTY_PATH = "...";
+
+	private void Reset()
+	{
+		fileDialog = ((Component)this).GetComponentInParent<FileDialog>();
+		FileDialogFavouritePathButton[] componentsInChildren = ((Component)((Component)this).transform.parent).GetComponentsInChildren<FileDialogFavouritePathButton>();
+		buttonIndex = List.FindIndex<FileDialogFavouritePathButton>((IReadOnlyList<FileDialogFavouritePathButton>)componentsInChildren, this, (IEqualityComparer<FileDialogFavouritePathButton>)null);
+		buttonCanvasGroup = ((Component)this).GetComponent<CanvasGroup>();
+		Transform obj = ((Component)this).transform.Find("PathText");
+		pathText = ((obj != null) ? ((Component)obj).GetComponent<RustText>() : null);
+	}
+
+	private void OnEnable()
+	{
+		Refresh();
+	}
+
+	public void Refresh()
+	{
+		bool flag = PlayerPrefs.HasKey(PLAYERPREFS_KEY_PREFIX + buttonIndex);
+		buttonCanvasGroup.alpha = (flag ? 1f : 0.2f);
+		if (!flag)
+		{
+			((TMP_Text)pathText).text = EMPTY_PATH;
+		}
+		else
+		{
+			((TMP_Text)pathText).text = PlayerPrefs.GetString(PLAYERPREFS_KEY_PREFIX + buttonIndex);
+		}
+	}
+
+	public void SetNewPath(string path)
+	{
+		PlayerPrefs.SetString(PLAYERPREFS_KEY_PREFIX + buttonIndex, path);
+		PlayerPrefs.Save();
+		Refresh();
+	}
+
+	public void SetPathFromFileDialog()
+	{
+		if (!((Object)(object)fileDialog == (Object)null))
+		{
+			SetNewPath(fileDialog.workingPath);
+		}
+	}
+
+	public void LoadPathToFileDialog()
+	{
+		if (!((Object)(object)fileDialog == (Object)null) && !string.IsNullOrEmpty(((TMP_Text)pathText).text) && !(((TMP_Text)pathText).text == EMPTY_PATH))
+		{
+			fileDialog.OpenDir(((TMP_Text)pathText).text, select: true);
+		}
+	}
+
+	public void ClearPath()
+	{
+		if (PlayerPrefs.HasKey(PLAYERPREFS_KEY_PREFIX + buttonIndex))
+		{
+			PlayerPrefs.DeleteKey(PLAYERPREFS_KEY_PREFIX + buttonIndex);
+			PlayerPrefs.Save();
+			Refresh();
+		}
+	}
+
+	public void ClickMainButton()
+	{
+		if (IsShortcutModifierHeld())
+		{
+			if (IsAlternateModifierHeld())
+			{
+				ClearPath();
+			}
+			else
+			{
+				SetPathFromFileDialog();
+			}
+		}
+		else
+		{
+			LoadPathToFileDialog();
+		}
+	}
+
+	private bool IsShortcutModifierHeld()
+	{
+		if (!Input.GetKey((KeyCode)306))
+		{
+			return Input.GetKey((KeyCode)310);
+		}
+		return true;
+	}
+
+	private bool IsAlternateModifierHeld()
+	{
+		if (!Input.GetKey((KeyCode)304))
+		{
+			return Input.GetKey((KeyCode)303);
+		}
+		return true;
+	}
+}
+
+
 public interface IAutoLayout
 {
 	void DoLayout();
@@ -790,7 +914,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 	private static MonoScriptData Get()
 	{
 		MonoScriptData result = default(MonoScriptData);
-		result.FilePathsData = new byte[2747]
+		result.FilePathsData = new byte[2833]
 		{
 			0, 0, 0, 1, 0, 0, 0, 43, 92, 65,
 			115, 115, 101, 116, 115, 92, 80, 108, 117, 103,
@@ -1037,38 +1161,47 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			114, 116, 121, 92, 70, 105, 108, 101, 68, 105,
 			97, 108, 111, 103, 92, 70, 105, 108, 101, 68,
 			105, 97, 108, 111, 103, 46, 99, 115, 0, 0,
-			0, 1, 0, 0, 0, 64, 92, 65, 115, 115,
+			0, 1, 0, 0, 0, 78, 92, 65, 115, 115,
 			101, 116, 115, 92, 80, 108, 117, 103, 105, 110,
 			115, 92, 82, 117, 115, 116, 46, 85, 73, 92,
 			84, 104, 105, 114, 100, 80, 97, 114, 116, 121,
 			92, 70, 105, 108, 101, 68, 105, 97, 108, 111,
-			103, 92, 70, 105, 108, 101, 76, 105, 115, 116,
-			69, 108, 101, 109, 101, 110, 116, 46, 99, 115,
-			0, 0, 0, 1, 0, 0, 0, 46, 92, 65,
+			103, 92, 70, 105, 108, 101, 68, 105, 97, 108,
+			111, 103, 70, 97, 118, 111, 117, 114, 105, 116,
+			101, 80, 97, 116, 104, 66, 117, 116, 116, 111,
+			110, 46, 99, 115, 0, 0, 0, 1, 0, 0,
+			0, 64, 92, 65, 115, 115, 101, 116, 115, 92,
+			80, 108, 117, 103, 105, 110, 115, 92, 82, 117,
+			115, 116, 46, 85, 73, 92, 84, 104, 105, 114,
+			100, 80, 97, 114, 116, 121, 92, 70, 105, 108,
+			101, 68, 105, 97, 108, 111, 103, 92, 70, 105,
+			108, 101, 76, 105, 115, 116, 69, 108, 101, 109,
+			101, 110, 116, 46, 99, 115, 0, 0, 0, 1,
+			0, 0, 0, 46, 92, 65, 115, 115, 101, 116,
+			115, 92, 80, 108, 117, 103, 105, 110, 115, 92,
+			82, 117, 115, 116, 46, 85, 73, 92, 85, 116,
+			105, 108, 105, 116, 121, 92, 73, 65, 117, 116,
+			111, 76, 97, 121, 111, 117, 116, 46, 99, 115,
+			0, 0, 0, 1, 0, 0, 0, 50, 92, 65,
 			115, 115, 101, 116, 115, 92, 80, 108, 117, 103,
 			105, 110, 115, 92, 82, 117, 115, 116, 46, 85,
 			73, 92, 85, 116, 105, 108, 105, 116, 121, 92,
-			73, 65, 117, 116, 111, 76, 97, 121, 111, 117,
-			116, 46, 99, 115, 0, 0, 0, 1, 0, 0,
-			0, 50, 92, 65, 115, 115, 101, 116, 115, 92,
-			80, 108, 117, 103, 105, 110, 115, 92, 82, 117,
-			115, 116, 46, 85, 73, 92, 85, 116, 105, 108,
-			105, 116, 121, 92, 82, 101, 99, 116, 84, 114,
-			97, 110, 115, 102, 111, 114, 109, 69, 120, 46,
-			99, 115, 0, 0, 0, 1, 0, 0, 0, 51,
-			92, 65, 115, 115, 101, 116, 115, 92, 80, 108,
-			117, 103, 105, 110, 115, 92, 82, 117, 115, 116,
-			46, 85, 73, 92, 85, 116, 105, 108, 105, 116,
-			121, 92, 84, 111, 103, 103, 108, 101, 71, 97,
-			109, 101, 79, 98, 106, 101, 99, 116, 46, 99,
-			115, 0, 0, 0, 1, 0, 0, 0, 48, 92,
-			65, 115, 115, 101, 116, 115, 92, 80, 108, 117,
-			103, 105, 110, 115, 92, 82, 117, 115, 116, 46,
-			85, 73, 92, 85, 116, 105, 108, 105, 116, 121,
-			92, 85, 73, 66, 101, 104, 97, 118, 105, 111,
-			117, 114, 69, 120, 46, 99, 115
+			82, 101, 99, 116, 84, 114, 97, 110, 115, 102,
+			111, 114, 109, 69, 120, 46, 99, 115, 0, 0,
+			0, 1, 0, 0, 0, 51, 92, 65, 115, 115,
+			101, 116, 115, 92, 80, 108, 117, 103, 105, 110,
+			115, 92, 82, 117, 115, 116, 46, 85, 73, 92,
+			85, 116, 105, 108, 105, 116, 121, 92, 84, 111,
+			103, 103, 108, 101, 71, 97, 109, 101, 79, 98,
+			106, 101, 99, 116, 46, 99, 115, 0, 0, 0,
+			1, 0, 0, 0, 48, 92, 65, 115, 115, 101,
+			116, 115, 92, 80, 108, 117, 103, 105, 110, 115,
+			92, 82, 117, 115, 116, 46, 85, 73, 92, 85,
+			116, 105, 108, 105, 116, 121, 92, 85, 73, 66,
+			101, 104, 97, 118, 105, 111, 117, 114, 69, 120,
+			46, 99, 115
 		};
-		result.TypesData = new byte[1761]
+		result.TypesData = new byte[1796]
 		{
 			0, 0, 0, 0, 15, 82, 117, 115, 116, 46,
 			85, 73, 124, 66, 108, 111, 99, 107, 101, 114,
@@ -1232,24 +1365,27 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			77, 101, 110, 117, 0, 0, 0, 0, 18, 82,
 			117, 115, 116, 46, 85, 73, 124, 70, 105, 108,
 			101, 68, 105, 97, 108, 111, 103, 0, 0, 0,
-			0, 23, 82, 117, 115, 116, 46, 85, 73, 124,
-			70, 105, 108, 101, 76, 105, 115, 116, 69, 108,
-			101, 109, 101, 110, 116, 0, 0, 0, 0, 12,
-			124, 73, 65, 117, 116, 111, 76, 97, 121, 111,
-			117, 116, 0, 0, 0, 0, 27, 85, 110, 105,
-			116, 121, 69, 110, 103, 105, 110, 101, 124, 82,
-			101, 99, 116, 84, 114, 97, 110, 115, 102, 111,
-			114, 109, 69, 120, 0, 0, 0, 0, 32, 82,
-			117, 115, 116, 46, 85, 73, 46, 85, 116, 105,
-			108, 105, 116, 121, 124, 84, 111, 103, 103, 108,
-			101, 71, 97, 109, 101, 79, 98, 106, 101, 99,
-			116, 0, 0, 0, 0, 25, 85, 110, 105, 116,
-			121, 69, 110, 103, 105, 110, 101, 124, 85, 73,
-			66, 101, 104, 97, 118, 105, 111, 117, 114, 69,
-			120
+			0, 30, 124, 70, 105, 108, 101, 68, 105, 97,
+			108, 111, 103, 70, 97, 118, 111, 117, 114, 105,
+			116, 101, 80, 97, 116, 104, 66, 117, 116, 116,
+			111, 110, 0, 0, 0, 0, 23, 82, 117, 115,
+			116, 46, 85, 73, 124, 70, 105, 108, 101, 76,
+			105, 115, 116, 69, 108, 101, 109, 101, 110, 116,
+			0, 0, 0, 0, 12, 124, 73, 65, 117, 116,
+			111, 76, 97, 121, 111, 117, 116, 0, 0, 0,
+			0, 27, 85, 110, 105, 116, 121, 69, 110, 103,
+			105, 110, 101, 124, 82, 101, 99, 116, 84, 114,
+			97, 110, 115, 102, 111, 114, 109, 69, 120, 0,
+			0, 0, 0, 32, 82, 117, 115, 116, 46, 85,
+			73, 46, 85, 116, 105, 108, 105, 116, 121, 124,
+			84, 111, 103, 103, 108, 101, 71, 97, 109, 101,
+			79, 98, 106, 101, 99, 116, 0, 0, 0, 0,
+			25, 85, 110, 105, 116, 121, 69, 110, 103, 105,
+			110, 101, 124, 85, 73, 66, 101, 104, 97, 118,
+			105, 111, 117, 114, 69, 120
 		};
-		result.TotalFiles = 51;
-		result.TotalTypes = 69;
+		result.TotalFiles = 52;
+		result.TotalTypes = 70;
 		result.IsEditorOnly = false;
 		return result;
 	}
@@ -5556,6 +5692,7 @@ using System.Threading.Tasks;
 using Facepunch;
 using Rust;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 public class HttpImage : MonoBehaviour
@@ -5564,7 +5701,7 @@ public class HttpImage : MonoBehaviour
 
 	public static Dictionary<string, Task> RequestCache = new Dictionary<string, Task>(StringComparer.OrdinalIgnoreCase);
 
-	public static Dictionary<string, (Texture2D, Sprite)> TextureCache = new Dictionary<string, (Texture2D, Sprite)>(StringComparer.OrdinalIgnoreCase);
+	public static Dictionary<string, (Texture2D Texture, Sprite Sprite, bool IsAsset)> TextureCache = new Dictionary<string, (Texture2D, Sprite, bool)>(StringComparer.OrdinalIgnoreCase);
 
 	public static Dictionary<string, (int Count, double LastModified)> ReferenceCounts = new Dictionary<string, (int, double)>(StringComparer.OrdinalIgnoreCase);
 
@@ -5615,7 +5752,7 @@ public class HttpImage : MonoBehaviour
 	{
 		_isRunningCleanup = false;
 		RequestCache = new Dictionary<string, Task>(StringComparer.OrdinalIgnoreCase);
-		TextureCache = new Dictionary<string, (Texture2D, Sprite)>(StringComparer.OrdinalIgnoreCase);
+		TextureCache = new Dictionary<string, (Texture2D, Sprite, bool)>(StringComparer.OrdinalIgnoreCase);
 		ReferenceCounts = new Dictionary<string, (int, double)>(StringComparer.OrdinalIgnoreCase);
 	}
 
@@ -5683,21 +5820,22 @@ public class HttpImage : MonoBehaviour
 	{
 		double realtimeSinceStartupAsDouble = Time.realtimeSinceStartupAsDouble;
 		List<string> list = Pool.Get<List<string>>();
-		foreach (var (item, tuple2) in ReferenceCounts)
+		foreach (var (text2, tuple2) in ReferenceCounts)
 		{
-			if (tuple2.Item1 <= 0 && realtimeSinceStartupAsDouble - tuple2.Item2 > 10.0)
+			if ((!TextureCache.TryGetValue(text2, out (Texture2D, Sprite, bool) value) || !value.Item3) && tuple2.Item1 <= 0 && realtimeSinceStartupAsDouble - tuple2.Item2 > 10.0)
 			{
-				list.Add(item);
+				list.Add(text2);
 			}
 		}
-		foreach (string item2 in list)
+		foreach (string item in list)
 		{
-			RequestCache.Remove(item2);
-			ReferenceCounts.Remove(item2);
-			if (TextureCache.Remove(item2, out var value))
+			RequestCache.Remove(item);
+			ReferenceCounts.Remove(item);
+			if (TextureCache.Remove(item, out (Texture2D, Sprite, bool) value2))
 			{
-				Object.Destroy((Object)(object)value.Item1);
-				Object.Destroy((Object)(object)value.Item2);
+				Assert.IsFalse(value2.Item3, "cache.IsAsset");
+				Object.Destroy((Object)(object)value2.Item1);
+				Object.Destroy((Object)(object)value2.Item2);
 			}
 		}
 		Pool.FreeUnmanaged<string>(ref list);
@@ -5730,9 +5868,9 @@ public class HttpImage : MonoBehaviour
 		{
 			ReferenceCounts.Add(url, (1, Time.realtimeSinceStartupAsDouble));
 		}
-		if (TextureCache.TryGetValue(url, out var value2))
+		if (TextureCache.TryGetValue(url, out (Texture2D, Sprite, bool) value2))
 		{
-			UpdateImageTexture(value2);
+			UpdateImageTexture(value2.Item1, value2.Item2);
 			imageLoaded = true;
 			this.OnImageLoaded?.Invoke();
 			return false;
@@ -5756,7 +5894,7 @@ public class HttpImage : MonoBehaviour
 		}
 		ClearUrl();
 		didLoad = true;
-		UpdateImageTexture((sprite.texture, sprite));
+		UpdateImageTexture(sprite.texture, sprite);
 	}
 
 	private IEnumerator WaitForLoad(string url)
@@ -5765,49 +5903,49 @@ public class HttpImage : MonoBehaviour
 		{
 			yield return null;
 		}
-		if (Object.op_Implicit((Object)(object)this) && string.Equals(url, Url, StringComparison.OrdinalIgnoreCase) && ((Object)(object)rawImage != (Object)null || (Object)(object)image != (Object)null))
+		if (Object.op_Implicit((Object)(object)this) && string.Equals(url, Url, StringComparison.OrdinalIgnoreCase) && ((Object)(object)rawImage != (Object)null || (Object)(object)image != (Object)null) && TextureCache.TryGetValue(url, out (Texture2D, Sprite, bool) value))
 		{
-			UpdateImageTexture(TextureCache[url]);
+			UpdateImageTexture(value.Item1, value.Item2);
 		}
 		imageLoaded = true;
 		this.OnImageLoaded?.Invoke();
 	}
 
-	private void UpdateImageTexture((Texture2D, Sprite) tex)
+	private void UpdateImageTexture(Texture2D tex, Sprite sprite)
 	{
-		if (!((Object)(object)tex.Item1 == (Object)null) && !((Object)(object)tex.Item2 == (Object)null))
+		if (!((Object)(object)tex == (Object)null) && !((Object)(object)sprite == (Object)null))
 		{
 			if ((Object)(object)rawImage != (Object)null)
 			{
-				rawImage.texture = (Texture)(object)tex.Item1;
+				rawImage.texture = (Texture)(object)tex;
 			}
 			if ((Object)(object)image != (Object)null)
 			{
-				image.sprite = tex.Item2;
+				image.sprite = sprite;
 			}
 			if ((Object)(object)secondaryRawImage != (Object)null)
 			{
-				secondaryRawImage.texture = (Texture)(object)tex.Item1;
+				secondaryRawImage.texture = (Texture)(object)tex;
 			}
 			if ((Object)(object)secondaryImage != (Object)null)
 			{
-				secondaryImage.sprite = tex.Item2;
+				secondaryImage.sprite = sprite;
 			}
 			SetImageEnabled(enabled: true);
-			AutosizeForTexture(tex.Item1);
+			AutosizeForTexture(tex);
 		}
 	}
 
 	public void SetMissingImage()
 	{
 		ClearUrl();
-		UpdateImageTexture((MissingImage, missingSprite));
+		UpdateImageTexture(MissingImage, missingSprite);
 	}
 
 	public void SetLoadingImage()
 	{
 		ClearUrl();
-		UpdateImageTexture((LoadingImage, loadingSprite));
+		UpdateImageTexture(LoadingImage, loadingSprite);
 	}
 
 	private IEnumerator StartAndWaitForLoad(string url)
@@ -5819,6 +5957,7 @@ public class HttpImage : MonoBehaviour
 			yield return null;
 		}
 		RequestCache.Remove(url);
+		bool flag = false;
 		Texture2D val;
 		if (downloadTask.IsCompletedSuccessfully)
 		{
@@ -5845,6 +5984,10 @@ public class HttpImage : MonoBehaviour
 					Object.DestroyImmediate((Object)(object)val);
 					val = null;
 				}
+				else
+				{
+					flag = true;
+				}
 			}
 		}
 		else
@@ -5864,11 +6007,11 @@ public class HttpImage : MonoBehaviour
 			}
 		}
 		Sprite item = CreateSprite(val);
-		(Texture2D, Sprite) tuple = (val, item);
-		TextureCache.Add(url, tuple);
+		(Texture2D, Sprite, bool) value = (val, item, !flag);
+		TextureCache.Add(url, value);
 		if (Object.op_Implicit((Object)(object)this) && string.Equals(url, Url, StringComparison.OrdinalIgnoreCase) && ((Object)(object)rawImage != (Object)null || (Object)(object)image != (Object)null))
 		{
-			UpdateImageTexture(tuple);
+			UpdateImageTexture(value.Item1, value.Item2);
 			AutosizeForTexture(val);
 		}
 		imageLoaded = true;
@@ -15910,6 +16053,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Rust;
 using Rust.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15925,15 +16069,16 @@ public class FileDialog : MonoBehaviour
 	public string result;
 
 	[HideInInspector]
-	private FileDialogMode mode;
+	public FileDialogMode mode;
+
+	[HideInInspector]
+	public bool canSelectFolder;
 
 	[HideInInspector]
 	public bool finished;
 
 	[Header("References")]
-	public Image windowIcon;
-
-	public Text windowName;
+	public RustText windowNameText;
 
 	public InputField currentPath;
 
@@ -15959,17 +16104,16 @@ public class FileDialog : MonoBehaviour
 
 	public Sprite fileIcon;
 
-	private string workingPath;
+	[HideInInspector]
+	public string workingPath;
 
 	private string workingFile;
 
 	private string[] allowedExtensions;
 
-	private long maxSize = -1L;
-
 	private bool saveLastPath = true;
 
-	public IEnumerator Open(string path = null, string allowedExtensions = null, string windowName = "OPEN FILE", Sprite windowIcon = null, long maxSize = -1L, bool saveLastPath = true)
+	public IEnumerator Open(string path = null, string allowedExtensions = null, string windowNameToken = "open_file", string windowNameSuffix = "", bool saveLastPath = true, bool canSelectFolder = false)
 	{
 		mode = FileDialogMode.Open;
 		((Component)commit).GetComponentInChildren<Text>().text = "OPEN";
@@ -15978,7 +16122,7 @@ public class FileDialog : MonoBehaviour
 		workingFile = "";
 		result = null;
 		finished = false;
-		this.maxSize = maxSize;
+		this.canSelectFolder = canSelectFolder;
 		this.saveLastPath = saveLastPath;
 		if (!string.IsNullOrEmpty(allowedExtensions))
 		{
@@ -15989,11 +16133,7 @@ public class FileDialog : MonoBehaviour
 		{
 			path = ((!saveLastPath) ? (Application.dataPath + "/../") : (string.IsNullOrEmpty(PlayerPrefs.GetString("OxOD.lastPath", (string)null)) ? (Application.dataPath + "/../") : PlayerPrefs.GetString("OxOD.lastPath", (string)null)));
 		}
-		this.windowName.text = windowName;
-		if (Object.op_Implicit((Object)(object)windowIcon))
-		{
-			this.windowIcon.sprite = windowIcon;
-		}
+		((TMP_Text)windowNameText).text = Translate.Get(windowNameToken, "OPEN FILE", false) + windowNameSuffix;
 		GoTo(path);
 		((Component)this).gameObject.SetActive(true);
 		while (!finished)
@@ -16002,7 +16142,7 @@ public class FileDialog : MonoBehaviour
 		}
 	}
 
-	public IEnumerator Save(string path = null, string allowedExtensions = null, string windowName = "SAVE FILE", Sprite windowIcon = null, bool saveLastPath = true, string defaultFileName = null)
+	public IEnumerator Save(string path = null, string allowedExtensions = null, string windowNameToken = "save_file", string windowNameSuffix = "", bool saveLastPath = true, string defaultFileName = null, bool canSelectFolder = false)
 	{
 		mode = FileDialogMode.Save;
 		((Component)commit).GetComponentInChildren<Text>().text = "SAVE";
@@ -16011,7 +16151,7 @@ public class FileDialog : MonoBehaviour
 		workingFile = "";
 		result = null;
 		finished = false;
-		maxSize = -1L;
+		this.canSelectFolder = canSelectFolder;
 		this.saveLastPath = saveLastPath;
 		if (!string.IsNullOrEmpty(allowedExtensions))
 		{
@@ -16026,11 +16166,7 @@ public class FileDialog : MonoBehaviour
 		{
 			path = ((!saveLastPath) ? (Application.dataPath + "/../") : (string.IsNullOrEmpty(PlayerPrefs.GetString("OxOD.lastPath", (string)null)) ? (Application.dataPath + "/../") : PlayerPrefs.GetString("OxOD.lastPath", (string)null)));
 		}
-		this.windowName.text = windowName;
-		if (Object.op_Implicit((Object)(object)windowIcon))
-		{
-			this.windowIcon.sprite = windowIcon;
-		}
+		((TMP_Text)windowNameText).text = Translate.Get(windowNameToken, "SAVE FILE", false) + windowNameSuffix;
 		GoTo(path);
 		((Component)this).gameObject.SetActive(true);
 		if (!string.IsNullOrEmpty(defaultFileName))
@@ -16043,7 +16179,7 @@ public class FileDialog : MonoBehaviour
 		}
 	}
 
-	public async Task<string> SaveAsync(string path = null, string allowedExtensions = null, string windowName = "SAVE FILE", Sprite windowIcon = null, bool saveLastPath = true, string defaultFileName = "")
+	public async Task<string> SaveAsync(string path = null, string allowedExtensions = null, string windowNameToken = "save_file", string windowNameSuffix = "", bool saveLastPath = true, string defaultFileName = "")
 	{
 		mode = FileDialogMode.Save;
 		((Component)commit).GetComponentInChildren<Text>().text = "SAVE";
@@ -16052,7 +16188,6 @@ public class FileDialog : MonoBehaviour
 		workingFile = defaultFileName;
 		result = null;
 		finished = false;
-		maxSize = -1L;
 		this.saveLastPath = saveLastPath;
 		if (!string.IsNullOrEmpty(allowedExtensions))
 		{
@@ -16067,11 +16202,7 @@ public class FileDialog : MonoBehaviour
 		{
 			path = ((!saveLastPath) ? (Application.dataPath + "/../") : (string.IsNullOrEmpty(PlayerPrefs.GetString("OxOD.lastPath", (string)null)) ? (Application.dataPath + "/../") : PlayerPrefs.GetString("OxOD.lastPath", (string)null)));
 		}
-		this.windowName.text = windowName;
-		if (Object.op_Implicit((Object)(object)windowIcon))
-		{
-			this.windowIcon.sprite = windowIcon;
-		}
+		((TMP_Text)windowNameText).text = Translate.Get(windowNameToken, "SAVE FILE", false) + windowNameSuffix;
 		GoTo(path);
 		((Component)this).gameObject.SetActive(true);
 		while (!finished)
@@ -16093,6 +16224,10 @@ public class FileDialog : MonoBehaviour
 
 	public void GoTo(string newPath)
 	{
+		if (string.IsNullOrEmpty(newPath))
+		{
+			return;
+		}
 		if (new DirectoryInfo(newPath).Exists)
 		{
 			OpenDir(newPath + "/");
@@ -16171,13 +16306,13 @@ public class FileDialog : MonoBehaviour
 	{
 		if (mode == FileDialogMode.Open)
 		{
-			workingFile = workingPath + "/" + newName;
+			workingFile = (canSelectFolder ? workingPath : (workingPath + "/" + newName));
 		}
 		else
 		{
 			workingFile = newName;
 		}
-		UpdateFileInfo();
+		UpdateFileInfo(canSelectFolder);
 	}
 
 	public void OnTypedEnd(string newName)
@@ -16207,34 +16342,62 @@ public class FileDialog : MonoBehaviour
 		UpdateFileInfo();
 	}
 
-	public void UpdateFileInfo()
+	public void UpdateFileInfo(bool selectsFolder = false)
 	{
 		if (mode == FileDialogMode.Open)
 		{
-			try
+			bool flag = false;
+			if (selectsFolder)
+			{
+				try
+				{
+					DirectoryInfo directoryInfo = new DirectoryInfo(workingFile + "/");
+					fileName.text = directoryInfo.FullName;
+					((Selectable)commit).interactable = directoryInfo.Exists;
+					flag = true;
+				}
+				catch (Exception)
+				{
+					fileName.text = "";
+					((Selectable)commit).interactable = false;
+				}
+			}
+			if (!flag)
+			{
+				try
+				{
+					fileName.text = new FileInfo(workingFile).Name;
+					((Selectable)commit).interactable = File.Exists(workingFile);
+				}
+				catch (Exception)
+				{
+					fileName.text = "";
+					((Selectable)commit).interactable = false;
+				}
+			}
+		}
+		else
+		{
+			if (workingFile.Length > 0)
 			{
 				fileName.text = new FileInfo(workingFile).Name;
-				((Selectable)commit).interactable = File.Exists(workingFile);
-				return;
 			}
-			catch (Exception)
-			{
-				fileName.text = "";
-				((Selectable)commit).interactable = false;
-				return;
-			}
+			((Selectable)commit).interactable = workingFile.Length > 0;
 		}
-		if (workingFile.Length > 0)
-		{
-			fileName.text = new FileInfo(workingFile).Name;
-		}
-		((Selectable)commit).interactable = workingFile.Length > 0;
 	}
 
-	public void OpenDir(string path)
+	public void OpenDir(string path, bool select = false)
 	{
-		ClearSelection();
+		if (!canSelectFolder || !select)
+		{
+			ClearSelection();
+		}
 		workingPath = Path.GetFullPath(path);
+		if (canSelectFolder && select)
+		{
+			workingFile = workingPath;
+			UpdateFileInfo(select);
+		}
 		UpdateElements();
 		UpdateDrivesList();
 		UpdateFilesList();
@@ -16292,18 +16455,9 @@ public class FileDialog : MonoBehaviour
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0339: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
 		GameObject val = filesScrollRectContent;
 		for (int i = 0; i < val.transform.childCount; i++)
 		{
@@ -16322,84 +16476,30 @@ public class FileDialog : MonoBehaviour
 					obj.transform.localScale = new Vector3(1f, 1f, 1f);
 					FileListElement component = obj.GetComponent<FileListElement>();
 					component.instance = this;
-					component.data = directories[j].FullName + "/";
+					string fullName = directories[j].FullName;
+					char directorySeparatorChar = Path.DirectorySeparatorChar;
+					component.data = fullName + directorySeparatorChar;
 					component.elementName.text = directories[j].Name;
 					component.size.text = "";
 					component.icon.sprite = folderIcon;
 					component.isFile = false;
 				}
 			}
-			if (allowedExtensions != null)
+			FileInfo[] array = ((allowedExtensions != null) ? (from f in directoryInfo.GetFiles()
+				where allowedExtensions.Contains(f.Extension.ToLower())
+				select f).ToArray() : directoryInfo.GetFiles());
+			for (int k = 0; k < array.Length; k++)
 			{
-				FileInfo[] array = (from f in directoryInfo.GetFiles()
-					where allowedExtensions.Contains(f.Extension.ToLower())
-					select f).ToArray();
-				for (int k = 0; k < array.Length; k++)
-				{
-					if (maxSize > 0)
-					{
-						if (array[k].Length < maxSize)
-						{
-							GameObject obj2 = Object.Instantiate<GameObject>(filesScrollRectElement, Vector3.zero, Quaternion.identity);
-							obj2.transform.SetParent(val.transform, true);
-							obj2.transform.localScale = new Vector3(1f, 1f, 1f);
-							FileListElement component2 = obj2.GetComponent<FileListElement>();
-							component2.instance = this;
-							component2.data = array[k].FullName;
-							component2.size.text = GetFileSizeText(array[k].Length);
-							component2.elementName.text = array[k].Name;
-							component2.icon.sprite = fileIcon;
-							component2.isFile = true;
-						}
-					}
-					else
-					{
-						GameObject obj3 = Object.Instantiate<GameObject>(filesScrollRectElement, Vector3.zero, Quaternion.identity);
-						obj3.transform.SetParent(val.transform, true);
-						obj3.transform.localScale = new Vector3(1f, 1f, 1f);
-						FileListElement component3 = obj3.GetComponent<FileListElement>();
-						component3.instance = this;
-						component3.data = array[k].FullName;
-						component3.size.text = GetFileSizeText(array[k].Length);
-						component3.elementName.text = array[k].Name;
-						component3.icon.sprite = fileIcon;
-						component3.isFile = true;
-					}
-				}
-				return;
-			}
-			FileInfo[] files = directoryInfo.GetFiles();
-			for (int l = 0; l < files.Length; l++)
-			{
-				if (maxSize > 0)
-				{
-					if (files[l].Length < maxSize)
-					{
-						GameObject obj4 = Object.Instantiate<GameObject>(filesScrollRectElement, Vector3.zero, Quaternion.identity);
-						obj4.transform.SetParent(val.transform, true);
-						obj4.transform.localScale = new Vector3(1f, 1f, 1f);
-						FileListElement component4 = obj4.GetComponent<FileListElement>();
-						component4.instance = this;
-						component4.data = files[l].FullName;
-						component4.size.text = GetFileSizeText(files[l].Length);
-						component4.elementName.text = files[l].Name;
-						component4.icon.sprite = fileIcon;
-						component4.isFile = true;
-					}
-				}
-				else
-				{
-					GameObject obj5 = Object.Instantiate<GameObject>(filesScrollRectElement, Vector3.zero, Quaternion.identity);
-					obj5.transform.SetParent(val.transform, true);
-					obj5.transform.localScale = new Vector3(1f, 1f, 1f);
-					FileListElement component5 = obj5.GetComponent<FileListElement>();
-					component5.instance = this;
-					component5.data = files[l].FullName;
-					component5.size.text = GetFileSizeText(files[l].Length);
-					component5.elementName.text = files[l].Name;
-					component5.icon.sprite = fileIcon;
-					component5.isFile = true;
-				}
+				GameObject obj2 = Object.Instantiate<GameObject>(filesScrollRectElement, Vector3.zero, Quaternion.identity);
+				obj2.transform.SetParent(val.transform, true);
+				obj2.transform.localScale = new Vector3(1f, 1f, 1f);
+				FileListElement component2 = obj2.GetComponent<FileListElement>();
+				component2.instance = this;
+				component2.data = array[k].FullName;
+				component2.size.text = GetFileSizeText(array[k].Length);
+				component2.elementName.text = array[k].Name;
+				component2.icon.sprite = fileIcon;
+				component2.isFile = true;
 			}
 		}
 		catch (Exception)
@@ -16431,7 +16531,7 @@ public class FileListElement : MonoBehaviour
 	{
 		if (!isFile)
 		{
-			instance.OpenDir(data);
+			instance.OpenDir(data, select: true);
 		}
 		else
 		{
@@ -16555,6 +16655,8 @@ using UnityEngine;
 
 public class NetGraph : SingletonComponent<NetGraph>
 {
+	public Canvas canvas;
+
 	public CanvasGroup group;
 
 	public GameObject rootPanel;
@@ -16566,6 +16668,7 @@ public class NetGraph : SingletonComponent<NetGraph>
 		set
 		{
 			group.alpha = (value ? 1 : 0);
+			((Behaviour)canvas).enabled = value;
 			rootPanel.SetActive(value);
 		}
 	}

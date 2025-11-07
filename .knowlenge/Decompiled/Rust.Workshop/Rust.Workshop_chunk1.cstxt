@@ -24,6 +24,10 @@ public class Skinnable : ScriptableObject
 
 	public string EntityPrefabName;
 
+	public GameObject EntityFemalePrefab;
+
+	public string EntityFemalePrefabName;
+
 	public GameObject ViewmodelPrefab;
 
 	public string ViewmodelPrefabName;
@@ -71,7 +75,92 @@ public class Skinnable : ScriptableObject
 
 	public static Skinnable FindForEntity(string entityName)
 	{
-		return All.FirstOrDefault((Skinnable x) => string.Compare(x.EntityPrefabName, entityName, StringComparison.OrdinalIgnoreCase) == 0);
+		return All.FirstOrDefault((Skinnable x) => string.Compare(x.EntityPrefabName, entityName, StringComparison.OrdinalIgnoreCase) == 0 || string.Compare(x.EntityFemalePrefabName, entityName, StringComparison.OrdinalIgnoreCase) == 0);
+	}
+}
+
+
+using System.Collections;
+using System.IO;
+using Facepunch.Extend;
+using Rust.UI;
+using Rust.Workshop;
+using Rust.Workshop.Editor;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class WorkshopPreviewImageButton : MonoBehaviour
+{
+	public RawImage TextureImage;
+
+	public RustText FileLabel;
+
+	public GameObject FileSizeWarning;
+
+	[HideInInspector]
+	public Publisher publisher;
+
+	protected WorkshopItemEditor Editor => SingletonComponent<WorkshopItemEditor>.Instance;
+
+	public FileInfo file { get; private set; }
+
+	public Texture texture { get; private set; }
+
+	public void SetFile(FileInfo file)
+	{
+		this.file = file;
+		SetTexture((Texture)(object)Editor.SetTexture("CustomIcon", this.file.FullName, isNormalMap: false, skipSettingMaterialTexture: true));
+		if ((Object)(object)texture != (Object)null)
+		{
+			FileSizeWarning.SetActive(texture.width >= 2048 || texture.height >= 2048);
+		}
+	}
+
+	public void SetTexture(Texture texture)
+	{
+		this.texture = texture;
+		if ((Object)(object)texture == (Object)null)
+		{
+			((TMP_Text)FileLabel).text = "None";
+			TextureImage.texture = null;
+			return;
+		}
+		((TMP_Text)FileLabel).text = StringExtensions.TruncateFilename(((Object)texture).name, 48, (string)null);
+		RustText fileLabel = FileLabel;
+		((TMP_Text)fileLabel).text = ((TMP_Text)fileLabel).text + $" ({texture.width} x {texture.height})";
+		TextureImage.texture = texture;
+	}
+
+	public void OpenFileBrowser()
+	{
+		((MonoBehaviour)this).StartCoroutine(BrowseForPreview());
+	}
+
+	public IEnumerator BrowseForPreview()
+	{
+		yield return ((MonoBehaviour)this).StartCoroutine(Editor.FileDialog.Open((string)null, ".png|.jpg", "open_file", "", true, false));
+		if (Editor.FileDialog.result == null)
+		{
+			yield break;
+		}
+		try
+		{
+			SetFile(new FileInfo(Editor.FileDialog.result));
+		}
+		catch
+		{
+			Debug.LogError((object)"Error loading custom preview file from dialog.");
+		}
+	}
+
+	public void Clear()
+	{
+		if ((Object)(object)publisher != (Object)null)
+		{
+			publisher.RemoveCustomPreview(this);
+		}
+		Object.Destroy((Object)(object)((Component)this).gameObject);
 	}
 }
 
@@ -229,7 +318,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 	private static MonoScriptData Get()
 	{
 		MonoScriptData result = default(MonoScriptData);
-		result.FilePathsData = new byte[2130]
+		result.FilePathsData = new byte[2200]
 		{
 			0, 0, 0, 1, 0, 0, 0, 46, 92, 65,
 			115, 115, 101, 116, 115, 92, 80, 108, 117, 103,
@@ -330,6 +419,13 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			116, 46, 87, 111, 114, 107, 115, 104, 111, 112,
 			92, 83, 116, 101, 97, 109, 73, 110, 118, 101,
 			110, 116, 111, 114, 121, 46, 99, 115, 0, 0,
+			0, 1, 0, 0, 0, 62, 92, 65, 115, 115,
+			101, 116, 115, 92, 80, 108, 117, 103, 105, 110,
+			115, 92, 82, 117, 115, 116, 46, 87, 111, 114,
+			107, 115, 104, 111, 112, 92, 85, 73, 92, 87,
+			111, 114, 107, 115, 104, 111, 112, 80, 114, 101,
+			118, 105, 101, 119, 73, 109, 97, 103, 101, 66,
+			117, 116, 116, 111, 110, 46, 99, 115, 0, 0,
 			0, 1, 0, 0, 0, 61, 92, 65, 115, 115,
 			101, 116, 115, 92, 80, 108, 117, 103, 105, 110,
 			115, 92, 82, 117, 115, 116, 46, 87, 111, 114,
@@ -445,7 +541,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			101, 109, 83, 101, 108, 101, 99, 116, 105, 111,
 			110, 66, 117, 116, 116, 111, 110, 46, 99, 115
 		};
-		result.TypesData = new byte[1522]
+		result.TypesData = new byte[1554]
 		{
 			1, 0, 0, 0, 22, 82, 117, 115, 116, 46,
 			87, 111, 114, 107, 115, 104, 111, 112, 124, 65,
@@ -523,86 +619,89 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			107, 115, 104, 111, 112, 46, 73, 116, 101, 109,
 			83, 99, 104, 101, 109, 97, 124, 80, 108, 97,
 			121, 116, 105, 109, 101, 68, 114, 111, 112, 73,
-			116, 101, 109, 0, 0, 0, 0, 39, 82, 117,
-			115, 116, 46, 87, 111, 114, 107, 115, 104, 111,
-			112, 124, 87, 111, 114, 107, 115, 104, 111, 112,
-			86, 105, 101, 119, 109, 111, 100, 101, 108, 67,
-			111, 110, 116, 114, 111, 108, 115, 0, 0, 0,
-			0, 13, 124, 87, 111, 114, 107, 115, 104, 111,
-			112, 66, 97, 115, 101, 0, 0, 0, 0, 17,
-			124, 87, 111, 114, 107, 115, 104, 111, 112, 83,
-			107, 105, 110, 66, 97, 115, 101, 0, 0, 0,
-			0, 29, 82, 117, 115, 116, 46, 87, 111, 114,
-			107, 115, 104, 111, 112, 46, 69, 100, 105, 116,
-			111, 114, 124, 67, 111, 108, 111, 114, 82, 111,
-			119, 0, 0, 0, 0, 29, 82, 117, 115, 116,
-			46, 87, 111, 114, 107, 115, 104, 111, 112, 46,
-			69, 100, 105, 116, 111, 114, 124, 70, 108, 111,
-			97, 116, 82, 111, 119, 0, 0, 0, 0, 42,
+			116, 101, 109, 0, 0, 0, 0, 27, 124, 87,
+			111, 114, 107, 115, 104, 111, 112, 80, 114, 101,
+			118, 105, 101, 119, 73, 109, 97, 103, 101, 66,
+			117, 116, 116, 111, 110, 0, 0, 0, 0, 39,
 			82, 117, 115, 116, 46, 87, 111, 114, 107, 115,
-			104, 111, 112, 46, 69, 100, 105, 116, 111, 114,
-			124, 73, 87, 111, 114, 107, 115, 104, 111, 112,
-			67, 111, 108, 111, 117, 114, 80, 105, 99, 107,
-			101, 114, 0, 0, 0, 0, 32, 82, 117, 115,
-			116, 46, 87, 111, 114, 107, 115, 104, 111, 112,
-			46, 69, 100, 105, 116, 111, 114, 124, 77, 97,
-			116, 101, 114, 105, 97, 108, 82, 111, 119, 0,
-			0, 0, 0, 31, 82, 117, 115, 116, 46, 87,
+			104, 111, 112, 124, 87, 111, 114, 107, 115, 104,
+			111, 112, 86, 105, 101, 119, 109, 111, 100, 101,
+			108, 67, 111, 110, 116, 114, 111, 108, 115, 0,
+			0, 0, 0, 13, 124, 87, 111, 114, 107, 115,
+			104, 111, 112, 66, 97, 115, 101, 0, 0, 0,
+			0, 17, 124, 87, 111, 114, 107, 115, 104, 111,
+			112, 83, 107, 105, 110, 66, 97, 115, 101, 0,
+			0, 0, 0, 29, 82, 117, 115, 116, 46, 87,
 			111, 114, 107, 115, 104, 111, 112, 46, 69, 100,
-			105, 116, 111, 114, 124, 84, 101, 120, 116, 117,
-			114, 101, 82, 111, 119, 0, 0, 0, 0, 46,
-			82, 117, 115, 116, 46, 87, 111, 114, 107, 115,
-			104, 111, 112, 46, 69, 100, 105, 116, 111, 114,
-			124, 73, 87, 111, 114, 107, 115, 104, 111, 112,
-			83, 99, 114, 101, 101, 110, 115, 104, 111, 116,
-			67, 97, 109, 101, 114, 97, 0, 0, 0, 0,
-			30, 82, 117, 115, 116, 46, 87, 111, 114, 107,
-			115, 104, 111, 112, 46, 69, 100, 105, 116, 111,
-			114, 124, 80, 117, 98, 108, 105, 115, 104, 101,
-			114, 0, 0, 0, 0, 48, 82, 117, 115, 116,
-			46, 87, 111, 114, 107, 115, 104, 111, 112, 46,
-			69, 100, 105, 116, 111, 114, 124, 87, 111, 114,
-			107, 115, 104, 111, 112, 67, 97, 109, 101, 114,
-			97, 75, 101, 121, 98, 105, 110, 100, 65, 110,
-			99, 104, 111, 114, 0, 0, 0, 0, 42, 82,
+			105, 116, 111, 114, 124, 67, 111, 108, 111, 114,
+			82, 111, 119, 0, 0, 0, 0, 29, 82, 117,
+			115, 116, 46, 87, 111, 114, 107, 115, 104, 111,
+			112, 46, 69, 100, 105, 116, 111, 114, 124, 70,
+			108, 111, 97, 116, 82, 111, 119, 0, 0, 0,
+			0, 42, 82, 117, 115, 116, 46, 87, 111, 114,
+			107, 115, 104, 111, 112, 46, 69, 100, 105, 116,
+			111, 114, 124, 73, 87, 111, 114, 107, 115, 104,
+			111, 112, 67, 111, 108, 111, 117, 114, 80, 105,
+			99, 107, 101, 114, 0, 0, 0, 0, 32, 82,
 			117, 115, 116, 46, 87, 111, 114, 107, 115, 104,
 			111, 112, 46, 69, 100, 105, 116, 111, 114, 124,
-			87, 111, 114, 107, 115, 104, 111, 112, 80, 108,
-			97, 121, 101, 114, 80, 114, 101, 118, 105, 101,
-			119, 0, 0, 0, 0, 33, 82, 117, 115, 116,
+			77, 97, 116, 101, 114, 105, 97, 108, 82, 111,
+			119, 0, 0, 0, 0, 31, 82, 117, 115, 116,
 			46, 87, 111, 114, 107, 115, 104, 111, 112, 46,
-			69, 100, 105, 116, 111, 114, 124, 87, 111, 114,
-			107, 115, 104, 111, 112, 86, 105, 101, 119, 0,
-			0, 0, 0, 32, 82, 117, 115, 116, 46, 87,
-			111, 114, 107, 115, 104, 111, 112, 124, 87, 111,
-			114, 107, 115, 104, 111, 112, 73, 99, 111, 110,
-			76, 111, 97, 100, 101, 114, 0, 0, 0, 0,
-			31, 82, 117, 115, 116, 46, 87, 111, 114, 107,
-			115, 104, 111, 112, 124, 87, 111, 114, 107, 115,
-			104, 111, 112, 73, 110, 116, 101, 114, 102, 97,
-			99, 101, 0, 0, 0, 0, 39, 82, 117, 115,
-			116, 46, 87, 111, 114, 107, 115, 104, 111, 112,
-			124, 73, 86, 105, 101, 119, 109, 111, 100, 101,
-			108, 87, 111, 114, 107, 115, 104, 111, 112, 80,
-			114, 101, 118, 105, 101, 119, 0, 0, 0, 0,
-			30, 82, 117, 115, 116, 46, 87, 111, 114, 107,
-			115, 104, 111, 112, 124, 73, 87, 111, 114, 107,
-			115, 104, 111, 112, 80, 114, 101, 118, 105, 101,
-			119, 0, 0, 0, 0, 36, 82, 117, 115, 116,
+			69, 100, 105, 116, 111, 114, 124, 84, 101, 120,
+			116, 117, 114, 101, 82, 111, 119, 0, 0, 0,
+			0, 46, 82, 117, 115, 116, 46, 87, 111, 114,
+			107, 115, 104, 111, 112, 46, 69, 100, 105, 116,
+			111, 114, 124, 73, 87, 111, 114, 107, 115, 104,
+			111, 112, 83, 99, 114, 101, 101, 110, 115, 104,
+			111, 116, 67, 97, 109, 101, 114, 97, 0, 0,
+			0, 0, 30, 82, 117, 115, 116, 46, 87, 111,
+			114, 107, 115, 104, 111, 112, 46, 69, 100, 105,
+			116, 111, 114, 124, 80, 117, 98, 108, 105, 115,
+			104, 101, 114, 0, 0, 0, 0, 48, 82, 117,
+			115, 116, 46, 87, 111, 114, 107, 115, 104, 111,
+			112, 46, 69, 100, 105, 116, 111, 114, 124, 87,
+			111, 114, 107, 115, 104, 111, 112, 67, 97, 109,
+			101, 114, 97, 75, 101, 121, 98, 105, 110, 100,
+			65, 110, 99, 104, 111, 114, 0, 0, 0, 0,
+			42, 82, 117, 115, 116, 46, 87, 111, 114, 107,
+			115, 104, 111, 112, 46, 69, 100, 105, 116, 111,
+			114, 124, 87, 111, 114, 107, 115, 104, 111, 112,
+			80, 108, 97, 121, 101, 114, 80, 114, 101, 118,
+			105, 101, 119, 0, 0, 0, 0, 33, 82, 117,
+			115, 116, 46, 87, 111, 114, 107, 115, 104, 111,
+			112, 46, 69, 100, 105, 116, 111, 114, 124, 87,
+			111, 114, 107, 115, 104, 111, 112, 86, 105, 101,
+			119, 0, 0, 0, 0, 32, 82, 117, 115, 116,
 			46, 87, 111, 114, 107, 115, 104, 111, 112, 124,
-			73, 87, 111, 114, 107, 115, 104, 111, 112, 80,
-			108, 97, 121, 101, 114, 80, 114, 101, 118, 105,
-			101, 119, 0, 0, 0, 0, 32, 82, 117, 115,
-			116, 46, 87, 111, 114, 107, 115, 104, 111, 112,
-			124, 87, 111, 114, 107, 115, 104, 111, 112, 73,
-			116, 101, 109, 69, 100, 105, 116, 111, 114, 0,
-			0, 0, 0, 28, 124, 87, 111, 114, 107, 115,
-			104, 111, 112, 73, 116, 101, 109, 83, 101, 108,
-			101, 99, 116, 105, 111, 110, 66, 117, 116, 116,
-			111, 110
+			87, 111, 114, 107, 115, 104, 111, 112, 73, 99,
+			111, 110, 76, 111, 97, 100, 101, 114, 0, 0,
+			0, 0, 31, 82, 117, 115, 116, 46, 87, 111,
+			114, 107, 115, 104, 111, 112, 124, 87, 111, 114,
+			107, 115, 104, 111, 112, 73, 110, 116, 101, 114,
+			102, 97, 99, 101, 0, 0, 0, 0, 39, 82,
+			117, 115, 116, 46, 87, 111, 114, 107, 115, 104,
+			111, 112, 124, 73, 86, 105, 101, 119, 109, 111,
+			100, 101, 108, 87, 111, 114, 107, 115, 104, 111,
+			112, 80, 114, 101, 118, 105, 101, 119, 0, 0,
+			0, 0, 30, 82, 117, 115, 116, 46, 87, 111,
+			114, 107, 115, 104, 111, 112, 124, 73, 87, 111,
+			114, 107, 115, 104, 111, 112, 80, 114, 101, 118,
+			105, 101, 119, 0, 0, 0, 0, 36, 82, 117,
+			115, 116, 46, 87, 111, 114, 107, 115, 104, 111,
+			112, 124, 73, 87, 111, 114, 107, 115, 104, 111,
+			112, 80, 108, 97, 121, 101, 114, 80, 114, 101,
+			118, 105, 101, 119, 0, 0, 0, 0, 32, 82,
+			117, 115, 116, 46, 87, 111, 114, 107, 115, 104,
+			111, 112, 124, 87, 111, 114, 107, 115, 104, 111,
+			112, 73, 116, 101, 109, 69, 100, 105, 116, 111,
+			114, 0, 0, 0, 0, 28, 124, 87, 111, 114,
+			107, 115, 104, 111, 112, 73, 116, 101, 109, 83,
+			101, 108, 101, 99, 116, 105, 111, 110, 66, 117,
+			116, 116, 111, 110
 		};
-		result.TotalFiles = 34;
-		result.TotalTypes = 45;
+		result.TotalFiles = 35;
+		result.TotalTypes = 46;
 		result.IsEditorOnly = false;
 		return result;
 	}
@@ -6950,6 +7049,10 @@ public static class Approved
 
 	private static void Add_2024()
 	{
+		Add_October_30_HALLOWEEN_2();
+		Add_October_23_HALLOWEEN();
+		Add_October_16_2025();
+		Add_October_09_2025();
 		Add_October_02_2025_TWITCHDROPS();
 		Add_October_02_2025();
 		Add_September_25_2025();
@@ -7065,6 +7168,73 @@ public static class Approved
 		Add_January_04_2024();
 	}
 
+	private static void Add_October_30_HALLOWEEN_2()
+	{
+		Add(new ApprovedSkinInfo(3581737202uL, "Frankenstein AR", "", "AK47").ItemId(66100uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3574691361uL, "Ghost Halloween SMG", "", "Custom SMG").ItemId(66101uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3581491813uL, "Creep Miner Hat", "", "Miner Hat").ItemId(66102uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581840707uL, "Slime Monster Hoodie", "", "Hoodie").ItemId(66103uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3581843177uL, "Slime Monster Pants", "", "Pants").ItemId(66104uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3579542840uL, "Pumpkin Jacket", "", "Vagabond Jacket").ItemId(66105uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581919982uL, "Witch Deer Skull Mask", "", "Deer Skull Mask").ItemId(66106uL).Store(Price.OneDollarFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581913171uL, "Witch Hide Poncho", "", "Hide Poncho").ItemId(66107uL).Store(Price.OneDollarFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3580422902uL, "Dr. Brainus Facemask", "", "Metal Facemask").ItemId(66108uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3580419187uL, "Dr. Brainus Chestplate", "", "Metal Chest Plate").ItemId(66109uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3578267785uL, "Horror Bed", "", "Bed").ItemId(66110uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581445158uL, "Tombstone Bed", "", "Bed").ItemId(66111uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582123202uL, "Sinister Small Box", "", "Wood Storage Box").ItemId(66112uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3568372096uL, "Dracula Sheet Metal Door", "", "Sheet Metal Door").ItemId(66113uL).Store(Price.TwoDollarsFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581911522uL, "Grim Farm Double Door", "", "Sheet Metal Double Door").ItemId(66114uL).Store(Price.TwoDollarsFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3569128522uL, "Hammer from Hell", "", "Hammer").ItemId(66115uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581864964uL, "Moonlight Raider Garage Door", "", "Garage Door").ItemId(66116uL).Store(Price.ThreeDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+	}
+
+	private static void Add_October_23_HALLOWEEN()
+	{
+		Add(new ApprovedSkinInfo(3580953056uL, "Surgeon Hat", "", "Miner Hat").ItemId(66000uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3569653984uL, "Skeleton Costume Balaclava", "", "Balaclava").ItemId(66001uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3569653327uL, "Skeleton Costume Burlap Shirt", "", "Burlap Shirt").ItemId(66002uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3569652962uL, "Skeleton Costume Burlap Pants", "", "Burlap Pants").ItemId(66003uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3573194433uL, "Tooth Monster Headwrap", "", "Burlap Headwrap").ItemId(66004uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3573195740uL, "Tooth Monster Poncho", "", "Hide Poncho").ItemId(66005uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582116684uL, "Pumpkin Boots", "", "Work Boots").ItemId(66006uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3582264566uL, "The Devourer Backpack", "", "Large Backpack").ItemId(66007uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582171329uL, "Ghost Furnace", "", "Furnace").ItemId(66008uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582718542uL, "Spooky Harvest Fridge", "", "Fridge").ItemId(66009uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582201100uL, "Lord of the Night Locker", "", "Locker").ItemId(66010uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3582860701uL, "Bone Cultists Garage Door", "", "Garage Door").ItemId(66011uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581323302uL, "That Thing Rock", "", "Rock").ItemId(66012uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3581987778uL, "Zombie LR", "", "LR300").ItemId(66013uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+	}
+
+	private static void Add_October_16_2025()
+	{
+		Add(new ApprovedSkinInfo(3572974993uL, "Señor Tomato Miner Hat", "", "Miner Hat").ItemId(65900uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3566984915uL, "Phantom M39", "", "M39").ItemId(65901uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3580156762uL, "Night Demon Boots", "", "Work Boots").ItemId(65902uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3580159796uL, "Night Demon Gloves", "", "Roadsign Gloves").ItemId(65903uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3581888902uL, "Iceberg Bed", "", "Bed").ItemId(65904uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581962971uL, "Armory Garage Door", "", "Garage Door").ItemId(65905uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577021353uL, "Swirled Sword", "", "Sword").ItemId(65906uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3575471532uL, "Bee SAP", "", "Semi-Automatic Pistol").ItemId(65907uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576233061uL, "Pirate Backpack", "", "Large Backpack").ItemId(65908uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3577256187uL, "Bones Fridge", "", "Fridge").ItemId(65909uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+	}
+
+	private static void Add_October_09_2025()
+	{
+		Add(new ApprovedSkinInfo(3577043349uL, "Thundergold Backpack", "", "Large Backpack").ItemId(65800uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581825855uL, "No Mercy Bed", "", "Bed").ItemId(65801uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3581736293uL, "Small Diving Box", "", "Wood Storage Box").ItemId(65802uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577364739uL, "Angelic Halo", "", "Miner Hat").ItemId(65803uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577341622uL, "Sinotype Metal Frags", "", "Large Wood Box").ItemId(65804uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577121970uL, "Fault SAR", "", "Semi-Automatic Rifle").ItemId(65805uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3559696794uL, "Deep Sea Rocket Launcher", "", "Rocket Launcher").ItemId(65806uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
+		Add(new ApprovedSkinInfo(3564790180uL, "Black Ops LR", "", "LR300").ItemId(65807uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577483619uL, "Neon Bed - Blue", "", "Bed").ItemId(65808uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3575583944uL, "All-Seeing Eye Door", "", "Sheet Metal Door").ItemId(65809uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+	}
+
 	private static void Add_October_02_2025_TWITCHDROPS()
 	{
 		Add(new ApprovedSkinInfo(3573321518uL, "Twitch Rivals Bandana", "", "Bandana").ItemId(11485uL).Store(Price.NotForSale, CanBeTraded: false, CanBeSold: false).NoCrate()
@@ -7085,14 +7255,14 @@ public static class Approved
 	{
 		Add(new ApprovedSkinInfo(3577439312uL, "Angler Fish Miners Hat", "", "Miner Hat").ItemId(65700uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
 		Add(new ApprovedSkinInfo(2006541391uL, "Caution WorkBoots", "", "Work Boots").ItemId(65701uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
-		Add(new ApprovedSkinInfo(3568819261uL, "Sinotype  Charcoal", "", "Large Wood Box").ItemId(65702uL).Store(Price.TwoDollarsFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3568819261uL, "Sinotype  Charcoal", "", "Large Wood Box").ItemId(65702uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
 		Add(new ApprovedSkinInfo(3570766836uL, "Veridian M39", "", "M39").ItemId(65703uL).Store(Price.OneDollar, CanBeTraded: true, CanBeSold: true));
-		Add(new ApprovedSkinInfo(3576754355uL, "Tropical Bed", "", "Bed").ItemId(65704uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
-		Add(new ApprovedSkinInfo(3576910152uL, "Cargo Heli Bed", "", "Bed").ItemId(65705uL).Store(Price.TwoDollarsFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
-		Add(new ApprovedSkinInfo(3576618283uL, "Nuke Vibe SAR", "", "Semi-Automatic Rifle").ItemId(65706uL).Store(Price.TwoDollarsFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
-		Add(new ApprovedSkinInfo(3577332784uL, "Small Cards Box", "", "Wood Storage Box").ItemId(65707uL).Store(Price.OneDollarFifty, CanBeTraded: true, CanBeSold: true).NoCrate());
-		Add(new ApprovedSkinInfo(3576383325uL, "Luxury Gold Door", "", "Wooden Door").ItemId(65708uL).Store(Price.TwoDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
-		Add(new ApprovedSkinInfo(3576280830uL, "Olympus AR", "", "AK47").ItemId(65709uL).Store(Price.ThreeDollars, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576754355uL, "Tropical Bed", "", "Bed").ItemId(65704uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576910152uL, "Cargo Heli Bed", "", "Bed").ItemId(65705uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576618283uL, "Nuke Vibe SAR", "", "Semi-Automatic Rifle").ItemId(65706uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3577332784uL, "Small Cards Box", "", "Wood Storage Box").ItemId(65707uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576383325uL, "Luxury Gold Door", "", "Wooden Door").ItemId(65708uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
+		Add(new ApprovedSkinInfo(3576280830uL, "Olympus AR", "", "AK47").ItemId(65709uL).Store(Price.NotForSale, CanBeTraded: true, CanBeSold: true).NoCrate());
 	}
 
 	private static void Add_September_25_2025()
@@ -9937,407 +10107,6 @@ public enum Category
 	Misc = 7,
 	Deployable = 9,
 	Gloves = 10
-}
-
-
-using System;
-using System.IO;
-using System.Linq;
-using Ionic.Crc;
-using Rust.Workshop;
-using UnityEngine;
-
-public class ApprovedSkinInfo
-{
-	public ulong InventoryId { get; private set; }
-
-	public string Desc { get; private set; }
-
-	public string Name { get; private set; }
-
-	public ulong WorkshopdId { get; private set; }
-
-	internal Price Price { get; private set; }
-
-	public bool Tradable { get; private set; }
-
-	public DropChance DropChance { get; private set; }
-
-	public bool Marketable { get; private set; }
-
-	public Skinnable Skinnable { get; private set; }
-
-	public bool AllowInCrates { get; private set; } = true;
-
-	public bool IsLimitedTimeOffer { get; private set; } = true;
-
-	public bool IsTwitchDrop { get; private set; }
-
-	public ApprovedSkinInfo(ulong WorkshopdId, string Name, string Desc, string ItemName)
-	{
-		this.WorkshopdId = WorkshopdId;
-		InventoryId = WorkshopdId;
-		this.Name = Name;
-		this.Desc = Desc;
-		Skinnable = Skinnable.All.FirstOrDefault((Skinnable x) => string.Compare(x.Name, ItemName, StringComparison.OrdinalIgnoreCase) == 0);
-		if ((Object)(object)Skinnable == (Object)null)
-		{
-			throw new Exception("Unknown Item Type: " + ItemName);
-		}
-	}
-
-	public ApprovedSkinInfo Store(Price Price, bool CanBeTraded, bool CanBeSold)
-	{
-		this.Price = Price;
-		Tradable = CanBeTraded;
-		Marketable = CanBeSold;
-		return this;
-	}
-
-	public ApprovedSkinInfo TimeLimited()
-	{
-		IsLimitedTimeOffer = true;
-		return this;
-	}
-
-	public ApprovedSkinInfo Unlimited()
-	{
-		IsLimitedTimeOffer = false;
-		return this;
-	}
-
-	public ApprovedSkinInfo NoCrate()
-	{
-		AllowInCrates = false;
-		return this;
-	}
-
-	public ApprovedSkinInfo Drops(DropChance DropChance)
-	{
-		this.DropChance = DropChance;
-		return this;
-	}
-
-	public ApprovedSkinInfo ItemId(ulong InventoryId)
-	{
-		this.InventoryId = InventoryId;
-		return this;
-	}
-
-	public ApprovedSkinInfo TwitchDrop()
-	{
-		if (Price != 0 || Tradable || Marketable || AllowInCrates)
-		{
-			throw new Exception("");
-		}
-		IsTwitchDrop = true;
-		return this;
-	}
-
-	public static implicit operator ItemSchema.Item(ApprovedSkinInfo o)
-	{
-		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		ItemSchema.Item item = new ItemSchema.Item();
-		Category category = o.Skinnable.Category;
-		string text = "cat.none;";
-		if (o.Marketable)
-		{
-			if (o.Skinnable.Category == Category.Pants || o.Skinnable.Category == Category.Shirt || o.Skinnable.Category == Category.Jacket || o.Skinnable.Category == Category.Hat || o.Skinnable.Category == Category.Mask || o.Skinnable.Category == Category.Footwear || o.Skinnable.Category == Category.Gloves)
-			{
-				text = "cat.clothing;breakdown.cloth;";
-			}
-			if (o.Skinnable.Category == Category.Weapon)
-			{
-				text = "cat.weapon;breakdown.metal;";
-			}
-			if (o.Skinnable.Category == Category.Misc || o.Skinnable.Category == Category.Deployable)
-			{
-				text = "cat.deployable;breakdown.wood;";
-			}
-		}
-		if (category == Category.Deployable)
-		{
-			category = Category.Misc;
-		}
-		if (!o.AllowInCrates)
-		{
-			text += "nocrate;";
-		}
-		string text2 = (string.IsNullOrEmpty(o.Skinnable.ItemName) ? "item.none;" : ("item." + o.Skinnable.ItemName.ToLower() + ";"));
-		string text3 = (o.IsLimitedTimeOffer ? "time.limited;" : "time.general;");
-		string text4 = (o.IsTwitchDrop ? "twitchdrop;" : "");
-		if (string.IsNullOrEmpty(o.Skinnable.ItemName))
-		{
-			throw new Exception("Item Type Has No ItemName: " + o.Skinnable.Name);
-		}
-		string text5 = "5";
-		if (File.Exists("Prerequisites/SteamInventory/Icons/" + o.InventoryId + ".png"))
-		{
-			byte[] array = File.ReadAllBytes("Prerequisites/SteamInventory/Icons/" + o.InventoryId + ".png");
-			CRC32 val = new CRC32();
-			val.SlurpBlock(array, 0, array.Length);
-			text5 = ((uint)val.Crc32Result).ToString();
-		}
-		string text6 = category.ToString().ToLower();
-		item.itemdefid = (uint)o.InventoryId;
-		item.name = o.Name;
-		item.type = o.Skinnable.Category.ToString();
-		item.icon_url = "https://files.facepunch.com/rust/icons/inventory/rust/" + o.InventoryId + "_small.png?" + text5;
-		item.icon_url_large = "https://files.facepunch.com/rust/icons/inventory/rust/" + o.InventoryId + "_large.png?" + text5;
-		item.marketable = o.Marketable;
-		item.tradable = o.Tradable;
-		item.commodity = true;
-		item.market_hash_name = o.Name;
-		item.market_name = o.Name;
-		item.description = o.Desc;
-		item.price_category = ((o.Price == Price.NotForSale) ? null : ("1;VLV" + (int)o.Price));
-		item.dropChance = o.DropChance;
-		item.priceCategory = o.Price;
-		item.itemshortname = o.Skinnable.ItemName;
-		item.workshopdownload = ((o.WorkshopdId != 0) ? o.WorkshopdId.ToString() : null);
-		item.workshopid = item.workshopdownload;
-		item.store_tags = (text + text3 + "subcat." + text6 + ";" + text2 + text4).TrimEnd(';');
-		return item;
-	}
-}
-
-
-using System;
-using Newtonsoft.Json;
-using Rust.Workshop;
-
-public class ItemSchema
-{
-	public class Item
-	{
-		public string name;
-
-		public uint itemdefid;
-
-		public string type;
-
-		public string price_category;
-
-		public string icon_url;
-
-		public string icon_url_large;
-
-		public bool marketable;
-
-		public bool tradable;
-
-		public bool commodity;
-
-		public string market_hash_name;
-
-		public string market_name;
-
-		public string bundle;
-
-		public string description;
-
-		public string workshopid;
-
-		public string itemshortname;
-
-		public string tags;
-
-		public string store_tags;
-
-		public string store_images;
-
-		public string exchange;
-
-		public bool store_hidden;
-
-		public string background_color;
-
-		public string name_color;
-
-		[NonSerialized]
-		public DropChance dropChance;
-
-		[NonSerialized]
-		public Price priceCategory;
-
-		public string workshopdownload;
-
-		[JsonProperty(/*Could not decode attribute arguments.*/)]
-		public int? purchase_limit;
-
-		[JsonIgnore]
-		public double Price => (double)priceCategory / 100.0;
-	}
-
-	public class PlaytimeDropItem : Item
-	{
-		public int drop_interval;
-
-		public bool use_drop_window;
-
-		public int drop_window;
-
-		public int drop_max_per_window;
-
-		public bool use_drop_limit;
-
-		public int drop_limit;
-	}
-
-	public int appid;
-
-	public Item[] items;
-}
-
-
-using Rust.UI;
-using Rust.Workshop;
-using UnityEngine;
-using UnityEngine.Events;
-
-public class WorkshopViewmodelControls : MonoBehaviour
-{
-	public RustButton Enabled;
-
-	public RustButton Ironsights;
-
-	public RustButton admire;
-
-	private IViewmodelWorkshopPreview currentViewmodel;
-
-	private void OnEnable()
-	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Expected O, but got Unknown
-		admire.OnPressed.AddListener(new UnityAction(OnAdmirePressed));
-	}
-
-	private void OnDisable()
-	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Expected O, but got Unknown
-		admire.OnPressed.RemoveListener(new UnityAction(OnAdmirePressed));
-	}
-
-	public void Clear()
-	{
-		Ironsights.Value = false;
-		currentViewmodel = null;
-	}
-
-	internal void DoUpdate(GameObject viewModel)
-	{
-		if ((Object)(object)viewModel == (Object)null)
-		{
-			((Component)this).gameObject.SetActive(false);
-			return;
-		}
-		((Component)this).gameObject.SetActive(true);
-		if (!Enabled.Value)
-		{
-			viewModel.SetActive(false);
-			return;
-		}
-		viewModel.SetActive(true);
-		Camera.main.fieldOfView = 85f;
-		IViewmodelWorkshopPreview viewmodelWorkshopPreview = default(IViewmodelWorkshopPreview);
-		if (viewModel.TryGetComponent<IViewmodelWorkshopPreview>(ref viewmodelWorkshopPreview))
-		{
-			currentViewmodel = viewmodelWorkshopPreview;
-		}
-	}
-
-	private void OnAdmirePressed()
-	{
-		_ = currentViewmodel;
-	}
-}
-
-
-using System;
-using Rust.Workshop;
-using UnityEngine;
-
-public class WorkshopIconLoader : MonoBehaviour
-{
-	public static Sprite Find(ulong workshopId, Sprite placeholder = null, Action callback = null)
-	{
-		Skin skin = WorkshopSkin.GetSkin(workshopId);
-		if (!skin.IconLoaded)
-		{
-			if (callback != null)
-			{
-				skin.OnIconLoaded = callback;
-			}
-			if ((Object)(object)placeholder != (Object)null)
-			{
-				return placeholder;
-			}
-		}
-		return skin.sprite;
-	}
-}
-
-
-using System.IO;
-using Facepunch.Utility;
-using Rust;
-using Rust.Workshop;
-using UnityEngine;
-
-public class WorkshopInterface : SingletonComponent<WorkshopInterface>
-{
-	internal WorkshopItemEditor Editor => SingletonComponent<WorkshopItemEditor>.Instance;
-
-	public void Exit()
-	{
-		Object.Destroy((Object)(object)((Component)this).gameObject);
-		Global.OpenMainMenu();
-	}
-
-	public void RenderAllIcons()
-	{
-		((Component)Editor).gameObject.SetActive(true);
-		if (!Directory.Exists("c:/test/icons"))
-		{
-			Directory.CreateDirectory("c:/test/icons");
-		}
-		Skinnable[] all = Skinnable.All;
-		foreach (Skinnable skinnable in all)
-		{
-			Editor.StartNewItem(skinnable.Name);
-			PropRenderer.RenderScreenshot(Editor.Prefab, "c:/test/icons/" + skinnable.Name + ".png", 512, 512, 4);
-			int num = 0;
-			Mesh[] meshDownloads = skinnable.MeshDownloads;
-			foreach (Mesh val in meshDownloads)
-			{
-				if ((Object)(object)val != (Object)null && val.isReadable)
-				{
-					Mesh.Export(val, $"c:/test/icons/{skinnable.Name}{num}.obj");
-					num++;
-				}
-			}
-		}
-		((Component)Editor).gameObject.SetActive(false);
-	}
-}
-
-
-using Rust.Workshop;
-
-public interface IViewmodelWorkshopPreview : IWorkshopPreview
-{
-}
-
-
-public interface IWorkshopPreview
-{
-}
-
-
-public interface IWorkshopPlayerPreview
-{
 }
 
 

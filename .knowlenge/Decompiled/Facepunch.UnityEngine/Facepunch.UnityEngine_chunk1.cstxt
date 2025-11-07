@@ -56,6 +56,8 @@ public abstract class FacepunchBehaviour : MonoBehaviour
 }
 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -223,6 +225,14 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 			invokeAction.TrackingData.InvokeCount--;
 		}
 		delList.Clear();
+	}
+
+	public void ForEach(Action<InvokeAction> callback)
+	{
+		foreach (var (obj, _) in curList)
+		{
+			callback(obj);
+		}
 	}
 }
 

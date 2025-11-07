@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Steamworks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -100,10 +101,55 @@ public static class Translate
 
 	public static Dictionary<string, string> englishBaseStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+	private static Dictionary<string, Dictionary<string, string>> allServerTranslations = null;
+
+	private static List<string> allServerLanguages = new List<string>
+	{
+		"af", "ar", "ca", "cs", "da", "de", "el", "en", "en-PT", "es-ES",
+		"fi", "fr", "he", "hu", "it", "ja", "ko", "nl", "no", "pl",
+		"pt-BR", "pt-PT", "ro", "ru", "sr", "sv-SE", "tr", "uk", "vi", "zh-CN",
+		"zh-TW"
+	};
+
 	private static string language = CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
 
 	[ClientVar(ClientAdmin = true)]
 	public static string overrideCulture;
+
+	public static void InitServerTranslations()
+	{
+		if (allServerTranslations != null)
+		{
+			return;
+		}
+		allServerTranslations = new Dictionary<string, Dictionary<string, string>>();
+		foreach (string allServerLanguage in allServerLanguages)
+		{
+			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			AddLanguageFile("Assets/Localization/" + allServerLanguage + "/engine.json", dictionary);
+			AddLanguageFile("Assets/Localization/" + allServerLanguage + "/phrases.json", dictionary);
+			allServerTranslations.Add(allServerLanguage, dictionary);
+		}
+	}
+
+	public static string GetServerTranslation(string token, string lang)
+	{
+		InitServerTranslations();
+		if (allServerTranslations.TryGetValue(ValidateServerLanguage(lang), out var value) && value.TryGetValue(token, out var value2))
+		{
+			return value2;
+		}
+		return string.Empty;
+	}
+
+	public static string ValidateServerLanguage(string lang)
+	{
+		if (allServerLanguages.Contains(lang))
+		{
+			return lang;
+		}
+		return "en";
+	}
 
 	public static void Init()
 	{
@@ -201,7 +247,7 @@ public static class Translate
 		{
 			RegionInfo regionInfo = new RegionInfo(currentCulture.Name);
 			NumberFormatInfo numberFormat = currentCulture.NumberFormat;
-			text = text + "Region: " + regionInfo.TwoLetterISORegionName + " (" + regionInfo.DisplayName + ")\nCurrency: " + regionInfo.ISOCurrencySymbol + " (" + regionInfo.CurrencySymbol + ")\nDecimal: '" + numberFormat.NumberDecimalSeparator + "'Group: '" + numberFormat.NumberGroupSeparator + "'\nCurrency Format: " + 1234.56.ToString("C", numberFormat) + "\nNumber Format: " + 1234.56.ToString("N", numberFormat);
+			text = text + "Region: " + regionInfo.TwoLetterISORegionName + " (" + regionInfo.DisplayName + ")\nCurrency: " + regionInfo.ISOCurrencySymbol + " (" + regionInfo.CurrencySymbol + ")\nDecimal: '" + numberFormat.NumberDecimalSeparator + "'\nGroup: '" + numberFormat.NumberGroupSeparator + "'\nCurrency Format: " + 1234.56.ToString("C", numberFormat) + "\nNumber Format: " + 1234.56.ToString("N", numberFormat) + "\nSteam Currency: '" + SteamInventory.Currency + "'";
 		}
 		catch
 		{

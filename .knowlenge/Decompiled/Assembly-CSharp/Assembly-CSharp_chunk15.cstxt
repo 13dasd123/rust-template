@@ -612,7 +612,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		}
 		CreateImportantEntities();
 		auth = ((Component)this).GetComponent<ConnectionAuth>();
-		Analytics.Azure.Initialize();
+		Analytics.StartForServer();
 		return World.LoadedFromSave;
 	}
 
@@ -667,6 +667,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			persistance = null;
 		}
 		EACServer.DoShutdown();
+		Analytics.ShutdownForServer();
 		Net.sv.callbackHandler = null;
 		TimeWarning val = TimeWarning.New("sv.Stop", 0);
 		try
@@ -1503,6 +1504,23 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Debug.LogWarning((object)"Server Exception: Chicken.EggWorkQueue");
 				Debug.LogException(ex35, (Object)(object)this);
 			}
+			try
+			{
+				TimeWarning val2 = TimeWarning.New("IndustrialStorageAdaptor.SortQueue", 0);
+				try
+				{
+					((ObjectWorkQueue<IndustrialStorageAdaptor>)IndustrialStorageAdaptor.SortQueue).RunQueue(0.10000000149011612);
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+			}
+			catch (Exception ex36)
+			{
+				Debug.LogWarning((object)"Server Exception: IndustrialStorageAdaptor.SortQueue");
+				Debug.LogException(ex36, (Object)(object)this);
+			}
 		}
 		finally
 		{
@@ -1757,7 +1775,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			{
 				text9 = ConVar.Server.ping_region_code_override;
 			}
-			SteamServer.GameTags = ServerTagCompressor.CompressTags($"mp{ConVar.Server.maxplayers},cp{BasePlayer.activePlayerList.Count},pt{Net.sv.ProtocolId},qp{SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued},$r{text9},v{2603}{text4}{text6},{text2},{text3},cs{text7}{text8},ts{RelationshipManager.maxTeamSize}");
+			SteamServer.GameTags = ServerTagCompressor.CompressTags($"mp{ConVar.Server.maxplayers},cp{BasePlayer.activePlayerList.Count},pt{Net.sv.ProtocolId},qp{SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued},$r{text9},v{2604}{text4}{text6},{text2},{text3},cs{text7}{text8},ts{RelationshipManager.maxTeamSize}");
 			if (ConVar.Server.description != null && ConVar.Server.description.Length > 100)
 			{
 				string[] array = StringEx.SplitToChunks(ConVar.Server.description, 100).ToArray();
@@ -1984,7 +2002,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public void JoinGame(Connection connection)
 	{
-		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		Approval val = Pool.Get<Approval>();
 		try
 		{
@@ -2011,6 +2029,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			val.nexus = World.Nexus;
 			val.nexusEndpoint = Nexus.endpoint;
 			val.nexusId = NexusServer.NexusId.GetValueOrDefault();
+			val.dnsEndpoint = ConVar.Server.favoritesEndpoint;
 			NetWrite val2 = ((BaseNetwork)Net.sv).StartWrite();
 			val2.PacketID((Type)3);
 			ProtoStreamExtensions.WriteToStream((IProto)(object)val, (Stream)(object)val2, false, 2097152);
@@ -2180,7 +2199,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		ServerInfo result = default(ServerInfo);
-		result.NetworkVersion = 2603;
+		result.NetworkVersion = 2604;
 		BuildInfo current = BuildInfo.Current;
 		object obj;
 		if (current == null)
@@ -2552,12 +2571,12 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
 		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(connection.userid);
 		BasePlayer.SpawnPoint spawnPoint = FindSpawnPoint(null, playerTeam?.teamID ?? 0);
 		BasePlayer basePlayer = GameManager.server.CreateEntity("assets/prefabs/player/player.prefab", spawnPoint.pos, spawnPoint.rot).ToPlayer();
@@ -2578,28 +2597,20 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		if (connection != null)
 		{
 			basePlayer.PlayerInit(connection);
-			PooledList<SleepingBag> val = SleepingBag.FindForPlayer(basePlayer.userID);
-			try
+			bool flag = !basePlayer.HasRespawnOptions() && !basePlayer.hasPreviousLife;
+			if (Object.op_Implicit((Object)(object)BaseGameMode.GetActiveGameMode(serverside: true)))
 			{
-				bool flag = Application.isEditor || (((List<SleepingBag>)(object)val).Count == 0 && !basePlayer.hasPreviousLife);
-				if (Object.op_Implicit((Object)(object)BaseGameMode.GetActiveGameMode(serverside: true)))
-				{
-					BaseGameMode.GetActiveGameMode(serverside: true).OnNewPlayer(basePlayer, flag);
-				}
-				else if (flag)
-				{
-					basePlayer.Respawn();
-				}
-				DebugEx.Log((object)$"{basePlayer.displayName} with steamid {basePlayer.userID.Get()} joined from ip {basePlayer.net.connection.ipaddress}", (StackTraceLogType)0);
-				DebugEx.Log((object)$"\tNetworkId {basePlayer.userID.Get()} is {basePlayer.net.ID} ({basePlayer.displayName})", (StackTraceLogType)0);
-				if (basePlayer.net.connection.ownerid != 0L && basePlayer.net.connection.ownerid != basePlayer.net.connection.userid)
-				{
-					DebugEx.Log((object)$"\t{basePlayer} is sharing the account {basePlayer.net.connection.ownerid}", (StackTraceLogType)0);
-				}
+				BaseGameMode.GetActiveGameMode(serverside: true).OnNewPlayer(basePlayer, flag);
 			}
-			finally
+			else if (flag)
 			{
-				((IDisposable)val)?.Dispose();
+				basePlayer.Respawn();
+			}
+			DebugEx.Log((object)$"{basePlayer.displayName} with steamid {basePlayer.userID.Get()} joined from ip {basePlayer.net.connection.ipaddress}", (StackTraceLogType)0);
+			DebugEx.Log((object)$"\tNetworkId {basePlayer.userID.Get()} is {basePlayer.net.ID} ({basePlayer.displayName})", (StackTraceLogType)0);
+			if (basePlayer.net.connection.ownerid != 0L && basePlayer.net.connection.ownerid != basePlayer.net.connection.userid)
+			{
+				DebugEx.Log((object)$"\t{basePlayer} is sharing the account {basePlayer.net.connection.ownerid}", (StackTraceLogType)0);
 			}
 		}
 		if (playerTeam != null && playerTeam.usePartySpawn && spawnPoint.isProcedualSpawn && playerTeam.firstSpawnLocation == default(Vector3))
@@ -2796,14 +2807,14 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their branch is '" + text + "' not '" + branch + "'"), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Steam Beta: Requires '" + branch + "' branch!", false);
 		}
-		else if (packet.connection.protocol > 2603)
+		else if (packet.connection.protocol > 2604)
 		{
-			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2603), (StackTraceLogType)0);
+			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2604), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!", false);
 		}
-		else if (packet.connection.protocol < 2603)
+		else if (packet.connection.protocol < 2604)
 		{
-			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2603), (StackTraceLogType)0);
+			DebugEx.Log((object)("Kicking " + ((object)packet.connection)?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2604), (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!", false);
 		}
 		else
@@ -3761,15 +3772,15 @@ public class UserPersistance : IDisposable
 		string text = strFolder + "/player.blueprints.";
 		if ((Object)(object)activeGameMode != (Object)null && activeGameMode.wipeBpsOnProtocol)
 		{
-			text = text + 272 + ".";
+			text = text + 273 + ".";
 		}
-		blueprints.Open(text + 5 + ".db", true);
+		blueprints.Open(text + 7 + ".db", true);
 		if (!blueprints.TableExists("data"))
 		{
 			blueprints.Execute("CREATE TABLE data ( userid TEXT PRIMARY KEY, info BLOB, updated INTEGER )");
 		}
 		deaths = new Database();
-		deaths.Open(strFolder + "/player.deaths." + 5 + ".db", true);
+		deaths.Open(strFolder + "/player.deaths." + 7 + ".db", true);
 		if (!deaths.TableExists("data"))
 		{
 			deaths.Execute("CREATE TABLE data ( userid TEXT, born INTEGER, died INTEGER, info BLOB )");
@@ -3777,7 +3788,7 @@ public class UserPersistance : IDisposable
 			deaths.Execute("CREATE INDEX IF NOT EXISTS diedindex ON data ( died )");
 		}
 		identities = new Database();
-		identities.Open(strFolder + "/player.identities." + 5 + ".db", true);
+		identities.Open(strFolder + "/player.identities." + 7 + ".db", true);
 		if (!identities.TableExists("data"))
 		{
 			identities.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, username TEXT )");
@@ -3793,7 +3804,7 @@ public class UserPersistance : IDisposable
 			tokens.Execute("ALTER TABLE data ADD COLUMN locked BOOLEAN DEFAULT 0");
 		}
 		playerState = new Database();
-		playerState.Open(strFolder + "/player.states." + 272 + ".db", true);
+		playerState.Open(strFolder + "/player.states." + 273 + ".db", true);
 		if (!playerState.TableExists("data"))
 		{
 			playerState.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, state BLOB )");
@@ -4371,7 +4382,7 @@ public class FileStorage : IDisposable
 
 	private MruDictionary<uint, CacheData> _cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
 
-	public static FileStorage server = new FileStorage("sv.files." + 272, server: true);
+	public static FileStorage server = new FileStorage("sv.files." + 273, server: true);
 
 	protected FileStorage(string name, bool server)
 	{
@@ -5271,6 +5282,9 @@ public class ItemSkin : SteamInventoryItem
 	[Tooltip("If set, whenever we make an item with this skin, we'll spawn this item without a skin instead")]
 	public ItemDefinition Redirect;
 
+	[Tooltip("(overriden by Redirect) If set, this is the icon that will be used in-game (spray can, crafting menu, repair bench). Allows you to have different icons for the store and in-game (see halloween wallpapers as an example)")]
+	public Sprite inGameIcon;
+
 	public bool UnlockedByDefault;
 
 	public void ApplySkin(GameObject obj)
@@ -5301,7 +5315,8 @@ public class ItemSkin : SteamInventoryItem
 
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using Facepunch;
 using UnityEngine;
 
 public class ItemSkinDirectory : ScriptableObject
@@ -5358,12 +5373,36 @@ public class ItemSkinDirectory : ScriptableObject
 
 	public static Skin[] ForItem(ItemDefinition item)
 	{
-		return Instance.skins.Where((Skin x) => x.isSkin && x.itemid == item.itemid).ToArray();
+		PooledList<Skin> val = Pool.Get<PooledList<Skin>>();
+		try
+		{
+			for (int i = 0; i < Instance.skins.Length; i++)
+			{
+				Skin item2 = Instance.skins[i];
+				if (item2.isSkin && item2.itemid == item.itemid)
+				{
+					((List<Skin>)(object)val).Add(item2);
+				}
+			}
+			return ((List<Skin>)(object)val).ToArray();
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	public static Skin FindByInventoryDefinitionId(int id)
 	{
-		return Instance.skins.Where((Skin x) => x.id == id).FirstOrDefault();
+		for (int i = 0; i < Instance.skins.Length; i++)
+		{
+			Skin result = Instance.skins[i];
+			if (result.id == id)
+			{
+				return result;
+			}
+		}
+		return default(Skin);
 	}
 
 	public static bool TryGetItemFromDefinitionID(int id, out ItemDefinition result)
@@ -8023,6 +8062,9 @@ public class OpenSteamURL : MonoBehaviour
 
 public class SteamClientWrapper : SingletonComponent<SteamClientWrapper>
 {
+	private static readonly Phrase TimelineDeathTitle = new Phrase("timeline.death", "Death");
+
+	private static readonly Phrase TimelineKillTitle = new Phrase("timeline.kill", "Kill");
 }
 
 
@@ -9262,8 +9304,8 @@ public class UIChat : PriorityListComponent<UIChat>
 
 	public UIFriendsList friendsList;
 
-	[Tooltip("Disable the text input field rather than hiding it.")]
 	[Header("Disable Settings")]
+	[Tooltip("Disable the text input field rather than hiding it.")]
 	public bool useDisable;
 
 	public RustInput rustInput;
@@ -9800,6 +9842,10 @@ public class UIClans : SingletonComponent<UIClans>
 
 	public static readonly Phrase LeaveNoOtherLeader = (Phrase)(object)new TokenisedPhrase("clan.leave.no_other_leader", "As a clan leader, you cannot leave your clan unless it is empty or you promote another member to the leader role.");
 
+	public Canvas Canvas;
+
+	public GraphicRaycaster GraphicRaycaster;
+
 	public CanvasGroup CanvasGroup;
 
 	public UIEscapeCapture EscapeCapture;
@@ -9974,6 +10020,15 @@ public class CompassMissionMarker : MonoBehaviour
 }
 
 
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ConsoleInputField : InputField
+{
+	private Event m_ProcessingEvent = new Event();
+}
+
+
 using Rust.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9995,6 +10050,19 @@ public class ConsoleUI : SingletonComponent<ConsoleUI>
 	public Color warningColor;
 
 	public Color inputColor;
+
+	[Header("Multi-line")]
+	public bool enableMultiline;
+
+	public RectTransform inputRect;
+
+	public RectTransform outputRect;
+
+	public float textHeight;
+
+	public int maxLines = 8;
+
+	public float defaultHeight;
 }
 
 
@@ -10124,6 +10192,8 @@ public class Crosshair : BaseMonoBehaviour
 	public Image Image;
 
 	public bool IsSettingsPreview;
+
+	public Canvas reticleCanvas;
 
 	public RectTransform reticleTransform;
 
@@ -10337,6 +10407,8 @@ using UnityEngine;
 
 public class DemoPlaybackUI : SingletonComponent<DemoPlaybackUI>
 {
+	public Canvas canvas;
+
 	public GameObject Root;
 }
 
@@ -11048,8 +11120,8 @@ public class CardGameUI : UIDialog
 		void UpdateInGameUI_NoPlayer(CardGameUI ui);
 	}
 
-	[SerializeField]
 	[Header("Card Game")]
+	[SerializeField]
 	private InfoTextUI primaryInfo;
 
 	[SerializeField]
@@ -14416,6 +14488,8 @@ public class SingleVendor : FacepunchBehaviour, IComparable<SingleVendor>
 
 	public RustText OwnerName;
 
+	public GameObject DroneIcon;
+
 	public SellOrderContainer SellOrdersContainer;
 
 	private List<VendorListing> listings;
@@ -14657,45 +14731,6 @@ public class SelectedContact : SingletonComponent<SelectedContact>
 }
 
 
-using UnityEngine;
-
-public class UIBuffs : SingletonComponent<UIBuffs>
-{
-	public bool Enabled = true;
-
-	public Transform PrefabBuffIcon;
-
-	public void Refresh(PlayerModifiers modifiers)
-	{
-		if (!Enabled)
-		{
-			return;
-		}
-		RemoveAll();
-		if ((Object)(object)modifiers == (Object)null)
-		{
-			return;
-		}
-		foreach (Modifier item in modifiers.All)
-		{
-			if (item != null)
-			{
-				Object.Instantiate<Transform>(PrefabBuffIcon).SetParent(((Component)this).transform);
-			}
-		}
-	}
-
-	private void RemoveAll()
-	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		foreach (Transform item in ((Component)this).transform)
-		{
-			Object.Destroy((Object)(object)((Component)item).gameObject);
-		}
-	}
-}
-
-
 using TMPro;
 using UnityEngine;
 
@@ -14721,9 +14756,11 @@ using UnityEngine.UI;
 
 public class UICompass : MonoBehaviour
 {
-	public RawImage compassStrip;
+	public Canvas compassCanvas;
 
 	public CanvasGroup compassGroup;
+
+	public RawImage compassStrip;
 
 	public List<CompassMapMarker> CompassMarkers;
 
@@ -14792,6 +14829,7 @@ public class UIHorseBuffsIcon : UIBuffsIcon<HorseModifiers, RidableHorse>
 }
 
 
+using Rust.UI;
 using UnityEngine;
 
 public class UIHUD : SingletonComponent<UIHUD>, IUIScreen
@@ -14818,11 +14856,13 @@ public class UIHUD : SingletonComponent<UIHUD>, IUIScreen
 
 	public RectTransform noticesRect;
 
-	public Canvas healthCanvas;
+	public CanvasGroup healthCanvasGroup;
 
 	public UICompass CompassWidget;
 
 	public GameObject KeyboardCaptureMode;
+
+	public RustIcon VehicleHealthIcon;
 }
 
 
@@ -14908,6 +14948,8 @@ using UnityEngine;
 public class IngameMenuBackground : MonoBehaviour
 {
 	public static bool Enabled;
+
+	public Canvas canvas;
 
 	public CanvasGroup canvasGroup;
 }
@@ -15760,6 +15802,10 @@ public class ItemOptionButton : MonoBehaviour
 	public RustText name;
 
 	public Image icon;
+
+	public Button button;
+
+	public Tooltip tooltip;
 }
 
 
@@ -15993,6 +16039,8 @@ public class LootPanel : MonoBehaviour
 
 	[Tooltip("Only needed if hideInvalidIcons is true")]
 	public CanvasGroup canvasGroup;
+
+	public SortingControls sortingControls;
 }
 
 
@@ -16271,6 +16319,8 @@ using UnityEngine;
 
 public class NoticeArea : SingletonComponent<NoticeArea>
 {
+	public Canvas canvas;
+
 	public GameObjectRef itemPickupPrefab;
 
 	public GameObjectRef itemPickupCondensedText;
@@ -16900,6 +16950,60 @@ public class ShieldInformationPanel : ItemInformationPanel
 
 
 using UnityEngine;
+
+public class SortingControls : MonoBehaviour, IClientComponent
+{
+	public SortingSettings SortingSettings;
+
+	public GameObject ControlsRoot;
+
+	public GameObject UnpoweredRoot;
+}
+
+
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SortingIcon : MonoBehaviour, IClientComponent
+{
+	public Image ItemIcon;
+
+	public GameObject BlueprintRoot;
+}
+
+
+using Rust.UI;
+using UnityEngine;
+
+public class SortingSettings : MonoBehaviour, IClientComponent
+{
+	public LootPanel Panel;
+
+	public RustToggle EnabledToggle;
+
+	public RustText LanguageLabel;
+
+	public RustText ModeLabel;
+
+	public RustToggle ReverseToggle;
+
+	public RustToggle StackToggle;
+
+	public GameObject CustomRoot;
+
+	public GameObjectRef SortingIcon;
+
+	public Transform SortingParent;
+
+	public GameObject LanguageRoot;
+
+	public Option[] SortOptions;
+
+	public GameObject BackgroundBlocker;
+}
+
+
+using UnityEngine;
 using UnityEngine.UI;
 
 public class SquareBorder : MonoBehaviour
@@ -17338,8 +17442,8 @@ public class VehicleEditingPanel : LootPanel
 	[SerializeField]
 	private Phrase phraseEmptyStorage;
 
-	[Header("Create Chassis")]
 	[SerializeField]
+	[Header("Create Chassis")]
 	private CreateChassisEntry[] chassisOptions;
 }
 
@@ -17502,7 +17606,7 @@ public static class ItemSearchUtils
 
 	public static bool IsValidSearchResult(string search, ItemDefinition target, bool checkItemIsValid)
 	{
-		if (checkItemIsValid && (!((Object)(object)target.isRedirectOf != (Object)null) || target.redirectVendingBehaviour != ItemDefinition.RedirectVendingBehaviour.ListAsUniqueItem) && target.Hidden())
+		if (checkItemIsValid && (!((Object)(object)target.isRedirectOf != (Object)null) || target.redirectVendingBehaviour != ItemDefinition.RedirectVendingBehaviour.ListAsUniqueItem) && target.Hidden() && !target.vehicleItem)
 		{
 			return false;
 		}
@@ -17682,6 +17786,19 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 					if (itemModProjectile.projectileObject != null && itemModProjectile.projectileObject.isValid)
 					{
 						dictionary.TryAdd(((Object)itemModProjectile.projectileObject.Get()).name, item);
+					}
+					if (itemModProjectile.SkinOverrides == null)
+					{
+						continue;
+					}
+					ItemModProjectile.SkinOverride[] skinOverrides = itemModProjectile.SkinOverrides;
+					for (int j = 0; j < skinOverrides.Length; j++)
+					{
+						ItemModProjectile.SkinOverride skinOverride = skinOverrides[j];
+						if ((Object)(object)skinOverride.OverrideProjectile.Get() != (Object)null)
+						{
+							dictionary.TryAdd(((Object)skinOverride.OverrideProjectile.Get()).name, item);
+						}
 					}
 				}
 			}
@@ -17970,6 +18087,7 @@ public class LookAtIOEnt : MonoBehaviour
 
 	public GameObject InfinitePowerText;
 
+	[Space]
 	public CanvasGroup group;
 
 	public HandleSet[] handleSets;
@@ -18224,6 +18342,7 @@ public class LanguageSelection : MonoBehaviour
 
 
 using Rust.UI;
+using SoftMasking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18233,11 +18352,15 @@ public class LoadingScreen : SingletonComponent<LoadingScreen>
 	private bool _isOpen;
 
 	[Header("Loading Screen References - UI")]
+	public Canvas canvas;
+
 	public CanvasGroup panel;
 
 	public CanvasGroup blackout;
 
 	public NeedsCursor needsCursor;
+
+	public SoftMask softMask;
 
 	public TextMeshProUGUI title;
 
@@ -19020,26 +19143,17 @@ public class ToggleHUDLayer : MonoBehaviour, IClientComponent
 	protected void OnEnable()
 	{
 		UIHUD instance = SingletonComponent<UIHUD>.Instance;
-		if (!((Object)(object)instance != (Object)null))
+		if ((Object)(object)instance != (Object)null)
 		{
-			return;
-		}
-		Transform val = TransformEx.FindChildRecursive(((Component)instance).transform, hudComponentName);
-		if ((Object)(object)val != (Object)null)
-		{
-			Canvas component = ((Component)val).GetComponent<Canvas>();
-			if ((Object)(object)component != (Object)null)
-			{
-				toggleControl.isOn = ((Behaviour)component).enabled;
-			}
-			else
+			Transform val = TransformEx.FindChildRecursive(((Component)instance).transform, hudComponentName);
+			if ((Object)(object)val != (Object)null)
 			{
 				toggleControl.isOn = ((Component)val).gameObject.activeSelf;
 			}
-		}
-		else
-		{
-			Debug.LogWarning((object)(((object)this).GetType().Name + ": Couldn't find child: " + hudComponentName));
+			else
+			{
+				Debug.LogWarning((object)(((object)this).GetType().Name + ": Couldn't find child: " + hudComponentName));
+			}
 		}
 	}
 
@@ -19574,7 +19688,7 @@ public class ServerBrowserList : ServerBrowserListBase, VirtualScroll.IDataSourc
 
 	public QueryType queryType;
 
-	public static string VersionTag = "v" + 2603;
+	public static string VersionTag = "v" + 2604;
 
 	public ServerKeyvalues[] keyValues = new ServerKeyvalues[0];
 
@@ -20117,6 +20231,8 @@ public class UI_FullscreenSkinViewer : SingletonComponent<UI_FullscreenSkinViewe
 
 	public Image glowImage;
 
+	public GameObject closeButton;
+
 	private UI_SkinViewerControls _source;
 }
 
@@ -20150,8 +20266,8 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float rotationSpeed = 300f;
 
-	[Header("Pan")]
 	[SerializeField]
+	[Header("Pan")]
 	private Vector2 panLimitX = new Vector2(-1f, 1f);
 
 	[SerializeField]
@@ -20160,8 +20276,8 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float panSpeed = 0.005f;
 
-	[Header("Zoom")]
 	[SerializeField]
+	[Header("Zoom")]
 	private float zoomSpeed = 0.1f;
 
 	[SerializeField]
@@ -20179,6 +20295,10 @@ public class UI_SkinViewerControls : MonoBehaviour
 
 	[SerializeField]
 	private float swayDelay = 0.3f;
+
+	[Space]
+	[SerializeField]
+	private bool fullScreenOnly;
 }
 
 
@@ -21332,10 +21452,15 @@ public class RandomObjectEnableOnEnable : MonoBehaviour
 
 
 using Rust.UI;
+using UnityEngine;
 
 public class RecordingSaved : SingletonComponent<RecordingSaved>
 {
 	public RustText Label;
+
+	public CanvasGroup canvasGroup;
+
+	public Canvas canvas;
 }
 
 
@@ -21887,6 +22012,8 @@ public class TeamUI : MonoBehaviour
 {
 	public static Phrase invitePhrase = new Phrase("team.invited", "{0} has invited you to join a team");
 
+	public Canvas canvas;
+
 	public RectTransform MemberPanel;
 
 	public GameObject memberEntryPrefab;
@@ -22230,13 +22357,13 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 
 	public Phrase phrase;
 
-	[Header("Additional Settings - Delay")]
 	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
+	[Header("Additional Settings - Delay")]
 	[Space(10f)]
 	public DelayType delayBeforeAppearing;
 
-	[Header("Advanced Settings - Position")]
 	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
+	[Header("Advanced Settings - Position")]
 	[Space(10f)]
 	public TooltipContainer.PositionMode positionMode;
 
@@ -22392,7 +22519,10 @@ public class TypeThroughButton : Button, IUpdateSelectedHandler, IEventSystemHan
 			obj.text += " ";
 		}
 		typingTarget.MoveTextEnd(false);
-		typingTarget.ProcessEvent(e);
+		if (e.character != '\n' && e.character != '\t')
+		{
+			typingTarget.ProcessEvent(e);
+		}
 		yield return null;
 		typingTarget.caretPosition = typingTarget.text.Length;
 		typingTarget.ForceLabelUpdate();
@@ -22512,19 +22642,35 @@ public class UICameraOverlay : SingletonComponent<UICameraOverlay>
 
 	public static readonly Phrase FlashOff = new Phrase("camera.flash_is_off", "Flash [OFF]");
 
+	public Canvas Canvas;
+
 	public CanvasGroup CanvasGroup;
 
 	public RustText FocusModeLabel;
 
 	public RustText FlashLabel;
 
+	protected override void Awake()
+	{
+		((SingletonComponent)this).Awake();
+		Hide();
+	}
+
 	public void Show()
 	{
+		if ((Object)(object)Canvas != (Object)null)
+		{
+			((Behaviour)Canvas).enabled = true;
+		}
 		CanvasGroup.alpha = 1f;
 	}
 
 	public void Hide()
 	{
+		if ((Object)(object)Canvas != (Object)null)
+		{
+			((Behaviour)Canvas).enabled = false;
+		}
 		CanvasGroup.alpha = 0f;
 	}
 
@@ -22582,6 +22728,10 @@ public class UIConversationScreen : SingletonComponent<UIConversationScreen>, IU
 	public UIMissionInfoConversation missionInfo;
 
 	public UIMissionInfoConversation missionInfoComplete;
+
+	public Canvas canvas;
+
+	public GraphicRaycaster graphicRaycaster;
 
 	public CanvasGroup conversationCanvas;
 
@@ -22914,6 +23064,8 @@ using UnityEngine;
 
 public class UIGodOverlay : SingletonComponent<UIGodOverlay>
 {
+	public Canvas canvas;
+
 	public CanvasGroup invisCanvas;
 }
 
@@ -22927,6 +23079,8 @@ using UnityEngine;
 
 public class UIInvisOverlay : SingletonComponent<UIInvisOverlay>
 {
+	public Canvas canvas;
+
 	public CanvasGroup invisCanvas;
 }
 
@@ -23156,6 +23310,8 @@ using UnityEngine.UI;
 
 public class UIScopeOverlay : MonoBehaviour
 {
+	public Canvas canvas;
+
 	public CanvasGroup group;
 
 	public static UIScopeOverlay instance;
@@ -23169,11 +23325,12 @@ public interface IUIScreen
 }
 
 
-using TMPro;
 using UnityEngine;
 
 public class UISleepingScreen : SingletonComponent<UISleepingScreen>, IUIScreen
 {
+	protected Canvas canvas;
+
 	protected CanvasGroup canvasGroup;
 
 	private bool visible;
@@ -23182,6 +23339,7 @@ public class UISleepingScreen : SingletonComponent<UISleepingScreen>, IUIScreen
 	{
 		((SingletonComponent)this).Awake();
 		canvasGroup = ((Component)this).GetComponent<CanvasGroup>();
+		canvas = ((Component)this).GetComponent<Canvas>();
 		visible = true;
 	}
 
@@ -23190,8 +23348,11 @@ public class UISleepingScreen : SingletonComponent<UISleepingScreen>, IUIScreen
 		if (visible != b)
 		{
 			visible = b;
+			if ((Object)(object)canvas != (Object)null)
+			{
+				((Behaviour)canvas).enabled = b;
+			}
 			canvasGroup.alpha = (visible ? 1f : 0f);
-			((Component)SingletonComponent<UISleepingScreen>.Instance).gameObject.SetChildComponentsEnabled<TMP_Text>(visible);
 		}
 	}
 }
@@ -23221,6 +23382,8 @@ using UnityEngine.UI;
 
 public class UIWounded : MonoBehaviour
 {
+	public Canvas canvas;
+
 	public CanvasGroup group;
 
 	public Image chanceFill;
@@ -23240,6 +23403,8 @@ public class UI_LocalVoice : PriorityListComponent<UI_LocalVoice>
 	public CanvasGroup voiceCanvas;
 
 	public CanvasGroup levelImage;
+
+	public Canvas canvas;
 }
 
 
@@ -25260,8 +25425,8 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 	[SerializeField]
 	private Light[] lights;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private LightEx[] lightExs;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => false;
@@ -26977,6 +27142,26 @@ public static class LinqEx
 
 
 using Network;
+
+public static class NetworkReadEx
+{
+	public static BasePlayer Player(this NetRead read)
+	{
+		return BasePlayer.FindByID(read.UInt64());
+	}
+
+	public static BaseEntity Entity(this NetRead read)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		NetworkableId uid = read.EntityID();
+		return BaseNetworkable.serverEntities.Find(uid) as BaseEntity;
+	}
+}
+
+
+using Network;
 using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
 
@@ -26997,6 +27182,8 @@ public static class NetworkWriteEx
 		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ff: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0327: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
 		if (typeof(T) == typeof(Vector3))
 		{
 			Vector3 val = GenericsUtil.Cast<T, Vector3>(obj);
@@ -27102,6 +27289,19 @@ public static class NetworkWriteEx
 			write.ItemID(GenericsUtil.Cast<T, ItemId>(obj));
 			return;
 		}
+		if (typeof(T) == typeof(BaseEntity))
+		{
+			BaseEntity baseEntity = GenericsUtil.Cast<T, BaseEntity>(obj);
+			write.EntityID(((Object)(object)baseEntity != (Object)null && baseEntity.net != null) ? baseEntity.net.ID : NetworkableId.EmptyId);
+			return;
+		}
+		if (typeof(T) == typeof(BasePlayer))
+		{
+			BasePlayer basePlayer = GenericsUtil.Cast<T, BasePlayer>(obj);
+			ulong num = (((Object)(object)basePlayer != (Object)null && basePlayer.net != null) ? basePlayer.userID.Get() : ulong.MaxValue);
+			write.UInt64(num);
+			return;
+		}
 		object obj2 = obj;
 		IProto val6 = (IProto)((obj2 is IProto) ? obj2 : null);
 		if (val6 != null)
@@ -27111,6 +27311,22 @@ public static class NetworkWriteEx
 		}
 		T val7 = obj;
 		Debug.LogError((object)("NetworkData.Write - no handler to write " + val7?.ToString() + " -> " + obj.GetType()));
+	}
+
+	public static void Player(this NetWrite write, BasePlayer player)
+	{
+		ulong num = (((Object)(object)player != (Object)null && player.net != null) ? player.userID.Get() : ulong.MaxValue);
+		write.UInt64(num);
+	}
+
+	public static void Entity(this NetWrite write, BaseEntity ent)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		NetworkableId val = (((Object)(object)ent != (Object)null && ent.net != null) ? ent.net.ID : NetworkableId.EmptyId);
+		write.EntityID(val);
 	}
 }
 
@@ -29700,17 +29916,15 @@ public class MeshDataBatch : MeshBatch
 }
 
 
+using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class MeshRendererBatch : MeshBatch
 {
-	private static readonly ProfilerMarker recalculateUVMetricsProfilerMarker = new ProfilerMarker("RecalculateUVMetrics");
-
 	private Vector3 position;
 
 	private Mesh meshBatch;
@@ -29823,8 +30037,16 @@ public class MeshRendererBatch : MeshBatch
 		}
 		meshLookup.Apply();
 		meshData.Apply(meshBatch);
+		TimeWarning val = TimeWarning.New("MeshRendererBatch.RecalculateUVMetrics", 0);
+		try
+		{
+			meshBatch.RecalculateUVDistributionMetrics(1E-09f);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 		meshBatch.UploadMeshData(false);
-		meshBatch.RecalculateUVDistributionMetrics(1E-09f);
 	}
 
 	protected override void ToggleMesh(bool state)
@@ -32231,6 +32453,13 @@ public static class TransformUtil
 			where (Object)(object)((Component)x).transform == (Object)(object)((Component)x).transform.root
 			select x).ToArray();
 	}
+
+	public static Transform[] GetAllRootObjects()
+	{
+		return (from x in Object.FindObjectsOfType<Transform>(true)
+			where (Object)(object)((Component)x).transform == (Object)(object)((Component)x).transform.root
+			select x).ToArray();
+	}
 }
 
 
@@ -33580,6 +33809,10 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 			{
 				return 50;
 			}
+			if (Object.op_Implicit((Object)(object)((Component)this).GetComponent<SlotMachinePayoutWidget>()))
+			{
+				return 24;
+			}
 			return 1;
 		}
 	}
@@ -34443,8 +34676,8 @@ public class RustLog : ConsoleSystem
 
 	public static readonly int[] Levels = new int[names.Length];
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void Level(Arg args)
 	{
 		if (args.Args.Length == 0 || args.Args.Length > 2)
@@ -35981,10 +36214,6 @@ public class SwapRPG : MonoBehaviour
 			}
 		}
 	}
-
-	private void Start()
-	{
-	}
 }
 
 
@@ -36309,14 +36538,14 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final applied intensity of the occlusion effect.")]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
 
-	[Tooltip("Radius spread of the occlusion.")]
 	[Range(0f, 32f)]
+	[Tooltip("Radius spread of the occlusion.")]
 	public float Radius = 2f;
 
 	[NonSerialized]
@@ -36325,20 +36554,20 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Range(0f, 2f)]
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
+	[Range(0f, 2f)]
 	public float RadiusIntensity = 1f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
 	[Range(0f, 0.99f)]
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -36360,12 +36589,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public Color FadeToTint = Color.black;
 
-	[Tooltip("Final Radius parameter.")]
 	[Range(0f, 32f)]
+	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius = 2f;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent = 1.8f;
 
 	[Tooltip("Final Thickness parameter.")]
@@ -36375,20 +36604,20 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Range(1f, 4f)]
 	[Tooltip("Radius in screen pixels.")]
+	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
 	[Range(1f, 4f)]
 	[Tooltip("Number of times that the Blur will repeat.")]
 	public int BlurPasses = 1;
 
-	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	public float BlurSharpness = 10f;
 
-	[Header("Temporal Filter")]
 	[Tooltip("Accumulates the effect over the time.")]
+	[Header("Temporal Filter")]
 	public bool FilterEnabled = true;
 
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
@@ -36445,9 +36674,9 @@ public enum SampleCountLevel
 
 using UnityEngine;
 
-[ExecuteInEditMode]
-[AddComponentMenu("Image Effects/Amplify Occlusion")]
 [RequireComponent(typeof(Camera))]
+[AddComponentMenu("Image Effects/Amplify Occlusion")]
+[ExecuteInEditMode]
 public class AmplifyOcclusionEffect : AmplifyOcclusionBase
 {
 }

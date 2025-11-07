@@ -2242,7 +2242,9 @@ public class FlexTransition : FacepunchBehaviour
 		TransformTranslateY = 201,
 		TransformScaleX = 202,
 		TransformScaleY = 203,
-		TransformRotate = 204
+		TransformRotate = 204,
+		TranslateX = 205,
+		TranslateY = 206
 	}
 
 	[Serializable]
@@ -2384,99 +2386,54 @@ public class FlexTransition : FacepunchBehaviour
 
 	private LTDescr RunTransitionImpl(in Definition transition, bool animate)
 	{
-		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0816: Unknown result type (might be due to invalid IL or missing references)
-		//IL_081d: Invalid comparison between Unknown and I4
+		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0988: Unknown result type (might be due to invalid IL or missing references)
+		//IL_098f: Invalid comparison between Unknown and I4
+		//IL_029b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0293: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0326: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0830: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0337: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0339: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0439: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_044b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0664: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0341: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0453: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_062a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_062f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_063c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ed: Unknown result type (might be due to invalid IL or missing references)
 		LTDescr val = null;
 		switch (transition.Property)
 		{
 		case TransitionProperty.ScaleX:
-		{
-			FlexElement flexElement5 = transition.Object as FlexElement;
-			if ((Object)(object)flexElement5 == (Object)null)
-			{
-				break;
-			}
-			float num11 = (_currentState ? transition.ToFloat : transition.FromFloat);
-			if (animate)
-			{
-				val = LeanTween.scaleX(((Component)flexElement5).gameObject, num11, transition.Duration).setOnUpdate((Action<float, object>)delegate(float value, object obj)
-				{
-					if (obj is FlexElement flexElement6)
-					{
-						flexElement6.SetLayoutDirty();
-					}
-				}, (object)flexElement5);
-			}
-			else
-			{
-				Vector3 localScale3 = ((Component)flexElement5).transform.localScale;
-				localScale3.x = num11;
-				((Component)flexElement5).transform.localScale = localScale3;
-				flexElement5.SetLayoutDirty();
-			}
-			break;
-		}
-		case TransitionProperty.ScaleY:
-		{
-			FlexElement flexElement3 = transition.Object as FlexElement;
-			if ((Object)(object)flexElement3 == (Object)null)
-			{
-				break;
-			}
-			float num9 = (_currentState ? transition.ToFloat : transition.FromFloat);
-			if (animate)
-			{
-				val = LeanTween.scaleY(((Component)flexElement3).gameObject, num9, transition.Duration).setOnUpdate((Action<float, object>)delegate(float value, object obj)
-				{
-					FlexElement flexElement4 = (FlexElement)obj;
-					if ((Object)(object)flexElement4 != (Object)null)
-					{
-						flexElement4.SetLayoutDirty();
-					}
-				}, (object)flexElement3);
-			}
-			else
-			{
-				Vector3 localScale2 = ((Component)flexElement3).transform.localScale;
-				localScale2.y = num9;
-				((Component)flexElement3).transform.localScale = localScale2;
-				flexElement3.SetLayoutDirty();
-			}
-			break;
-		}
-		case TransitionProperty.ScaleXY:
 		{
 			FlexElement flexElement = transition.Object as FlexElement;
 			if ((Object)(object)flexElement == (Object)null)
@@ -2486,7 +2443,7 @@ public class FlexTransition : FacepunchBehaviour
 			float num3 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.scale(((Component)flexElement).gameObject, new Vector3(num3, num3, ((Component)flexElement).transform.localScale.z), transition.Duration).setOnUpdate((Action<Vector3, object>)delegate(Vector3 value, object obj)
+				val = LeanTween.scaleX(((Component)flexElement).gameObject, num3, transition.Duration).setOnUpdate((Action<float, object>)delegate(float value, object obj)
 				{
 					if (obj is FlexElement flexElement2)
 					{
@@ -2498,101 +2455,156 @@ public class FlexTransition : FacepunchBehaviour
 			{
 				Vector3 localScale = ((Component)flexElement).transform.localScale;
 				localScale.x = num3;
-				localScale.y = num3;
 				((Component)flexElement).transform.localScale = localScale;
 				flexElement.SetLayoutDirty();
 			}
 			break;
 		}
-		case TransitionProperty.ImageColor:
+		case TransitionProperty.ScaleY:
 		{
-			Object @object = transition.Object;
-			Image val2 = (Image)(object)((@object is Image) ? @object : null);
-			if ((Object)(object)val2 == (Object)null)
+			FlexElement flexElement5 = transition.Object as FlexElement;
+			if ((Object)(object)flexElement5 == (Object)null)
 			{
 				break;
 			}
-			Color color = ((Graphic)val2).color;
-			Color val3 = (_currentState ? transition.ToColor : transition.FromColor);
+			float num13 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)val2).gameObject, color, val3, transition.Duration).setOnUpdateParam((object)val2).setOnUpdateColor((Action<Color, object>)delegate(Color value, object obj)
+				val = LeanTween.scaleY(((Component)flexElement5).gameObject, num13, transition.Duration).setOnUpdate((Action<float, object>)delegate(float value, object obj)
+				{
+					FlexElement flexElement6 = (FlexElement)obj;
+					if ((Object)(object)flexElement6 != (Object)null)
+					{
+						flexElement6.SetLayoutDirty();
+					}
+				}, (object)flexElement5);
+			}
+			else
+			{
+				Vector3 localScale3 = ((Component)flexElement5).transform.localScale;
+				localScale3.y = num13;
+				((Component)flexElement5).transform.localScale = localScale3;
+				flexElement5.SetLayoutDirty();
+			}
+			break;
+		}
+		case TransitionProperty.ScaleXY:
+		{
+			FlexElement flexElement3 = transition.Object as FlexElement;
+			if ((Object)(object)flexElement3 == (Object)null)
+			{
+				break;
+			}
+			float num8 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			if (animate)
+			{
+				val = LeanTween.scale(((Component)flexElement3).gameObject, new Vector3(num8, num8, ((Component)flexElement3).transform.localScale.z), transition.Duration).setOnUpdate((Action<Vector3, object>)delegate(Vector3 value, object obj)
+				{
+					if (obj is FlexElement flexElement4)
+					{
+						flexElement4.SetLayoutDirty();
+					}
+				}, (object)flexElement3);
+			}
+			else
+			{
+				Vector3 localScale2 = ((Component)flexElement3).transform.localScale;
+				localScale2.x = num8;
+				localScale2.y = num8;
+				((Component)flexElement3).transform.localScale = localScale2;
+				flexElement3.SetLayoutDirty();
+			}
+			break;
+		}
+		case TransitionProperty.ImageColor:
+		{
+			Object object4 = transition.Object;
+			Image val8 = (Image)(object)((object4 is Image) ? object4 : null);
+			if ((Object)(object)val8 == (Object)null)
+			{
+				break;
+			}
+			Color color2 = ((Graphic)val8).color;
+			Color val9 = (_currentState ? transition.ToColor : transition.FromColor);
+			if (animate)
+			{
+				val = LeanTween.value(((Component)val8).gameObject, color2, val9, transition.Duration).setOnUpdateParam((object)val8).setOnUpdateColor((Action<Color, object>)delegate(Color value, object obj)
 				{
 					//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-					Image val4 = (Image)((obj is Image) ? obj : null);
-					if (val4 != null)
+					Image val10 = (Image)((obj is Image) ? obj : null);
+					if (val10 != null)
 					{
-						((Graphic)val4).color = value;
+						((Graphic)val10).color = value;
 					}
 				});
 			}
 			else
 			{
-				((Graphic)val2).color = val3;
+				((Graphic)val8).color = val9;
 			}
 			break;
 		}
 		case TransitionProperty.TextColor:
 		{
-			Object object4 = transition.Object;
-			TMP_Text val7 = (TMP_Text)(object)((object4 is TMP_Text) ? object4 : null);
-			if ((Object)(object)val7 == (Object)null)
+			Object object3 = transition.Object;
+			TMP_Text val5 = (TMP_Text)(object)((object3 is TMP_Text) ? object3 : null);
+			if ((Object)(object)val5 == (Object)null)
 			{
 				break;
 			}
-			Color color2 = ((Graphic)val7).color;
-			Color val8 = (_currentState ? transition.ToColor : transition.FromColor);
+			Color color = ((Graphic)val5).color;
+			Color val6 = (_currentState ? transition.ToColor : transition.FromColor);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)val7).gameObject, color2, val8, transition.Duration).setOnUpdateParam((object)val7).setOnUpdateColor((Action<Color, object>)delegate(Color value, object state)
+				val = LeanTween.value(((Component)val5).gameObject, color, val6, transition.Duration).setOnUpdateParam((object)val5).setOnUpdateColor((Action<Color, object>)delegate(Color value, object state)
 				{
 					//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-					TMP_Text val9 = (TMP_Text)((state is TMP_Text) ? state : null);
-					if (val9 != null)
+					TMP_Text val7 = (TMP_Text)((state is TMP_Text) ? state : null);
+					if (val7 != null)
 					{
-						((Graphic)val9).color = value;
+						((Graphic)val7).color = value;
 					}
 				});
 			}
 			else
 			{
-				((Graphic)val7).color = val8;
+				((Graphic)val5).color = val6;
 			}
 			break;
 		}
 		case TransitionProperty.CanvasAlpha:
 		{
-			Object object2 = transition.Object;
-			CanvasGroup val5 = (CanvasGroup)(object)((object2 is CanvasGroup) ? object2 : null);
-			if (!((Object)(object)val5 == (Object)null))
+			Object object6 = transition.Object;
+			CanvasGroup val13 = (CanvasGroup)(object)((object6 is CanvasGroup) ? object6 : null);
+			if (!((Object)(object)val13 == (Object)null))
 			{
-				float num6 = (_currentState ? transition.ToFloat : transition.FromFloat);
+				float num10 = (_currentState ? transition.ToFloat : transition.FromFloat);
 				if (animate)
 				{
-					val = LeanTween.alphaCanvas(val5, num6, transition.Duration).setEase(transition.Ease);
+					val = LeanTween.alphaCanvas(val13, num10, transition.Duration).setEase(transition.Ease);
 				}
 				else
 				{
-					val5.alpha = num6;
+					val13.alpha = num10;
 				}
 			}
 			break;
 		}
 		case TransitionProperty.RotationZ:
 		{
-			Object object3 = transition.Object;
-			Transform val6 = (Transform)(object)((object3 is Transform) ? object3 : null);
-			if (!((Object)(object)val6 == (Object)null))
+			Object @object = transition.Object;
+			Transform val2 = (Transform)(object)((@object is Transform) ? @object : null);
+			if (!((Object)(object)val2 == (Object)null))
 			{
-				float num8 = (_currentState ? transition.ToFloat : transition.FromFloat);
+				float num2 = (_currentState ? transition.ToFloat : transition.FromFloat);
 				if (animate)
 				{
-					val = LeanTween.rotateZ(((Component)val6).gameObject, num8, transition.Duration);
+					val = LeanTween.rotateZ(((Component)val2).gameObject, num2, transition.Duration);
 					break;
 				}
-				Vector3 eulerAngles = val6.eulerAngles;
-				eulerAngles.z = num8;
-				val6.localEulerAngles = eulerAngles;
+				Vector3 eulerAngles = val2.eulerAngles;
+				eulerAngles.z = num2;
+				val2.localEulerAngles = eulerAngles;
 			}
 			break;
 		}
@@ -2604,10 +2616,10 @@ public class FlexTransition : FacepunchBehaviour
 				break;
 			}
 			float translateX = flexGraphicTransform.TranslateX;
-			float num2 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			float num4 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)flexGraphicTransform).gameObject, translateX, num2, transition.Duration).setOnUpdateParam((object)flexGraphicTransform).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+				val = LeanTween.value(((Component)flexGraphicTransform).gameObject, translateX, num4, transition.Duration).setOnUpdateParam((object)flexGraphicTransform).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
 				{
 					if (state is FlexGraphicTransform flexGraphicTransform2)
 					{
@@ -2618,7 +2630,7 @@ public class FlexTransition : FacepunchBehaviour
 			}
 			else
 			{
-				flexGraphicTransform.TranslateX = num2;
+				flexGraphicTransform.TranslateX = num4;
 				flexGraphicTransform.SetVerticesDirty();
 			}
 			break;
@@ -2631,10 +2643,10 @@ public class FlexTransition : FacepunchBehaviour
 				break;
 			}
 			float translateY = flexGraphicTransform9.TranslateY;
-			float num10 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			float num12 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)flexGraphicTransform9).gameObject, translateY, num10, transition.Duration).setOnUpdateParam((object)flexGraphicTransform9).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+				val = LeanTween.value(((Component)flexGraphicTransform9).gameObject, translateY, num12, transition.Duration).setOnUpdateParam((object)flexGraphicTransform9).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
 				{
 					if (state is FlexGraphicTransform flexGraphicTransform10)
 					{
@@ -2645,35 +2657,105 @@ public class FlexTransition : FacepunchBehaviour
 			}
 			else
 			{
-				flexGraphicTransform9.TranslateY = num10;
+				flexGraphicTransform9.TranslateY = num12;
 				flexGraphicTransform9.SetVerticesDirty();
+			}
+			break;
+		}
+		case TransitionProperty.TranslateY:
+		{
+			Object object2 = transition.Object;
+			Transform val3 = (Transform)(object)((object2 is Transform) ? object2 : null);
+			if ((Object)(object)val3 == (Object)null)
+			{
+				break;
+			}
+			float y = val3.localPosition.y;
+			float num6 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			if (animate)
+			{
+				val = LeanTween.value(((Component)val3).gameObject, y, num6, transition.Duration).setEase(transition.Ease).setOnUpdateParam((object)val3)
+					.setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+					{
+						//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+						//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+						//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+						Transform val4 = (Transform)((state is Transform) ? state : null);
+						if (val4 != null)
+						{
+							Vector3 localPosition = val4.localPosition;
+							localPosition.y = value;
+							val4.localPosition = localPosition;
+						}
+					});
+			}
+			else
+			{
+				Vector3 localPosition2 = val3.localPosition;
+				localPosition2.y = num6;
+				val3.localPosition = localPosition2;
+			}
+			break;
+		}
+		case TransitionProperty.TranslateX:
+		{
+			Object object5 = transition.Object;
+			Transform val11 = (Transform)(object)((object5 is Transform) ? object5 : null);
+			if ((Object)(object)val11 == (Object)null)
+			{
+				break;
+			}
+			float x = val11.localPosition.x;
+			float num9 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			if (animate)
+			{
+				val = LeanTween.value(((Component)val11).gameObject, x, num9, transition.Duration).setEase(transition.Ease).setOnUpdateParam((object)val11)
+					.setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+					{
+						//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+						//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+						//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+						Transform val12 = (Transform)((state is Transform) ? state : null);
+						if (val12 != null)
+						{
+							Vector3 localPosition3 = val12.localPosition;
+							localPosition3.x = value;
+							val12.localPosition = localPosition3;
+						}
+					});
+			}
+			else
+			{
+				Vector3 localPosition4 = val11.localPosition;
+				localPosition4.x = num9;
+				val11.localPosition = localPosition4;
 			}
 			break;
 		}
 		case TransitionProperty.TransformScaleX:
 		{
-			FlexGraphicTransform flexGraphicTransform5 = transition.Object as FlexGraphicTransform;
-			if ((Object)(object)flexGraphicTransform5 == (Object)null)
+			FlexGraphicTransform flexGraphicTransform7 = transition.Object as FlexGraphicTransform;
+			if ((Object)(object)flexGraphicTransform7 == (Object)null)
 			{
 				break;
 			}
-			float scaleX = flexGraphicTransform5.ScaleX;
-			float num5 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			float scaleX = flexGraphicTransform7.ScaleX;
+			float num11 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)flexGraphicTransform5).gameObject, scaleX, num5, transition.Duration).setOnUpdateParam((object)flexGraphicTransform5).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+				val = LeanTween.value(((Component)flexGraphicTransform7).gameObject, scaleX, num11, transition.Duration).setOnUpdateParam((object)flexGraphicTransform7).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
 				{
-					if (state is FlexGraphicTransform flexGraphicTransform6)
+					if (state is FlexGraphicTransform flexGraphicTransform8)
 					{
-						flexGraphicTransform6.ScaleX = value;
-						flexGraphicTransform6.SetVerticesDirty();
+						flexGraphicTransform8.ScaleX = value;
+						flexGraphicTransform8.SetVerticesDirty();
 					}
 				});
 			}
 			else
 			{
-				flexGraphicTransform5.ScaleX = num5;
-				flexGraphicTransform5.SetVerticesDirty();
+				flexGraphicTransform7.ScaleX = num11;
+				flexGraphicTransform7.SetVerticesDirty();
 			}
 			break;
 		}
@@ -2685,10 +2767,10 @@ public class FlexTransition : FacepunchBehaviour
 				break;
 			}
 			float scaleY = flexGraphicTransform3.ScaleY;
-			float num4 = (_currentState ? transition.ToFloat : transition.FromFloat);
+			float num5 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)flexGraphicTransform3).gameObject, scaleY, num4, transition.Duration).setOnUpdateParam((object)flexGraphicTransform3).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+				val = LeanTween.value(((Component)flexGraphicTransform3).gameObject, scaleY, num5, transition.Duration).setOnUpdateParam((object)flexGraphicTransform3).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
 				{
 					if (state is FlexGraphicTransform flexGraphicTransform4)
 					{
@@ -2699,35 +2781,35 @@ public class FlexTransition : FacepunchBehaviour
 			}
 			else
 			{
-				flexGraphicTransform3.ScaleY = num4;
+				flexGraphicTransform3.ScaleY = num5;
 				flexGraphicTransform3.SetVerticesDirty();
 			}
 			break;
 		}
 		case TransitionProperty.TransformRotate:
 		{
-			FlexGraphicTransform flexGraphicTransform7 = transition.Object as FlexGraphicTransform;
-			if ((Object)(object)flexGraphicTransform7 == (Object)null)
+			FlexGraphicTransform flexGraphicTransform5 = transition.Object as FlexGraphicTransform;
+			if ((Object)(object)flexGraphicTransform5 == (Object)null)
 			{
 				break;
 			}
-			float rotate = flexGraphicTransform7.Rotate;
+			float rotate = flexGraphicTransform5.Rotate;
 			float num7 = (_currentState ? transition.ToFloat : transition.FromFloat);
 			if (animate)
 			{
-				val = LeanTween.value(((Component)flexGraphicTransform7).gameObject, rotate, num7, transition.Duration).setOnUpdateParam((object)flexGraphicTransform7).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
+				val = LeanTween.value(((Component)flexGraphicTransform5).gameObject, rotate, num7, transition.Duration).setOnUpdateParam((object)flexGraphicTransform5).setOnUpdateObject((Action<float, object>)delegate(float value, object state)
 				{
-					if (state is FlexGraphicTransform flexGraphicTransform8)
+					if (state is FlexGraphicTransform flexGraphicTransform6)
 					{
-						flexGraphicTransform8.Rotate = value;
-						flexGraphicTransform8.SetVerticesDirty();
+						flexGraphicTransform6.Rotate = value;
+						flexGraphicTransform6.SetVerticesDirty();
 					}
 				});
 			}
 			else
 			{
-				flexGraphicTransform7.Rotate = num7;
-				flexGraphicTransform7.SetVerticesDirty();
+				flexGraphicTransform5.Rotate = num7;
+				flexGraphicTransform5.SetVerticesDirty();
 			}
 			break;
 		}
@@ -2943,7 +3025,9 @@ public enum TransitionProperty
 	TransformTranslateY = 201,
 	TransformScaleX = 202,
 	TransformScaleY = 203,
-	TransformRotate = 204
+	TransformRotate = 204,
+	TranslateX = 205,
+	TranslateY = 206
 }
 
 

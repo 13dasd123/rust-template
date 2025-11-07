@@ -1574,10 +1574,10 @@ public class FXAAPostEffectsBase : MonoBehaviour
 using System;
 using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(Camera))]
 [AddComponentMenu("KriptoFX/Explosion_Bloom")]
 [ImageEffectAllowedInSceneView]
+[ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
@@ -1587,26 +1587,26 @@ public class Explosion_Bloom : MonoBehaviour
 		[Tooltip("Filters out pixels under this level of brightness.")]
 		public float threshold;
 
-		[Range(0f, 1f)]
 		[SerializeField]
+		[Range(0f, 1f)]
 		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		public float softKnee;
 
-		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
-		[SerializeField]
 		[Range(1f, 7f)]
+		[SerializeField]
+		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 		public float radius;
 
-		[Tooltip("Blend factor of the result image.")]
 		[SerializeField]
+		[Tooltip("Blend factor of the result image.")]
 		public float intensity;
 
-		[Tooltip("Controls filter quality and buffer resolution.")]
 		[SerializeField]
+		[Tooltip("Controls filter quality and buffer resolution.")]
 		public bool highQuality;
 
-		[Tooltip("Reduces flashing noise with an additional filter.")]
 		[SerializeField]
+		[Tooltip("Reduces flashing noise with an additional filter.")]
 		public bool antiFlicker;
 
 		public float thresholdGamma
@@ -1652,8 +1652,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Shader m_Shader;
 
 	private Material m_Material;
@@ -1858,26 +1858,26 @@ public struct Settings
 	[Tooltip("Filters out pixels under this level of brightness.")]
 	public float threshold;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	[Tooltip("Makes transition between under/over-threshold gradual.")]
 	public float softKnee;
 
-	[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
-	[SerializeField]
 	[Range(1f, 7f)]
+	[SerializeField]
+	[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 	public float radius;
 
-	[Tooltip("Blend factor of the result image.")]
 	[SerializeField]
+	[Tooltip("Blend factor of the result image.")]
 	public float intensity;
 
-	[Tooltip("Controls filter quality and buffer resolution.")]
 	[SerializeField]
+	[Tooltip("Controls filter quality and buffer resolution.")]
 	public bool highQuality;
 
-	[Tooltip("Reduces flashing noise with an additional filter.")]
 	[SerializeField]
+	[Tooltip("Reduces flashing noise with an additional filter.")]
 	public bool antiFlicker;
 
 	public float thresholdGamma
@@ -2714,8 +2714,8 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 using ConVar;
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Light))]
+[ExecuteInEditMode]
 public class NGSS_Directional : MonoBehaviour
 {
 	public enum SAMPLER_COUNT
@@ -6083,9 +6083,9 @@ public struct Sphere
 using UnityEngine;
 using UnityEngine.Rendering;
 
+[ExecuteInEditMode]
 [AddComponentMenu("Image Effects/Sonic Ether/SE Screen-Space Shadows")]
 [RequireComponent(typeof(Camera))]
-[ExecuteInEditMode]
 public class SEScreenSpaceShadows : SingletonComponent<SEScreenSpaceShadows>, IClientComponent
 {
 	private CommandBuffer blendShadowsCommandBuffer;
@@ -6976,9 +6976,9 @@ public class VertexStreamChildrenRebuilder : MonoBehaviour
 using System;
 using UnityEngine;
 
-[AddComponentMenu("Rendering/Visualize Texture Density")]
 [ExecuteInEditMode]
 [ImageEffectAllowedInSceneView]
+[AddComponentMenu("Rendering/Visualize Texture Density")]
 public class VisualizeTexelDensity : MonoBehaviour
 {
 	public Shader shader;

@@ -1,4 +1,2534 @@
 using System;
+
+[Serializable]
+public struct SpectrumParameters
+{
+	public float scale;
+
+	public float angle;
+
+	public float spreadBlend;
+
+	public float swell;
+
+	public float alpha;
+
+	public float peakOmega;
+
+	public float gamma;
+
+	public float shortWavesFade;
+}
+
+
+using System;
+using UnityEngine;
+
+[Serializable]
+public struct SpectrumSettings
+{
+	[Range(0f, 1f)]
+	public float scale;
+
+	public float windSpeed;
+
+	public float fetch;
+
+	[Range(0f, 1f)]
+	public float spreadBlend;
+
+	[Range(0f, 1f)]
+	public float swell;
+
+	public float peakEnhancement;
+
+	public float shortWavesFade;
+}
+
+
+using Rust.Water5;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "New Spectrum Settings", menuName = "Water5/Spectrum Settings")]
+public class OceanSpectrumSettings : ScriptableObject
+{
+	public OceanSettings oceanSettings;
+
+	[Header("Deep Wave Settings")]
+	public float g;
+
+	public float beaufort;
+
+	public float depth;
+
+	public SpectrumSettings local;
+
+	public SpectrumSettings swell;
+
+	[Header("Material Settings")]
+	public Color color;
+
+	public Color specColor;
+
+	public float smoothness;
+
+	public Color waterColor;
+
+	public Color waterExtinction;
+
+	public float scatteringCoefficient;
+
+	public Color subSurfaceColor;
+
+	public float subSurfaceFalloff;
+
+	public float subSurfaceBase;
+
+	public float subSurfaceSun;
+
+	public float subSurfaceAmount;
+
+	public float foamAmount;
+
+	public float foamScale;
+
+	public Color foamColor;
+
+	public Color baseFoamColor;
+
+	[Button("Update Spectrum")]
+	public void UpdateSpectrum()
+	{
+		WaterSystem.Instance?.Refresh();
+	}
+}
+
+
+using System;
+using Rust.Modular;
+using UnityEngine;
+
+[Serializable]
+public class ConditionalObject
+{
+	public enum AdjacentCondition
+	{
+		SameInFront,
+		SameBehind,
+		DifferentInFront,
+		DifferentBehind,
+		BothDifferent,
+		BothSame
+	}
+
+	public enum AdjacentMatchType
+	{
+		GroupOrExact,
+		ExactOnly,
+		GroupNotExact
+	}
+
+	public GameObject gameObject;
+
+	public GameObject ownerGameObject;
+
+	public ConditionalSocketSettings[] socketSettings;
+
+	public bool restrictOnHealth;
+
+	public float healthRestrictionMin;
+
+	public float healthRestrictionMax;
+
+	public bool restrictOnAdjacent;
+
+	public AdjacentCondition adjacentRestriction;
+
+	public AdjacentMatchType adjacentMatch;
+
+	public bool restrictOnLockable;
+
+	public bool lockableRestriction;
+
+	public bool? IsActive { get; private set; }
+
+	public ConditionalObject(GameObject conditionalGO, GameObject ownerGO, int socketsTaken)
+	{
+		gameObject = conditionalGO;
+		ownerGameObject = ownerGO;
+		socketSettings = new ConditionalSocketSettings[socketsTaken];
+	}
+
+	public void SetActive(bool active)
+	{
+		if (!IsActive.HasValue || active != IsActive.Value)
+		{
+			gameObject.SetActive(active);
+			IsActive = active;
+		}
+	}
+
+	public void RefreshActive()
+	{
+		if (IsActive.HasValue)
+		{
+			gameObject.SetActive(IsActive.Value);
+		}
+	}
+}
+
+
+public enum AdjacentCondition
+{
+	SameInFront,
+	SameBehind,
+	DifferentInFront,
+	DifferentBehind,
+	BothDifferent,
+	BothSame
+}
+
+
+public enum AdjacentMatchType
+{
+	GroupOrExact,
+	ExactOnly,
+	GroupNotExact
+}
+
+
+using System;
+using Rust.Modular;
+
+[Serializable]
+public class ConditionalSocketSettings
+{
+	public enum LocationCondition
+	{
+		Middle,
+		Front,
+		Back,
+		NotMiddle,
+		NotFront,
+		NotBack
+	}
+
+	public bool restrictOnLocation;
+
+	public LocationCondition locationRestriction;
+
+	public bool restrictOnWheel;
+
+	public ModularVehicleSocket.SocketWheelType wheelRestriction;
+
+	public bool HasSocketRestrictions
+	{
+		get
+		{
+			if (!restrictOnLocation)
+			{
+				return restrictOnWheel;
+			}
+			return true;
+		}
+	}
+}
+
+
+public enum LocationCondition
+{
+	Middle,
+	Front,
+	Back,
+	NotMiddle,
+	NotFront,
+	NotBack
+}
+
+
+using UnityEngine;
+using UnityEngine.Events;
+
+public class EnableDisableEvent : MonoBehaviour
+{
+	[SerializeField]
+	private UnityEvent enableEvent;
+
+	[SerializeField]
+	private UnityEvent disableEvent;
+
+	protected void OnEnable()
+	{
+		if (enableEvent != null)
+		{
+			enableEvent.Invoke();
+		}
+	}
+
+	protected void OnDisable()
+	{
+		if (disableEvent != null)
+		{
+			disableEvent.Invoke();
+		}
+	}
+}
+
+
+using Rust.Modular;
+
+public static class EngineItemTypeEx
+{
+	public static bool BoostsAcceleration(this EngineStorage.EngineItemTypes engineItemType)
+	{
+		if (engineItemType != EngineStorage.EngineItemTypes.SparkPlug)
+		{
+			return engineItemType == EngineStorage.EngineItemTypes.Piston;
+		}
+		return true;
+	}
+
+	public static bool BoostsTopSpeed(this EngineStorage.EngineItemTypes engineItemType)
+	{
+		if (engineItemType != EngineStorage.EngineItemTypes.Carburetor && engineItemType != 0)
+		{
+			return engineItemType == EngineStorage.EngineItemTypes.Piston;
+		}
+		return true;
+	}
+
+	public static bool BoostsFuelEconomy(this EngineStorage.EngineItemTypes engineItemType)
+	{
+		if (engineItemType != EngineStorage.EngineItemTypes.Carburetor)
+		{
+			return engineItemType == EngineStorage.EngineItemTypes.Valve;
+		}
+		return true;
+	}
+}
+
+
+using System;
+using System.Linq;
+using Facepunch;
+using Oxide.Core;
+using ProtoBuf;
+using Rust.Modular;
+using UnityEngine;
+
+public class EngineStorage : StorageContainer
+{
+	public enum EngineItemTypes
+	{
+		Crankshaft,
+		Carburetor,
+		SparkPlug,
+		Piston,
+		Valve
+	}
+
+	[Header("Engine Storage")]
+	public Sprite engineIcon;
+
+	public float internalDamageMultiplier = 0.5f;
+
+	public EngineItemTypes[] slotTypes;
+
+	[SerializeField]
+	public VehicleModuleEngineItems allEngineItems;
+
+	[ReadOnly]
+	[SerializeField]
+	public int accelerationBoostSlots;
+
+	[ReadOnly]
+	[SerializeField]
+	public int topSpeedBoostSlots;
+
+	[SerializeField]
+	[ReadOnly]
+	public int fuelEconomyBoostSlots;
+
+	public bool isUsable { get; set; }
+
+	public float accelerationBoostPercent { get; set; }
+
+	public float topSpeedBoostPercent { get; set; }
+
+	public float fuelEconomyBoostPercent { get; set; }
+
+	public VehicleModuleEngine GetEngineModule()
+	{
+		BaseEntity baseEntity = GetParentEntity();
+		if ((Object)(object)baseEntity != (Object)null)
+		{
+			return ((Component)baseEntity).GetComponent<VehicleModuleEngine>();
+		}
+		return null;
+	}
+
+	public float GetAveragedLoadoutPercent()
+	{
+		return (accelerationBoostPercent + topSpeedBoostPercent + fuelEconomyBoostPercent) / 3f;
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.msg.engineStorage != null)
+		{
+			isUsable = info.msg.engineStorage.isUsable;
+			accelerationBoostPercent = info.msg.engineStorage.accelerationBoost;
+			topSpeedBoostPercent = info.msg.engineStorage.topSpeedBoost;
+			fuelEconomyBoostPercent = info.msg.engineStorage.fuelEconomyBoost;
+		}
+		GetEngineModule()?.RefreshPerformanceStats(this);
+	}
+
+	public override bool CanBeLooted(BasePlayer player)
+	{
+		VehicleModuleEngine engineModule = GetEngineModule();
+		if ((Object)(object)engineModule != (Object)null)
+		{
+			return engineModule.CanBeLooted(player);
+		}
+		return false;
+	}
+
+	public override int GetIdealSlot(BasePlayer player, ItemContainer container, Item item)
+	{
+		return GetValidSlot(item);
+	}
+
+	public int GetValidSlot(Item item)
+	{
+		ItemModEngineItem component = ((Component)item.info).GetComponent<ItemModEngineItem>();
+		if ((Object)(object)component == (Object)null)
+		{
+			return -1;
+		}
+		EngineItemTypes engineItemType = component.engineItemType;
+		for (int i = 0; i < inventorySlots; i++)
+		{
+			if (engineItemType == slotTypes[i] && !base.inventory.SlotTaken(item, i))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public override void OnInventoryFirstCreated(ItemContainer container)
+	{
+		RefreshLoadoutData();
+	}
+
+	public override void OnItemAddedOrRemoved(Item item, bool added)
+	{
+		RefreshLoadoutData();
+	}
+
+	public override bool ItemFilter(Item item, int targetSlot)
+	{
+		if (!base.ItemFilter(item, targetSlot))
+		{
+			return false;
+		}
+		if (targetSlot < 0 || targetSlot >= slotTypes.Length)
+		{
+			return false;
+		}
+		ItemModEngineItem component = ((Component)item.info).GetComponent<ItemModEngineItem>();
+		if ((Object)(object)component != (Object)null && component.engineItemType == slotTypes[targetSlot])
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public void RefreshLoadoutData()
+	{
+		if (Interface.CallHook("OnEngineLoadoutRefresh", (object)this) == null)
+		{
+			isUsable = base.inventory.IsFull() && base.inventory.itemList.All((Item item) => !item.isBroken);
+			accelerationBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsAcceleration) / (float)accelerationBoostSlots;
+			topSpeedBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsTopSpeed) / (float)topSpeedBoostSlots;
+			fuelEconomyBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsFuelEconomy) / (float)fuelEconomyBoostSlots;
+			SendNetworkUpdate();
+			GetEngineModule()?.RefreshPerformanceStats(this);
+		}
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		info.msg.engineStorage = Pool.Get<EngineStorage>();
+		info.msg.engineStorage.isUsable = isUsable;
+		info.msg.engineStorage.accelerationBoost = accelerationBoostPercent;
+		info.msg.engineStorage.topSpeedBoost = topSpeedBoostPercent;
+		info.msg.engineStorage.fuelEconomyBoost = fuelEconomyBoostPercent;
+	}
+
+	public void OnModuleDamaged(float damageTaken)
+	{
+		if (damageTaken <= 0f)
+		{
+			return;
+		}
+		damageTaken *= internalDamageMultiplier;
+		float[] array = new float[base.inventory.capacity];
+		float num = 0f;
+		for (int i = 0; i < array.Length; i++)
+		{
+			array[i] = Random.value;
+			num += array[i];
+		}
+		float num2 = damageTaken / num;
+		for (int j = 0; j < array.Length; j++)
+		{
+			Item slot = base.inventory.GetSlot(j);
+			if (slot != null)
+			{
+				slot.condition -= array[j] * num2;
+			}
+		}
+		RefreshLoadoutData();
+	}
+
+	public void AdminAddParts(int tier)
+	{
+		if (base.inventory == null)
+		{
+			Debug.LogWarning((object)(((object)this).GetType().Name + ": Null inventory on " + ((Object)this).name));
+			return;
+		}
+		for (int i = 0; i < base.inventory.capacity; i++)
+		{
+			Item slot = base.inventory.GetSlot(i);
+			if (slot != null)
+			{
+				slot.RemoveFromContainer();
+				slot.Remove();
+			}
+		}
+		for (int j = 0; j < base.inventory.capacity; j++)
+		{
+			if (base.inventory.GetSlot(j) == null && allEngineItems.TryGetItem(tier, slotTypes[j], out var output))
+			{
+				ItemDefinition component = ((Component)output).GetComponent<ItemDefinition>();
+				Item item = ItemManager.Create(component, 1, 0uL);
+				if (item != null)
+				{
+					item.condition = component.condition.max;
+					item.MoveToContainer(base.inventory, j, allowStack: false);
+				}
+				else
+				{
+					Debug.LogError((object)(((object)this).GetType().Name + ": Failed to create engine storage item."));
+				}
+			}
+		}
+	}
+
+	public float GetContainerItemsValueFor(Func<EngineItemTypes, bool> boostConditional)
+	{
+		float num = 0f;
+		foreach (Item item in base.inventory.itemList)
+		{
+			ItemModEngineItem component = ((Component)item.info).GetComponent<ItemModEngineItem>();
+			if ((Object)(object)component != (Object)null && boostConditional(component.engineItemType) && !item.isBroken)
+			{
+				num += (float)item.amount * GetTierValue(component.tier);
+			}
+		}
+		return num;
+	}
+
+	public float GetTierValue(int tier)
+	{
+		switch (tier)
+		{
+		case 1:
+			return 0.6f;
+		case 2:
+			return 0.8f;
+		case 3:
+			return 1f;
+		default:
+			Debug.LogError((object)(((object)this).GetType().Name + ": Unrecognised item tier: " + tier));
+			return 0f;
+		}
+	}
+}
+
+
+public enum EngineItemTypes
+{
+	Crankshaft,
+	Carburetor,
+	SparkPlug,
+	Piston,
+	Valve
+}
+
+
+using UnityEngine;
+
+public class ModularCarAudio : GroundVehicleAudio
+{
+	public bool showDebug;
+
+	[Header("Skid")]
+	[SerializeField]
+	private SoundDefinition skidSoundLoop;
+
+	[SerializeField]
+	private SoundDefinition skidSoundDirtLoop;
+
+	[SerializeField]
+	private SoundDefinition skidSoundSnowLoop;
+
+	[SerializeField]
+	private float skidMinSlip = 10f;
+
+	[SerializeField]
+	private float skidMaxSlip = 25f;
+
+	[Header("Movement & Suspension")]
+	[SerializeField]
+	private SoundDefinition movementStartOneshot;
+
+	[SerializeField]
+	private SoundDefinition movementStopOneshot;
+
+	[SerializeField]
+	private float movementStartStopMinTimeBetweenSounds = 0.25f;
+
+	[SerializeField]
+	private SoundDefinition movementRattleLoop;
+
+	[SerializeField]
+	private float movementRattleMaxSpeed = 10f;
+
+	[SerializeField]
+	private float movementRattleMaxAngSpeed = 10f;
+
+	[SerializeField]
+	private float movementRattleIdleGain = 0.3f;
+
+	[SerializeField]
+	private SoundDefinition suspensionLurchSound;
+
+	[SerializeField]
+	private float suspensionLurchMinExtensionDelta = 0.4f;
+
+	[SerializeField]
+	private float suspensionLurchMinTimeBetweenSounds = 0.25f;
+
+	[Header("Wheels")]
+	[SerializeField]
+	private SoundDefinition tyreRollingSoundDef;
+
+	[SerializeField]
+	private SoundDefinition tyreRollingWaterSoundDef;
+
+	[SerializeField]
+	private SoundDefinition tyreRollingGrassSoundDef;
+
+	[SerializeField]
+	private SoundDefinition tyreRollingSnowSoundDef;
+
+	[SerializeField]
+	private AnimationCurve tyreRollGainCurve;
+}
+
+
+using System;
+using Facepunch;
+using Rust;
+using Rust.Modular;
+using UnityEngine;
+
+public class ModularVehicleInventory : IDisposable
+{
+	private ItemContainer moduleContainer;
+
+	private ItemContainer chassisContainer;
+
+	private readonly BaseModularVehicle vehicle;
+
+	public ItemContainer ModuleContainer => moduleContainer;
+
+	public ItemContainer ChassisContainer => chassisContainer;
+
+	public ItemContainerId UID => moduleContainer.uid;
+
+	private int TotalSockets => vehicle.TotalSockets;
+
+	public ModularVehicleInventory(BaseModularVehicle vehicle, ItemDefinition chassisItemDef, bool giveUID)
+	{
+		this.vehicle = vehicle;
+		moduleContainer = CreateModuleInventory(vehicle, giveUID);
+		chassisContainer = CreateChassisInventory(vehicle, giveUID);
+		vehicle.AssociatedItemInstance = ItemManager.Create(chassisItemDef, 1, 0uL);
+		if (!Application.isLoadingSave)
+		{
+			vehicle.AssociatedItemInstance.MoveToContainer(chassisContainer, 0, allowStack: false);
+		}
+	}
+
+	public void Dispose()
+	{
+		foreach (Item item in moduleContainer.itemList)
+		{
+			item.OnDirty -= OnModuleItemChanged;
+		}
+		Pool.Free<ItemContainer>(ref moduleContainer);
+		Pool.Free<ItemContainer>(ref chassisContainer);
+	}
+
+	public void GiveUIDs()
+	{
+		moduleContainer.GiveUID();
+		chassisContainer.GiveUID();
+	}
+
+	public bool SocketIsFree(int socketIndex, Item moduleItem = null)
+	{
+		Item item = null;
+		int num = socketIndex;
+		while (item == null && num >= 0)
+		{
+			item = moduleContainer.GetSlot(num);
+			if (item != null)
+			{
+				if (item == moduleItem)
+				{
+					return true;
+				}
+				ItemModVehicleModule component = ((Component)item.info).GetComponent<ItemModVehicleModule>();
+				return num + component.socketsTaken - 1 < socketIndex;
+			}
+			num--;
+		}
+		return true;
+	}
+
+	public bool SocketIsTaken(int socketIndex)
+	{
+		return !SocketIsFree(socketIndex);
+	}
+
+	public bool TryAddModuleItem(Item moduleItem, int socketIndex)
+	{
+		if (moduleItem == null)
+		{
+			Debug.LogError((object)(GetType().Name + ": Can't add null item."));
+			return false;
+		}
+		return moduleItem.MoveToContainer(moduleContainer, socketIndex, allowStack: false);
+	}
+
+	public bool RemoveAndDestroy(Item itemToRemove)
+	{
+		bool result = moduleContainer.Remove(itemToRemove);
+		itemToRemove.Remove();
+		return result;
+	}
+
+	public int TryGetFreeSocket(int socketsTaken)
+	{
+		return TryGetFreeSocket(null, socketsTaken);
+	}
+
+	public int TryGetFreeSocket(Item moduleItem, int socketsTaken)
+	{
+		for (int i = 0; i <= TotalSockets - socketsTaken; i++)
+		{
+			if (SocketsAreFree(i, socketsTaken, moduleItem))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public bool SocketsAreFree(int firstIndex, int socketsTaken, Item moduleItem = null)
+	{
+		if (firstIndex < 0 || firstIndex + socketsTaken > TotalSockets)
+		{
+			return false;
+		}
+		for (int i = firstIndex; i < firstIndex + socketsTaken; i++)
+		{
+			if (!SocketIsFree(i, moduleItem))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public bool TrySyncModuleInventory(BaseVehicleModule moduleEntity, int firstSocketIndex)
+	{
+		if (firstSocketIndex < 0)
+		{
+			Debug.LogError((object)$"{GetType().Name}: Invalid socket index ({firstSocketIndex}) for new module entity.", (Object)(object)((Component)vehicle).gameObject);
+			return false;
+		}
+		Item slot = moduleContainer.GetSlot(firstSocketIndex);
+		int numSocketsTaken = moduleEntity.GetNumSocketsTaken();
+		if (!SocketsAreFree(firstSocketIndex, numSocketsTaken) && (slot == null || moduleEntity.AssociatedItemInstance != slot))
+		{
+			Debug.LogError((object)$"{GetType().Name}: Sockets are not free for new module entity. First: {firstSocketIndex} Taken: {numSocketsTaken}", (Object)(object)((Component)vehicle).gameObject);
+			return false;
+		}
+		if (slot == null)
+		{
+			Item item = ItemManager.Create(moduleEntity.AssociatedItemDef, 1, 0uL);
+			item.condition = moduleEntity.health;
+			moduleEntity.AssociatedItemInstance = item;
+			bool num = TryAddModuleItem(item, firstSocketIndex);
+			if (num)
+			{
+				vehicle.SetUpModule(moduleEntity, item);
+				return num;
+			}
+			item.Remove();
+			return num;
+		}
+		return true;
+	}
+
+	private bool SocketIsUsed(Item item, int slotIndex)
+	{
+		return !SocketIsFree(slotIndex, item);
+	}
+
+	private ItemContainer CreateModuleInventory(BaseModularVehicle vehicle, bool giveUID)
+	{
+		ItemContainer itemContainer = Pool.Get<ItemContainer>();
+		itemContainer.entityOwner = vehicle;
+		itemContainer.allowedContents = ItemContainer.ContentsType.Generic;
+		itemContainer.maxStackSize = 1;
+		itemContainer.ServerInitialize(null, TotalSockets);
+		if (giveUID)
+		{
+			itemContainer.GiveUID();
+		}
+		itemContainer.onItemAddedRemoved = OnSocketInventoryAddRemove;
+		itemContainer.canAcceptItem = ItemFilter;
+		itemContainer.slotIsReserved = SocketIsUsed;
+		return itemContainer;
+	}
+
+	private ItemContainer CreateChassisInventory(BaseModularVehicle vehicle, bool giveUID)
+	{
+		ItemContainer itemContainer = Pool.Get<ItemContainer>();
+		itemContainer.entityOwner = vehicle;
+		itemContainer.allowedContents = ItemContainer.ContentsType.Generic;
+		itemContainer.maxStackSize = 1;
+		itemContainer.ServerInitialize(null, 1);
+		if (giveUID)
+		{
+			itemContainer.GiveUID();
+		}
+		return itemContainer;
+	}
+
+	private void OnSocketInventoryAddRemove(Item moduleItem, bool added)
+	{
+		if (added)
+		{
+			ModuleItemAdded(moduleItem, moduleItem.position);
+		}
+		else
+		{
+			ModuleItemRemoved(moduleItem);
+		}
+	}
+
+	private void ModuleItemAdded(Item moduleItem, int socketIndex)
+	{
+		ItemModVehicleModule component = ((Component)moduleItem.info).GetComponent<ItemModVehicleModule>();
+		if (!Application.isLoadingSave && (Object)(object)vehicle.GetModuleForItem(moduleItem) == (Object)null)
+		{
+			vehicle.CreatePhysicalModuleEntity(moduleItem, component, socketIndex);
+		}
+		moduleItem.OnDirty += OnModuleItemChanged;
+	}
+
+	private void ModuleItemRemoved(Item moduleItem)
+	{
+		if (moduleItem == null)
+		{
+			Debug.LogError((object)"Null module item removed.", (Object)(object)((Component)vehicle).gameObject);
+			return;
+		}
+		moduleItem.OnDirty -= OnModuleItemChanged;
+		BaseVehicleModule moduleForItem = vehicle.GetModuleForItem(moduleItem);
+		if ((Object)(object)moduleForItem != (Object)null)
+		{
+			if (!moduleForItem.IsFullySpawned())
+			{
+				Debug.LogError((object)"Module entity being removed before it's fully spawned. This could cause errors.", (Object)(object)((Component)vehicle).gameObject);
+			}
+			moduleForItem.Kill();
+		}
+		else
+		{
+			Debug.Log((object)"Couldn't find entity for this item.");
+		}
+	}
+
+	private void OnModuleItemChanged(Item moduleItem)
+	{
+		BaseVehicleModule moduleForItem = vehicle.GetModuleForItem(moduleItem);
+		if ((Object)(object)moduleForItem != (Object)null)
+		{
+			moduleForItem.SetHealth(moduleItem.condition);
+			if (moduleForItem.FirstSocketIndex != moduleItem.position)
+			{
+				ModuleItemRemoved(moduleItem);
+				ModuleItemAdded(moduleItem, moduleItem.position);
+			}
+		}
+	}
+
+	private bool ItemFilter(Item item, int targetSlot)
+	{
+		string failureReason;
+		return vehicle.ModuleCanBeAdded(item, targetSlot, out failureReason);
+	}
+}
+
+
+using System;
+using Rust.Modular;
+using UnityEngine;
+
+[Serializable]
+public class ModularVehicleSocket
+{
+	public enum SocketWheelType
+	{
+		NoWheel,
+		ForwardWheel,
+		BackWheel
+	}
+
+	public enum SocketLocationType
+	{
+		Middle,
+		Front,
+		Back
+	}
+
+	[SerializeField]
+	private Transform socketTransform;
+
+	[SerializeField]
+	private SocketWheelType wheelType;
+
+	[SerializeField]
+	private SocketLocationType locationType;
+
+	public Vector3 WorldPosition => socketTransform.position;
+
+	public Quaternion WorldRotation => socketTransform.rotation;
+
+	public SocketWheelType WheelType => wheelType;
+
+	public SocketLocationType LocationType => locationType;
+
+	public bool ShouldBeActive(ConditionalSocketSettings modelSettings)
+	{
+		bool flag = true;
+		if (modelSettings.restrictOnLocation)
+		{
+			ConditionalSocketSettings.LocationCondition locationRestriction = modelSettings.locationRestriction;
+			switch (LocationType)
+			{
+			case SocketLocationType.Back:
+				flag = locationRestriction == ConditionalSocketSettings.LocationCondition.Back || locationRestriction == ConditionalSocketSettings.LocationCondition.NotFront || locationRestriction == ConditionalSocketSettings.LocationCondition.NotMiddle;
+				break;
+			case SocketLocationType.Front:
+				flag = locationRestriction == ConditionalSocketSettings.LocationCondition.Front || locationRestriction == ConditionalSocketSettings.LocationCondition.NotBack || locationRestriction == ConditionalSocketSettings.LocationCondition.NotMiddle;
+				break;
+			case SocketLocationType.Middle:
+				flag = locationRestriction == ConditionalSocketSettings.LocationCondition.Middle || locationRestriction == ConditionalSocketSettings.LocationCondition.NotFront || locationRestriction == ConditionalSocketSettings.LocationCondition.NotBack;
+				break;
+			}
+		}
+		if (flag && modelSettings.restrictOnWheel)
+		{
+			flag = WheelType == modelSettings.wheelRestriction;
+		}
+		return flag;
+	}
+}
+
+
+public enum SocketWheelType
+{
+	NoWheel,
+	ForwardWheel,
+	BackWheel
+}
+
+
+public enum SocketLocationType
+{
+	Middle,
+	Front,
+	Back
+}
+
+
+using System.Collections.Generic;
+using Facepunch;
+using Rust.Modular;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Vehicle Module Engine Items", menuName = "Scriptable Object/Vehicles/Module Engine Items")]
+public class VehicleModuleEngineItems : ScriptableObject
+{
+	[SerializeField]
+	private ItemModEngineItem[] engineItems;
+
+	public bool TryGetItem(int tier, EngineStorage.EngineItemTypes type, out ItemModEngineItem output)
+	{
+		List<ItemModEngineItem> list = Pool.Get<List<ItemModEngineItem>>();
+		bool result = false;
+		output = null;
+		ItemModEngineItem[] array = engineItems;
+		foreach (ItemModEngineItem itemModEngineItem in array)
+		{
+			if (itemModEngineItem.tier == tier && itemModEngineItem.engineItemType == type)
+			{
+				list.Add(itemModEngineItem);
+			}
+		}
+		if (list.Count > 0)
+		{
+			output = ListEx.GetRandom<ItemModEngineItem>(list);
+			result = true;
+		}
+		Pool.FreeUnmanaged<ItemModEngineItem>(ref list);
+		return result;
+	}
+}
+
+
+using System;
+using Rust.Modular;
+using UnityEngine;
+
+[Serializable]
+public class VehicleModuleSlidingComponent
+{
+	[Serializable]
+	public class SlidingPart
+	{
+		public Transform transform;
+
+		public Vector3 openPosition;
+
+		public Vector3 closedPosition;
+	}
+
+	public string interactionColliderName = "MyCollider";
+
+	public BaseEntity.Flags flag_SliderOpen = BaseEntity.Flags.Reserved3;
+
+	public float moveTime = 1f;
+
+	public SlidingPart[] slidingParts;
+
+	public SoundDefinition openSoundDef;
+
+	public SoundDefinition closeSoundDef;
+
+	private float positionPercent;
+
+	public bool WantsOpenPos(BaseEntity parentEntity)
+	{
+		return parentEntity.HasFlag(flag_SliderOpen);
+	}
+
+	public void Use(BaseVehicleModule parentModule)
+	{
+		parentModule.SetFlag(flag_SliderOpen, !WantsOpenPos(parentModule));
+	}
+
+	public void ServerUpdateTick(BaseVehicleModule parentModule)
+	{
+		CheckPosition(parentModule, Time.fixedDeltaTime);
+	}
+
+	private void CheckPosition(BaseEntity parentEntity, float dt)
+	{
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = WantsOpenPos(parentEntity);
+		if ((flag && positionPercent == 1f) || (!flag && positionPercent == 0f))
+		{
+			return;
+		}
+		float num = (flag ? (dt / moveTime) : (0f - dt / moveTime));
+		positionPercent = Mathf.Clamp01(positionPercent + num);
+		SlidingPart[] array = slidingParts;
+		foreach (SlidingPart slidingPart in array)
+		{
+			if (!((Object)(object)slidingPart.transform == (Object)null))
+			{
+				slidingPart.transform.localPosition = Vector3.Lerp(slidingPart.closedPosition, slidingPart.openPosition, positionPercent);
+			}
+		}
+	}
+}
+
+
+using System;
+using UnityEngine;
+
+[Serializable]
+public class SlidingPart
+{
+	public Transform transform;
+
+	public Vector3 openPosition;
+
+	public Vector3 closedPosition;
+}
+
+
+using Rust.Modular;
+using UnityEngine;
+
+public class ItemModEngineItem : ItemMod
+{
+	public EngineStorage.EngineItemTypes engineItemType;
+
+	[Range(1f, 3f)]
+	public int tier = 1;
+}
+
+
+using UnityEngine;
+
+public class ItemModVehicleChassis : ItemMod, VehicleModuleInformationPanel.IVehicleModuleInfo
+{
+	public GameObjectRef entityPrefab;
+
+	[Range(1f, 6f)]
+	public int socketsTaken = 1;
+
+	public int SocketsTaken => socketsTaken;
+}
+
+
+using UnityEngine;
+
+public class ItemModVehicleModule : ItemMod, VehicleModuleInformationPanel.IVehicleModuleInfo
+{
+	public GameObjectRef entityPrefab;
+
+	[Range(1f, 2f)]
+	public int socketsTaken = 1;
+
+	public int SocketsTaken => socketsTaken;
+
+	public BaseVehicleModule CreateModuleEntity(BaseEntity parent, Vector3 position, Quaternion rotation)
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		if (!entityPrefab.isValid)
+		{
+			Debug.LogError((object)"Invalid entity prefab for module");
+			return null;
+		}
+		BaseEntity baseEntity = GameManager.server.CreateEntity(entityPrefab.resourcePath, position, rotation);
+		BaseVehicleModule result = null;
+		if ((Object)(object)baseEntity != (Object)null)
+		{
+			if ((Object)(object)parent != (Object)null)
+			{
+				baseEntity.SetParent(parent, worldPositionStays: true);
+				baseEntity.canTriggerParent = false;
+			}
+			baseEntity.Spawn();
+			result = ((Component)baseEntity).GetComponent<BaseVehicleModule>();
+		}
+		return result;
+	}
+}
+
+
+public enum Notes
+{
+	A,
+	B,
+	C,
+	D,
+	E,
+	F,
+	G
+}
+
+
+using System.Collections.Generic;
+using Rust.Interpolation;
+
+public interface IGenericLerpTarget<T> where T : ISnapshot<T>, new()
+{
+	float GetInterpolationDelay(ILerpInfo.LerpType lerpType);
+
+	float GetInterpolationSmoothing();
+
+	void SetFrom(T snapshot);
+
+	T GetCurrentState();
+
+	void DebugInterpolationState(Interpolator<T>.Segment segment, List<T> entries);
+}
+
+
+using System;
+using Rust.Interpolation;
+using UnityEngine;
+
+public class GenericLerp<T> : IDisposable where T : ISnapshot<T>, new()
+{
+	private readonly Interpolator<T> interpolator;
+
+	private IGenericLerpTarget<T> target;
+
+	private static T snapshotPrototype = new T();
+
+	private static float timeOffset = 0f;
+
+	private float timeOffset0 = float.MaxValue;
+
+	private float timeOffset1 = float.MaxValue;
+
+	private float timeOffset2 = float.MaxValue;
+
+	private float timeOffset3 = float.MaxValue;
+
+	private int timeOffsetCount;
+
+	private int TimeOffsetInterval => PositionLerp.TimeOffsetInterval;
+
+	private float LerpTime => PositionLerp.LerpTime;
+
+	public GenericLerp(IGenericLerpTarget<T> target, int listCount)
+	{
+		this.target = target;
+		interpolator = new Interpolator<T>(listCount);
+	}
+
+	public void Tick()
+	{
+		if (target != null)
+		{
+			float interpolationDelay = target.GetInterpolationDelay(ILerpInfo.LerpType.Generic);
+			float interpolationSmoothing = target.GetInterpolationSmoothing();
+			Interpolator<T>.Segment segment = interpolator.Query(LerpTime, interpolationDelay, 0f, interpolationSmoothing, ref snapshotPrototype);
+			target.SetFrom(segment.tick);
+		}
+	}
+
+	public void Snapshot(T snapshot)
+	{
+		float interpolationDelay = target.GetInterpolationDelay(ILerpInfo.LerpType.Generic);
+		float interpolationSmoothing = target.GetInterpolationSmoothing();
+		float num = interpolationDelay + interpolationSmoothing + 1f;
+		float lerpTime = LerpTime;
+		timeOffset0 = Mathf.Min(timeOffset0, lerpTime - snapshot.Time);
+		timeOffsetCount++;
+		if (timeOffsetCount >= TimeOffsetInterval / 4)
+		{
+			timeOffset3 = timeOffset2;
+			timeOffset2 = timeOffset1;
+			timeOffset1 = timeOffset0;
+			timeOffset0 = float.MaxValue;
+			timeOffsetCount = 0;
+		}
+		timeOffset = Mathx.Min(timeOffset0, timeOffset1, timeOffset2, timeOffset3);
+		lerpTime = (snapshot.Time += timeOffset);
+		interpolator.Add(snapshot);
+		interpolator.Cull(lerpTime - num);
+	}
+
+	public void SnapTo(T snapshot)
+	{
+		interpolator.Clear();
+		Snapshot(snapshot);
+		target.SetFrom(snapshot);
+	}
+
+	public void SnapToNow(T snapshot)
+	{
+		snapshot.Time = LerpTime;
+		interpolator.last = snapshot;
+		Wipe();
+	}
+
+	public void SnapToEnd()
+	{
+		float interpolationDelay = target.GetInterpolationDelay(ILerpInfo.LerpType.Generic);
+		Interpolator<T>.Segment segment = interpolator.Query(LerpTime, interpolationDelay, 0f, 0f, ref snapshotPrototype);
+		target.SetFrom(segment.tick);
+		Wipe();
+	}
+
+	public void Dispose()
+	{
+		target = null;
+		interpolator.Clear();
+		timeOffset0 = float.MaxValue;
+		timeOffset1 = float.MaxValue;
+		timeOffset2 = float.MaxValue;
+		timeOffset3 = float.MaxValue;
+		timeOffsetCount = 0;
+	}
+
+	private void Wipe()
+	{
+		interpolator.Clear();
+		timeOffsetCount = 0;
+		timeOffset0 = float.MaxValue;
+		timeOffset1 = float.MaxValue;
+		timeOffset2 = float.MaxValue;
+		timeOffset3 = float.MaxValue;
+	}
+}
+
+
+public interface ISnapshot<T>
+{
+	float Time { get; set; }
+
+	void MatchValuesTo(T entry);
+
+	void Lerp(T prev, T next, float delta);
+
+	T GetNew();
+}
+
+
+using System.Collections.Generic;
+using Rust.Interpolation;
+using UnityEngine;
+
+public class Interpolator<T> where T : ISnapshot<T>, new()
+{
+	public struct Segment
+	{
+		public T tick;
+
+		public T prev;
+
+		public T next;
+	}
+
+	public List<T> list;
+
+	public T last;
+
+	public Interpolator(int listCount)
+	{
+		list = new List<T>(listCount);
+	}
+
+	public void Add(T tick)
+	{
+		last = tick;
+		list.Add(tick);
+	}
+
+	public void Cull(float beforeTime)
+	{
+		for (int i = 0; i < list.Count; i++)
+		{
+			if (list[i].Time < beforeTime)
+			{
+				list.RemoveAt(i);
+				i--;
+			}
+		}
+	}
+
+	public void Clear()
+	{
+		list.Clear();
+	}
+
+	public Segment Query(float time, float interpolation, float extrapolation, float smoothing, ref T t)
+	{
+		Segment result = default(Segment);
+		if (list.Count == 0)
+		{
+			result.prev = last;
+			result.next = last;
+			result.tick = last;
+			return result;
+		}
+		float num = time - interpolation - smoothing * 0.5f;
+		float num2 = Mathf.Min(time - interpolation, last.Time);
+		float num3 = num2 - smoothing;
+		T prev = list[0];
+		T val = last;
+		T prev2 = list[0];
+		T val2 = last;
+		foreach (T item in list)
+		{
+			if (item.Time < num3)
+			{
+				prev = item;
+			}
+			else if (val.Time >= item.Time)
+			{
+				val = item;
+			}
+			if (item.Time < num2)
+			{
+				prev2 = item;
+			}
+			else if (val2.Time >= item.Time)
+			{
+				val2 = item;
+			}
+		}
+		T @new = t.GetNew();
+		if (val.Time - prev.Time <= Mathf.Epsilon)
+		{
+			@new.Time = num3;
+			@new.MatchValuesTo(val);
+		}
+		else
+		{
+			@new.Time = num3;
+			@new.Lerp(prev, val, (num3 - prev.Time) / (val.Time - prev.Time));
+		}
+		result.prev = @new;
+		T new2 = t.GetNew();
+		if (val2.Time - prev2.Time <= Mathf.Epsilon)
+		{
+			new2.Time = num2;
+			new2.MatchValuesTo(val2);
+		}
+		else
+		{
+			new2.Time = num2;
+			new2.Lerp(prev2, val2, (num2 - prev2.Time) / (val2.Time - prev2.Time));
+		}
+		result.next = new2;
+		if (new2.Time - @new.Time <= Mathf.Epsilon)
+		{
+			result.prev = new2;
+			result.tick = new2;
+			return result;
+		}
+		if (num - new2.Time > extrapolation)
+		{
+			result.prev = new2;
+			result.tick = new2;
+			return result;
+		}
+		T new3 = t.GetNew();
+		new3.Time = num;
+		new3.Lerp(@new, new2, Mathf.Min(num - @new.Time, new2.Time + extrapolation - @new.Time) / (new2.Time - @new.Time));
+		result.tick = new3;
+		return result;
+	}
+}
+
+
+public struct Segment
+{
+	public T tick;
+
+	public T prev;
+
+	public T next;
+}
+
+
+using Rust.Interpolation;
+using UnityEngine;
+
+public struct TransformSnapshot : ISnapshot<TransformSnapshot>
+{
+	public Vector3 pos;
+
+	public Quaternion rot;
+
+	public float Time { get; set; }
+
+	public TransformSnapshot(float time, Vector3 pos, Quaternion rot)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		Time = time;
+		this.pos = pos;
+		this.rot = rot;
+	}
+
+	public void MatchValuesTo(TransformSnapshot entry)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		pos = entry.pos;
+		rot = entry.rot;
+	}
+
+	public void Lerp(TransformSnapshot prev, TransformSnapshot next, float delta)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		pos = Vector3.LerpUnclamped(prev.pos, next.pos, delta);
+		rot = Quaternion.SlerpUnclamped(prev.rot, next.rot, delta);
+	}
+
+	public TransformSnapshot GetNew()
+	{
+		return default(TransformSnapshot);
+	}
+}
+
+
+using Rust.Interpolation;
+using UnityEngine;
+
+public struct FloatSnapshot : ISnapshot<FloatSnapshot>
+{
+	public float value;
+
+	public float Time { get; set; }
+
+	public FloatSnapshot(float time, float value)
+	{
+		Time = time;
+		this.value = value;
+	}
+
+	public void MatchValuesTo(FloatSnapshot entry)
+	{
+		value = entry.value;
+	}
+
+	public void Lerp(FloatSnapshot prev, FloatSnapshot next, float delta)
+	{
+		value = Mathf.Lerp(prev.value, next.value, delta);
+	}
+
+	public FloatSnapshot GetNew()
+	{
+		return default(FloatSnapshot);
+	}
+}
+
+
+using System.Collections.Generic;
+using Rust.Ai;
+using UnityEngine;
+
+public static class AStarPath
+{
+	private static float Heuristic(IAIPathNode from, IAIPathNode to)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		return Vector3.Distance(from.Position, to.Position);
+	}
+
+	public static bool FindPath(IAIPathNode start, IAIPathNode goal, out Stack<IAIPathNode> path, out float pathCost)
+	{
+		path = null;
+		pathCost = -1f;
+		bool result = false;
+		if (start == goal)
+		{
+			return false;
+		}
+		AStarNodeList aStarNodeList = new AStarNodeList();
+		HashSet<IAIPathNode> hashSet = new HashSet<IAIPathNode>();
+		AStarNode item = new AStarNode(0f, Heuristic(start, goal), null, start);
+		aStarNodeList.Add(item);
+		while (aStarNodeList.Count > 0)
+		{
+			AStarNode aStarNode = aStarNodeList[0];
+			aStarNodeList.RemoveAt(0);
+			hashSet.Add(aStarNode.Node);
+			if (aStarNode.Satisfies(goal))
+			{
+				path = new Stack<IAIPathNode>();
+				pathCost = 0f;
+				while (aStarNode.Parent != null)
+				{
+					pathCost += aStarNode.F;
+					path.Push(aStarNode.Node);
+					aStarNode = aStarNode.Parent;
+				}
+				if (aStarNode != null)
+				{
+					path.Push(aStarNode.Node);
+				}
+				result = true;
+				break;
+			}
+			foreach (IAIPathNode item2 in aStarNode.Node.Linked)
+			{
+				if (!hashSet.Contains(item2))
+				{
+					float num = aStarNode.G + Heuristic(aStarNode.Node, item2);
+					AStarNode aStarNodeOf = aStarNodeList.GetAStarNodeOf(item2);
+					if (aStarNodeOf == null)
+					{
+						aStarNodeOf = new AStarNode(num, Heuristic(item2, goal), aStarNode, item2);
+						aStarNodeList.Add(aStarNodeOf);
+						aStarNodeList.AStarNodeSort();
+					}
+					else if (num < aStarNodeOf.G)
+					{
+						aStarNodeOf.Update(num, aStarNodeOf.H, aStarNode, item2);
+						aStarNodeList.AStarNodeSort();
+					}
+				}
+			}
+		}
+		return result;
+	}
+}
+
+
+using Rust.Ai;
+
+public class AStarNode
+{
+	public AStarNode Parent;
+
+	public float G;
+
+	public float H;
+
+	public IAIPathNode Node;
+
+	public float F => G + H;
+
+	public AStarNode(float g, float h, AStarNode parent, IAIPathNode node)
+	{
+		G = g;
+		H = h;
+		Parent = parent;
+		Node = node;
+	}
+
+	public void Update(float g, float h, AStarNode parent, IAIPathNode node)
+	{
+		G = g;
+		H = h;
+		Parent = parent;
+		Node = node;
+	}
+
+	public bool Satisfies(IAIPathNode node)
+	{
+		return Node == node;
+	}
+
+	public static bool operator <(AStarNode lhs, AStarNode rhs)
+	{
+		return lhs.F < rhs.F;
+	}
+
+	public static bool operator >(AStarNode lhs, AStarNode rhs)
+	{
+		return lhs.F > rhs.F;
+	}
+}
+
+
+using System.Collections.Generic;
+using Rust.Ai;
+
+public class AStarNodeList : List<AStarNode>
+{
+	private class AStarNodeComparer : IComparer<AStarNode>
+	{
+		int IComparer<AStarNode>.Compare(AStarNode lhs, AStarNode rhs)
+		{
+			if (lhs < rhs)
+			{
+				return -1;
+			}
+			if (lhs > rhs)
+			{
+				return 1;
+			}
+			return 0;
+		}
+	}
+
+	private readonly AStarNodeComparer comparer = new AStarNodeComparer();
+
+	public bool Contains(IAIPathNode n)
+	{
+		for (int i = 0; i < base.Count; i++)
+		{
+			AStarNode aStarNode = base[i];
+			if (aStarNode != null && aStarNode.Node.Equals(n))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public AStarNode GetAStarNodeOf(IAIPathNode n)
+	{
+		for (int i = 0; i < base.Count; i++)
+		{
+			AStarNode aStarNode = base[i];
+			if (aStarNode != null && aStarNode.Node.Equals(n))
+			{
+				return aStarNode;
+			}
+		}
+		return null;
+	}
+
+	public void AStarNodeSort()
+	{
+		Sort(comparer);
+	}
+}
+
+
+using System.Collections.Generic;
+
+private class AStarNodeComparer : IComparer<AStarNode>
+{
+	int IComparer<AStarNode>.Compare(AStarNode lhs, AStarNode rhs)
+	{
+		if (lhs < rhs)
+		{
+			return -1;
+		}
+		if (lhs > rhs)
+		{
+			return 1;
+		}
+		return 0;
+	}
+}
+
+
+using System;
+using System.Collections.Generic;
+using ConVar;
+using Facepunch;
+using Oxide.Core;
+using Rust.Ai;
+using UnityEngine;
+
+public class SimpleAIMemory
+{
+	public struct SeenInfo
+	{
+		public BaseEntity Entity;
+
+		public Vector3 Position;
+
+		public float Timestamp;
+
+		public float Danger;
+	}
+
+	public static HashSet<BasePlayer> PlayerIgnoreList = new HashSet<BasePlayer>();
+
+	[NonSerialized]
+	public List<SeenInfo> All = new List<SeenInfo>();
+
+	[NonSerialized]
+	public List<BaseEntity> Players = new List<BaseEntity>();
+
+	[NonSerialized]
+	public HashSet<BaseEntity> LOS = new HashSet<BaseEntity>();
+
+	[NonSerialized]
+	public List<BaseEntity> Targets = new List<BaseEntity>();
+
+	[NonSerialized]
+	public List<BaseEntity> Threats = new List<BaseEntity>();
+
+	[NonSerialized]
+	public List<BaseEntity> Friendlies = new List<BaseEntity>();
+
+	public void SetKnown(BaseEntity ent, BaseEntity owner, AIBrainSenses brainSenses)
+	{
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		if (Interface.CallHook("OnNpcTargetSense", (object)owner, (object)ent, (object)brainSenses) != null)
+		{
+			return;
+		}
+		IAISenses iAISenses = owner as IAISenses;
+		BasePlayer basePlayer = ent as BasePlayer;
+		if ((Object)(object)basePlayer != (Object)null && PlayerIgnoreList.Contains(basePlayer))
+		{
+			return;
+		}
+		bool flag = false;
+		if (iAISenses != null && iAISenses.IsThreat(ent))
+		{
+			flag = true;
+			if (brainSenses != null)
+			{
+				brainSenses.LastThreatTimestamp = Time.realtimeSinceStartup;
+			}
+		}
+		for (int i = 0; i < All.Count; i++)
+		{
+			if ((Object)(object)All[i].Entity == (Object)(object)ent)
+			{
+				SeenInfo value = All[i];
+				value.Position = ((Component)ent).transform.position;
+				value.Timestamp = Mathf.Max(Time.realtimeSinceStartup, value.Timestamp);
+				All[i] = value;
+				return;
+			}
+		}
+		if ((Object)(object)basePlayer != (Object)null)
+		{
+			if (AI.ignoreplayers && !basePlayer.IsNpc)
+			{
+				return;
+			}
+			Players.Add(ent);
+		}
+		if (iAISenses != null)
+		{
+			if (iAISenses.IsTarget(ent))
+			{
+				Targets.Add(ent);
+			}
+			if (iAISenses.IsFriendly(ent))
+			{
+				Friendlies.Add(ent);
+			}
+			if (flag)
+			{
+				Threats.Add(ent);
+			}
+		}
+		All.Add(new SeenInfo
+		{
+			Entity = ent,
+			Position = ((Component)ent).transform.position,
+			Timestamp = Time.realtimeSinceStartup
+		});
+	}
+
+	public void SetLOS(BaseEntity ent, bool flag)
+	{
+		if (!((Object)(object)ent == (Object)null))
+		{
+			if (flag)
+			{
+				LOS.Add(ent);
+			}
+			else
+			{
+				LOS.Remove(ent);
+			}
+		}
+	}
+
+	public bool IsLOS(BaseEntity ent)
+	{
+		return LOS.Contains(ent);
+	}
+
+	public bool IsPlayerKnown(BasePlayer player)
+	{
+		return Players.Contains(player);
+	}
+
+	public void Forget(float secondsOld)
+	{
+		for (int i = 0; i < All.Count; i++)
+		{
+			if (!(Time.realtimeSinceStartup - All[i].Timestamp >= secondsOld))
+			{
+				continue;
+			}
+			BaseEntity entity = All[i].Entity;
+			if ((Object)(object)entity != (Object)null)
+			{
+				if (entity is BasePlayer)
+				{
+					Players.Remove(entity);
+				}
+				Targets.Remove(entity);
+				Threats.Remove(entity);
+				Friendlies.Remove(entity);
+				LOS.Remove(entity);
+			}
+			All.RemoveAt(i);
+			i--;
+		}
+	}
+
+	public static void AddIgnorePlayer(BasePlayer player)
+	{
+		if (!PlayerIgnoreList.Contains(player))
+		{
+			PlayerIgnoreList.Add(player);
+		}
+	}
+
+	public static void RemoveIgnorePlayer(BasePlayer player)
+	{
+		PlayerIgnoreList.Remove(player);
+	}
+
+	public static void ClearIgnoredPlayers()
+	{
+		PlayerIgnoreList.Clear();
+	}
+
+	public static string GetIgnoredPlayers()
+	{
+		TextTable val = Pool.Get<TextTable>();
+		try
+		{
+			val.AddColumns(new string[2] { "Name", "Steam ID" });
+			foreach (BasePlayer playerIgnore in PlayerIgnoreList)
+			{
+				val.AddRow(new string[2]
+				{
+					playerIgnore.displayName,
+					playerIgnore.userID.ToString()
+				});
+			}
+			return ((object)val).ToString();
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+}
+
+
+using UnityEngine;
+
+public struct SeenInfo
+{
+	public BaseEntity Entity;
+
+	public Vector3 Position;
+
+	public float Timestamp;
+
+	public float Danger;
+}
+
+
+using System.Collections;
+using Rust.Ai;
+using UnityEngine;
+
+public class CoverPoint
+{
+	public enum CoverType
+	{
+		Full,
+		Partial,
+		None
+	}
+
+	public CoverType NormalCoverType;
+
+	public bool IsDynamic;
+
+	public Transform SourceTransform;
+
+	private Vector3 _staticPosition;
+
+	private Vector3 _staticNormal;
+
+	public CoverPointVolume Volume { get; private set; }
+
+	public Vector3 Position
+	{
+		get
+		{
+			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			if (IsDynamic && (Object)(object)SourceTransform != (Object)null)
+			{
+				return SourceTransform.position;
+			}
+			return _staticPosition;
+		}
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_staticPosition = value;
+		}
+	}
+
+	public Vector3 Normal
+	{
+		get
+		{
+			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			if (IsDynamic && (Object)(object)SourceTransform != (Object)null)
+			{
+				return SourceTransform.forward;
+			}
+			return _staticNormal;
+		}
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_staticNormal = value;
+		}
+	}
+
+	public BaseEntity ReservedFor { get; set; }
+
+	public bool IsReserved => (Object)(object)ReservedFor != (Object)null;
+
+	public bool IsCompromised { get; set; }
+
+	public float Score { get; set; }
+
+	public bool IsValidFor(BaseEntity entity)
+	{
+		if (!IsCompromised)
+		{
+			if (!((Object)(object)ReservedFor == (Object)null))
+			{
+				return (Object)(object)ReservedFor == (Object)(object)entity;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public CoverPoint(CoverPointVolume volume, float score)
+	{
+		Volume = volume;
+		Score = score;
+	}
+
+	public void CoverIsCompromised(float cooldown)
+	{
+		if (!IsCompromised && (Object)(object)Volume != (Object)null)
+		{
+			((MonoBehaviour)Volume).StartCoroutine(StartCooldown(cooldown));
+		}
+	}
+
+	private IEnumerator StartCooldown(float cooldown)
+	{
+		IsCompromised = true;
+		yield return CoroutineEx.waitForSeconds(cooldown);
+		IsCompromised = false;
+	}
+
+	public bool ProvidesCoverFromPoint(Vector3 point, float arcThreshold)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = Position - point;
+		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		return Vector3.Dot(Normal, normalized) < arcThreshold;
+	}
+}
+
+
+public enum CoverType
+{
+	Full,
+	Partial,
+	None
+}
+
+
+using UnityEngine;
+
+[RequireComponent(typeof(Collider))]
+public class CoverPointBlockerVolume : MonoBehaviour
+{
+}
+
+
+using System.Collections.Generic;
+using Rust.Ai;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class CoverPointVolume : MonoBehaviour, IServerComponent
+{
+	internal enum CoverType
+	{
+		None,
+		Partial,
+		Full
+	}
+
+	public float DefaultCoverPointScore = 1f;
+
+	public float CoverPointRayLength = 1f;
+
+	public LayerMask CoverLayerMask;
+
+	public Transform BlockerGroup;
+
+	public Transform ManualCoverPointGroup;
+
+	[ServerVar(Help = "cover_point_sample_step_size defines the size of the steps we do horizontally for the cover point volume's cover point generation (smaller steps gives more accurate cover points, but at a higher processing cost). (default: 6.0)")]
+	public static float cover_point_sample_step_size = 6f;
+
+	[ServerVar(Help = "cover_point_sample_step_height defines the height of the steps we do vertically for the cover point volume's cover point generation (smaller steps gives more accurate cover points, but at a higher processing cost). (default: 2.0)")]
+	public static float cover_point_sample_step_height = 2f;
+
+	public readonly List<CoverPoint> CoverPoints = new List<CoverPoint>();
+
+	private readonly List<CoverPointBlockerVolume> _coverPointBlockers = new List<CoverPointBlockerVolume>();
+
+	private float _dynNavMeshBuildCompletionTime = -1f;
+
+	private int _genAttempts;
+
+	private Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+
+	public bool repeat => true;
+
+	public float? ExecuteUpdate(float deltaTime, float nextInterval)
+	{
+		if (CoverPoints.Count == 0)
+		{
+			if (_dynNavMeshBuildCompletionTime < 0f)
+			{
+				if ((Object)(object)SingletonComponent<DynamicNavMesh>.Instance == (Object)null || !((Behaviour)SingletonComponent<DynamicNavMesh>.Instance).enabled || !SingletonComponent<DynamicNavMesh>.Instance.IsBuilding)
+				{
+					_dynNavMeshBuildCompletionTime = Time.realtimeSinceStartup;
+				}
+			}
+			else if (_genAttempts < 4 && Time.realtimeSinceStartup - _dynNavMeshBuildCompletionTime > 0.25f)
+			{
+				GenerateCoverPoints(null);
+				if (CoverPoints.Count != 0)
+				{
+					return null;
+				}
+				_dynNavMeshBuildCompletionTime = Time.realtimeSinceStartup;
+				_genAttempts++;
+				if (_genAttempts >= 4)
+				{
+					Object.Destroy((Object)(object)((Component)this).gameObject);
+					return null;
+				}
+			}
+		}
+		return 1f + Random.value * 2f;
+	}
+
+	[ContextMenu("Clear Cover Points")]
+	private void ClearCoverPoints()
+	{
+		CoverPoints.Clear();
+		_coverPointBlockers.Clear();
+	}
+
+	public Bounds GetBounds()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 center = ((Bounds)(ref bounds)).center;
+		if (Mathf.Approximately(((Vector3)(ref center)).sqrMagnitude, 0f))
+		{
+			bounds = new Bounds(((Component)this).transform.position, ((Component)this).transform.localScale);
+		}
+		return bounds;
+	}
+
+	[ContextMenu("Pre-Generate Cover Points")]
+	public void PreGenerateCoverPoints()
+	{
+		GenerateCoverPoints(null);
+	}
+
+	[ContextMenu("Convert to Manual Cover Points")]
+	public void ConvertToManualCoverPoints()
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		foreach (CoverPoint coverPoint in CoverPoints)
+		{
+			ManualCoverPoint manualCoverPoint = new GameObject("MCP").AddComponent<ManualCoverPoint>();
+			((Component)manualCoverPoint).transform.localPosition = Vector3.zero;
+			((Component)manualCoverPoint).transform.position = coverPoint.Position;
+			manualCoverPoint.Normal = coverPoint.Normal;
+			manualCoverPoint.NormalCoverType = coverPoint.NormalCoverType;
+			manualCoverPoint.Volume = this;
+		}
+	}
+
+	public void GenerateCoverPoints(Transform coverPointGroup)
+	{
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
+		_ = Time.realtimeSinceStartup;
+		ClearCoverPoints();
+		if ((Object)(object)ManualCoverPointGroup == (Object)null)
+		{
+			ManualCoverPointGroup = coverPointGroup;
+		}
+		if ((Object)(object)ManualCoverPointGroup == (Object)null)
+		{
+			ManualCoverPointGroup = ((Component)this).transform;
+		}
+		if (ManualCoverPointGroup.childCount > 0)
+		{
+			ManualCoverPoint[] componentsInChildren = ((Component)ManualCoverPointGroup).GetComponentsInChildren<ManualCoverPoint>();
+			for (int i = 0; i < componentsInChildren.Length; i++)
+			{
+				CoverPoint item = componentsInChildren[i].ToCoverPoint(this);
+				CoverPoints.Add(item);
+			}
+		}
+		if (_coverPointBlockers.Count == 0 && (Object)(object)BlockerGroup != (Object)null)
+		{
+			CoverPointBlockerVolume[] componentsInChildren2 = ((Component)BlockerGroup).GetComponentsInChildren<CoverPointBlockerVolume>();
+			if (componentsInChildren2 != null && componentsInChildren2.Length != 0)
+			{
+				_coverPointBlockers.AddRange(componentsInChildren2);
+			}
+		}
+		NavMeshHit val = default(NavMeshHit);
+		if (CoverPoints.Count != 0 || !NavMesh.SamplePosition(((Component)this).transform.position, ref val, ((Component)this).transform.localScale.y * cover_point_sample_step_height, -1))
+		{
+			return;
+		}
+		Vector3 position = ((Component)this).transform.position;
+		Vector3 val2 = ((Component)this).transform.lossyScale * 0.5f;
+		NavMeshHit info = default(NavMeshHit);
+		for (float num = position.x - val2.x + 1f; num < position.x + val2.x - 1f; num += cover_point_sample_step_size)
+		{
+			for (float num2 = position.z - val2.z + 1f; num2 < position.z + val2.z - 1f; num2 += cover_point_sample_step_size)
+			{
+				for (float num3 = position.y - val2.y; num3 < position.y + val2.y; num3 += cover_point_sample_step_height)
+				{
+					if (!NavMesh.FindClosestEdge(new Vector3(num, num3, num2), ref info, ((NavMeshHit)(ref val)).mask))
+					{
+						continue;
+					}
+					((NavMeshHit)(ref info)).position = new Vector3(((NavMeshHit)(ref info)).position.x, ((NavMeshHit)(ref info)).position.y + 0.5f, ((NavMeshHit)(ref info)).position.z);
+					bool flag = true;
+					foreach (CoverPoint coverPoint2 in CoverPoints)
+					{
+						Vector3 val3 = coverPoint2.Position - ((NavMeshHit)(ref info)).position;
+						if (((Vector3)(ref val3)).sqrMagnitude < cover_point_sample_step_size * cover_point_sample_step_size)
+						{
+							flag = false;
+							break;
+						}
+					}
+					if (flag)
+					{
+						CoverPoint coverPoint = CalculateCoverPoint(info);
+						if (coverPoint != null)
+						{
+							CoverPoints.Add(coverPoint);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private CoverPoint CalculateCoverPoint(NavMeshHit info)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		RaycastHit rayHit;
+		CoverType coverType = ProvidesCoverInDir(new Ray(((NavMeshHit)(ref info)).position, -((NavMeshHit)(ref info)).normal), CoverPointRayLength, out rayHit);
+		if (coverType == CoverType.None)
+		{
+			return null;
+		}
+		CoverPoint coverPoint = new CoverPoint(this, DefaultCoverPointScore)
+		{
+			Position = ((NavMeshHit)(ref info)).position,
+			Normal = -((NavMeshHit)(ref info)).normal
+		};
+		switch (coverType)
+		{
+		case CoverType.Full:
+			coverPoint.NormalCoverType = CoverPoint.CoverType.Full;
+			break;
+		case CoverType.Partial:
+			coverPoint.NormalCoverType = CoverPoint.CoverType.Partial;
+			break;
+		}
+		return coverPoint;
+	}
+
+	internal CoverType ProvidesCoverInDir(Ray ray, float maxDistance, out RaycastHit rayHit)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		rayHit = default(RaycastHit);
+		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).origin))
+		{
+			return CoverType.None;
+		}
+		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).direction))
+		{
+			return CoverType.None;
+		}
+		if (((Ray)(ref ray)).direction == Vector3.zero)
+		{
+			return CoverType.None;
+		}
+		((Ray)(ref ray)).origin = ((Ray)(ref ray)).origin + PlayerEyes.EyeOffset;
+		if (Physics.Raycast(((Ray)(ref ray)).origin, ((Ray)(ref ray)).direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
+		{
+			return CoverType.Full;
+		}
+		((Ray)(ref ray)).origin = ((Ray)(ref ray)).origin + PlayerEyes.DuckOffset;
+		if (Physics.Raycast(((Ray)(ref ray)).origin, ((Ray)(ref ray)).direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
+		{
+			return CoverType.Partial;
+		}
+		return CoverType.None;
+	}
+
+	public bool Contains(Vector3 point)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		Bounds val = default(Bounds);
+		((Bounds)(ref val))..ctor(((Component)this).transform.position, ((Component)this).transform.localScale);
+		return ((Bounds)(ref val)).Contains(point);
+	}
+}
+
+
+internal enum CoverType
+{
+	None,
+	Partial,
+	Full
+}
+
+
+using Rust.Ai;
+using UnityEngine;
+
+public class ManualCoverPoint : FacepunchBehaviour
+{
+	public bool IsDynamic;
+
+	public float Score = 2f;
+
+	public CoverPointVolume Volume;
+
+	public Vector3 Normal;
+
+	public CoverPoint.CoverType NormalCoverType;
+
+	public Vector3 Position => ((Component)this).transform.position;
+
+	public float DirectionMagnitude
+	{
+		get
+		{
+			if ((Object)(object)Volume != (Object)null)
+			{
+				return Volume.CoverPointRayLength;
+			}
+			return 1f;
+		}
+	}
+
+	private void Awake()
+	{
+		if ((Object)(object)((Component)this).transform.parent != (Object)null)
+		{
+			Volume = ((Component)((Component)this).transform.parent).GetComponent<CoverPointVolume>();
+		}
+	}
+
+	public CoverPoint ToCoverPoint(CoverPointVolume volume)
+	{
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		Volume = volume;
+		if (IsDynamic)
+		{
+			CoverPoint obj = new CoverPoint(Volume, Score)
+			{
+				IsDynamic = true,
+				SourceTransform = ((Component)this).transform,
+				NormalCoverType = NormalCoverType
+			};
+			Transform transform = ((Component)this).transform;
+			obj.Position = ((transform != null) ? transform.position : Vector3.zero);
+			return obj;
+		}
+		Vector3 val = ((Component)this).transform.rotation * Normal;
+		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		return new CoverPoint(Volume, Score)
+		{
+			IsDynamic = false,
+			Position = ((Component)this).transform.position,
+			Normal = normalized,
+			NormalCoverType = NormalCoverType
+		};
+	}
+}
+
+
+using System;
+using Rust;
+using Rust.Ai;
+using UnityEngine;
+
+[DefaultExecutionOrder(-102)]
+public class AiManagedAgent : FacepunchBehaviour, IServerComponent
+{
+	[Tooltip("TODO: Replace with actual agent type id on the NavMeshAgent when we upgrade to 5.6.1 or above.")]
+	public int AgentTypeIndex;
+
+	[NonSerialized]
+	[ReadOnly]
+	public Vector2i NavmeshGridCoord;
+
+	private bool isRegistered;
+
+	private void OnEnable()
+	{
+		isRegistered = false;
+		if ((Object)(object)SingletonComponent<AiManager>.Instance == (Object)null || !((Behaviour)SingletonComponent<AiManager>.Instance).enabled || AiManager.nav_disable)
+		{
+			((Behaviour)this).enabled = false;
+		}
+	}
+
+	private void DelayedRegistration()
+	{
+		if (!isRegistered)
+		{
+			isRegistered = true;
+		}
+	}
+
+	private void OnDisable()
+	{
+		if (!Application.isQuitting && !((Object)(object)SingletonComponent<AiManager>.Instance == (Object)null) && ((Behaviour)SingletonComponent<AiManager>.Instance).enabled)
+		{
+			_ = isRegistered;
+		}
+	}
+}
+
+
+using System;
 using Rust;
 using Rust.Ai;
 using UnityEngine;
@@ -8144,8 +10674,8 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	[SerializeField]
 	private NavMeshAgent agent;
 
-	[Header("Speed")]
 	[SerializeField]
+	[Header("Speed")]
 	private float sneakSpeed = 0.6f;
 
 	[SerializeField]
@@ -11350,8 +13880,8 @@ public class UI_RustButtonGroup : MonoBehaviour
 	[SerializeField]
 	protected bool _unpressSiblings;
 
-	[Tooltip("This button will appear 'pressed' at the beginning.")]
 	[SerializeField]
+	[Tooltip("This button will appear 'pressed' at the beginning.")]
 	private RustButton _defaultButton;
 
 	[SerializeField]
@@ -12113,6 +14643,10 @@ public class UI_MenuManager : SingletonComponent<UI_MenuManager>
 	private Transform _genericPopupParent;
 
 	[SerializeField]
+	[Header("Drops")]
+	private UI_DropsController _dropsController;
+
+	[SerializeField]
 	[Header("Background Image Settings")]
 	private CanvasGroup _homeVideoOverlay;
 
@@ -12226,6 +14760,23 @@ public class UI_DemoWindowButton : MonoBehaviour
 }
 
 
+using UnityEngine;
+
+public class UI_DropsController : FacepunchBehaviour
+{
+	[SerializeField]
+	private GameObject _dropPrefab;
+
+	[SerializeField]
+	private Transform _dropsParent;
+
+	[ClientVar(Saved = true)]
+	public static bool show_placeholder_drop_data;
+
+	private const int MAX_DROPS = 3;
+}
+
+
 using Facepunch.Flexbox;
 using Rust.UI;
 using UnityEngine;
@@ -12233,8 +14784,8 @@ using UnityEngine.UI;
 
 public class UI_Hero_InfoBox : FacepunchBehaviour
 {
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	protected RustText _title;
 
 	[SerializeField]
@@ -12334,8 +14885,8 @@ using UnityEngine.Video;
 
 public class UI_Hero_Store : UI_Hero_InfoBox
 {
-	[Header("Hero Store")]
 	[SerializeField]
+	[Header("Hero Store")]
 	private VideoPlayer _video;
 
 	[SerializeField]
@@ -12356,8 +14907,8 @@ public class UI_Hero_Store : UI_Hero_InfoBox
 	[SerializeField]
 	private List<Image> _progressBarHolders;
 
-	[Header("On Hover Animation")]
 	[SerializeField]
+	[Header("On Hover Animation")]
 	private CanvasGroup _menuBlurGroup;
 
 	[SerializeField]
@@ -12547,12 +15098,12 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_Window _shockbyteWindow;
 
-	[SerializeField]
 	[Header("Categories")]
+	[SerializeField]
 	private List<ServerBrowserCategoryData> _categories;
 
-	[Header("Headers")]
 	[SerializeField]
+	[Header("Headers")]
 	private List<ServerBrowserHeader> _headers;
 
 	[Header("Filters")]
@@ -12794,8 +15345,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private GameObject _queueObject;
 
-	[Header("References - Favourites")]
 	[SerializeField]
+	[Header("References - Favourites")]
 	private RustButton _favouritesButton;
 
 	[SerializeField]
@@ -12804,8 +15355,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private RectTransform _favouritesSpawnPoint;
 
-	[Header("References - Styles")]
 	[SerializeField]
+	[Header("References - Styles")]
 	private StyleAsset _evenStyle;
 
 	[SerializeField]
@@ -12814,8 +15365,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private bool _joinOnClick;
 
 	public static Phrase LastJoinedPhrase = (Phrase)(object)new TokenisedPhrase("serverentry.lastplayed.ago", "{0} ago");
@@ -13005,8 +15556,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[Header("Info Box References")]
 	[SerializeField]
+	[Header("Info Box References")]
 	private RustText _playerCount;
 
 	[SerializeField]
@@ -13168,8 +15719,8 @@ public class UI_MenuNavigationGroup : UI_RustButtonGroup
 		public string Path;
 	}
 
-	[SerializeField]
 	[Header("Navigation Groups (IGNORE BUTTON GROUPS - Just Add Here)")]
+	[SerializeField]
 	private List<TabButton> _navigationGroups = new List<TabButton>();
 }
 
@@ -13344,8 +15895,8 @@ public class UI_SteamInventoryCraftingModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	private MaterialGroup clothGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject craftOK;
 
 	[SerializeField]
@@ -13486,8 +16037,8 @@ public class UI_SteamInventoryPlayerItemModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	protected UI_SteamInventoryCraftingModal.MaterialGroup clothGroup;
 
-	[Header("Breakdown Controls")]
 	[SerializeField]
+	[Header("Breakdown Controls")]
 	private GameObject breakdownButtonGroup;
 
 	[SerializeField]
@@ -13555,13 +16106,16 @@ public class UI_SteamInventoryCrafting : MonoBehaviour
 
 	[Space]
 	[SerializeField]
-	private Transform craftingButtonParent;
+	private GameObject craftingLoading;
+
+	[SerializeField]
+	private CanvasGroup craftingButtonParent;
 
 	[SerializeField]
 	private GameObject craftingButtonPrefab;
 
 	[SerializeField]
-	private UI_SteamInventoryNewItemModal newItemModal;
+	public UI_SteamInventoryNewItemModal newItemModal;
 
 	[SerializeField]
 	private UI_SteamInventoryCraftingModal craftingModal;
@@ -13706,8 +16260,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private RustButton rightArrowButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureWidget[] gestureWidgets;
 
 	[SerializeField]
@@ -13719,8 +16273,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform wheelCenter;
 
 	[SerializeField]
@@ -13729,12 +16283,12 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -13753,8 +16307,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Canvas buttonListCanvas;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject hoveredGestureTexts;
 
 	[SerializeField]
@@ -13776,8 +16330,8 @@ public class UI_SettingsGestureWidget : UI_SettingsGestureDraggable
 	[SerializeField]
 	private StyleAsset emptyStyle;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Image gestureIcon;
 
 	[SerializeField]
@@ -14325,8 +16879,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private CoverVideo tooltipVideo;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private ScrollRect scrollRect;
 
 	[SerializeField]
@@ -14547,8 +17101,8 @@ public class UI_StoreCart : UI_Window
 
 	public static readonly Phrase CartPhrase = new Phrase("store.cart.items", "Cart ({0})");
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private StyleAsset emptyStyle;
 
 	[SerializeField]
@@ -14569,8 +17123,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform itemParent;
 
 	[SerializeField]
@@ -14643,9 +17197,13 @@ public static class PriceFormatter
 
 
 using Rust.UI.MainMenu;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_StoreDLCTab : UI_StoreTabBase
 {
+	[SerializeField]
+	private RectMask2D mask;
 }
 
 
@@ -14654,8 +17212,8 @@ using UnityEngine;
 
 public class UI_StoreFeaturedTab : UI_StoreTabBase
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreCountdown countdown;
 }
 
@@ -14681,8 +17239,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 		public RustButton Button;
 	}
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private ScrollRect scrollRect;
 
 	[SerializeField]
@@ -14722,8 +17280,8 @@ using UnityEngine.UI;
 
 public class UI_StoreLimitedTab : UI_StoreTabBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemGrid itemGrid;
 
 	[SerializeField]
@@ -14959,6 +17517,9 @@ public class UI_StoreCarrouselButton : MonoBehaviour
 
 	public RustText variantText;
 
+	[Space]
+	public GameObject skinViewerGroup;
+
 	public void UpdateGauge(float fillAmount)
 	{
 		if (fillAmount != 0f && !gaugeParent.activeInHierarchy)
@@ -14978,18 +17539,22 @@ public class UI_StoreCarrouselButton : MonoBehaviour
 
 	public void Init(UI_StoreItemOverlayPage.PageElement element, UI_StoreItemOverlayPage page)
 	{
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		if (element.Name != null && !string.IsNullOrEmpty(element.Name.english))
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		if (!element.UseSkinViewer)
 		{
-			titleText.SetPhrase(element.Name, Array.Empty<object>());
+			if (element.Name != null && !string.IsNullOrEmpty(element.Name.english))
+			{
+				titleText.SetPhrase(element.Name, Array.Empty<object>());
+			}
+			else if ((Object)(object)element.Item != (Object)null)
+			{
+				titleText.SetPhrase(element.Item.displayName, Array.Empty<object>());
+			}
 		}
-		else if ((Object)(object)element.Item != (Object)null)
-		{
-			titleText.SetPhrase(element.Item.displayName, Array.Empty<object>());
-		}
+		skinViewerGroup.SetActive(element.UseSkinViewer);
 		videoIcon.SetActive(element.isVideo);
 		Sprite val = (((Object)(object)element.FullscreenSprite == (Object)null) ? element.GallerySprite : element.FullscreenSprite);
 		Sprite val2 = null;
@@ -15024,8 +17589,8 @@ public class UI_StoreCartButtonAnimation : BaseMonoBehaviour
 	[SerializeField]
 	private GameObject addToCartGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private FlexElement inCartGroup;
 
 	[SerializeField]
@@ -15054,8 +17619,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private RustText subtitleText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private CoverImage takeoverImage;
 
 	[SerializeField]
@@ -15068,9 +17633,9 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private Image gaugeImage;
 
-	[SerializeField]
 	[Space]
 	[Header("Animation")]
+	[SerializeField]
 	private CanvasGroup canvasGroup;
 }
 
@@ -15083,8 +17648,8 @@ using UnityEngine.UI;
 
 public class UI_StoreCheckoutResultPage : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private FlexTransition crossFadeTransition;
 
 	[SerializeField]
@@ -15099,15 +17664,15 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RustText itemSubtitleText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreCheckoutResultButton carrouselButtonPrefab;
 
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -15135,8 +17700,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	private UI_StoreTakeover localTakeovers;
 
 	[SerializeField]
-	[Header("Skin Viewer")]
 	[Space]
+	[Header("Skin Viewer")]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -15297,8 +17862,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private StoreSource source;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -15476,6 +18041,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 
 		public Sprite ItemIcon;
 
+		public bool UseSkinViewer;
+
 		public Phrase GetTitle()
 		{
 			if (Name != null && !string.IsNullOrEmpty(Name.english))
@@ -15522,8 +18089,11 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
-	[Space]
+	[SerializeField]
 	[Header("Page Content")]
+	[Space]
+	private CanvasGroup bodyCanvasGroup;
+
 	[SerializeField]
 	private FlexTransition crossFadeTransition;
 
@@ -15564,6 +18134,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 	private Transform galleryParent;
 
 	[SerializeField]
+	private Canvas galleryCanvas;
+
+	[SerializeField]
 	private CanvasGroup arrowButtons;
 
 	[SerializeField]
@@ -15589,10 +18162,17 @@ public class UI_StoreItemOverlayPage : UI_Window
 	private float autoCycleInterval = 10f;
 
 	[SerializeField]
+	[Header("Skin Viewer")]
+	private UI_SkinViewerControls skinViewerControls;
+
+	[SerializeField]
+	private CoverImage skinViewerImage;
+
+	[SerializeField]
 	private UI_StoreCarrouselButton carouselButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 }
 
@@ -15624,6 +18204,8 @@ public struct PageElement
 	public Phrase ItemName;
 
 	public Sprite ItemIcon;
+
+	public bool UseSkinViewer;
 
 	public Phrase GetTitle()
 	{
@@ -15706,9 +18288,9 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	public CoverImage coverImage;
 
+	[Header("Header")]
 	[Space]
 	[SerializeField]
-	[Header("Header")]
 	private GameObject headerTextGroup;
 
 	[SerializeField]
@@ -15721,6 +18303,9 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	private UI_StoreAddCartButton cartButton;
 
 	[Space]
+	[SerializeField]
+	private GameObject ownedOverlay;
+
 	[SerializeField]
 	private GameObject ownedTag;
 
@@ -15967,8 +18552,8 @@ using UnityEngine;
 
 public class UI_Popup : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform buttonsParent;
 
 	[SerializeField]
@@ -16005,8 +18590,8 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	protected CanvasGroup _group;
 
-	[Header("Window - Escape Capture")]
 	[SerializeField]
+	[Header("Window - Escape Capture")]
 	protected UIEscapeCapture _escape;
 
 	[Header("Window - Flex Element")]
@@ -16086,7 +18671,7 @@ public class UI_Window : BaseMonoBehaviour
 	protected virtual void OnOpened()
 	{
 		this.OnOpen?.Invoke();
-		if (Object.op_Implicit((Object)(object)_openTransition))
+		if ((Object)(object)_openTransition != (Object)null)
 		{
 			if (_oneShotTransition)
 			{

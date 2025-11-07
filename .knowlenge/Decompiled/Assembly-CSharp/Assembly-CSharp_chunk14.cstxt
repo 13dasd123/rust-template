@@ -11666,10 +11666,10 @@ public enum FishingTag
 
 using UnityEngine;
 
-[RequireComponent(typeof(PostOpaqueDepth))]
 [RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(PostOpaqueDepth))]
 public class WaterCamera : MonoBehaviour
 {
 }
@@ -12543,6 +12543,7 @@ public class WaterSystem : MonoBehaviour
 		else
 		{
 			Array.Fill(waterHeight, OceanLevel, 0, pos.Length);
+			Array.Fill(shore, 0f, 0, posUV.Length);
 		}
 	}
 
@@ -13146,8 +13147,8 @@ public delegate void FillCommandBuffer(CommandBuffer cb);
 
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
 public class CommandBufferManager : MonoBehaviour
 {
 }
@@ -13156,7 +13157,7 @@ public class CommandBufferManager : MonoBehaviour
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class DeferredDecal : MonoBehaviour
+public class DeferredDecal : MonoBehaviour, IClientComponent
 {
 	public Mesh mesh;
 
@@ -13271,9 +13272,9 @@ public struct ScreenSpaceRefractionParams
 
 using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(Camera))]
+[ExecuteInEditMode]
 public class DeferredExtension : MonoBehaviour
 {
 	public ExtendGBufferParams extendGBuffer = ExtendGBufferParams.Default;
@@ -13305,8 +13306,8 @@ public class DeferredExtensionMesh : MonoBehaviour
 using UnityEngine;
 
 [RequireComponent(typeof(CommandBufferManager))]
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
 public class DeferredIndirectLightingPass : MonoBehaviour
 {
 }
@@ -13758,8 +13759,8 @@ public class DeferredMeshDecalRenderer : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(Camera))]
 public class DeployGuideCamera : SingletonComponent<DeployGuideCamera>
 {
 	public DeployGuideMaterial GoodMaterial;
@@ -13962,8 +13963,8 @@ public class OceanParameters
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(DeferredIndirectLightingPass))]
+[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
 public class SpatialEnvironmentVolumePass : MonoBehaviour
 {
@@ -14027,8 +14028,8 @@ public static class GraphicsMemory
 
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 public class Impostor : MonoBehaviour, IClientComponent, IPrefabPreProcess
 {
@@ -14648,8 +14649,8 @@ public class ObjectMotionVectorFix : MonoBehaviour
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(CommandBufferManager))]
+[ExecuteInEditMode]
 public class PostOpaqueDepth : MonoBehaviour
 {
 	public RenderTexture postOpaqueDepth;
@@ -15977,8 +15978,8 @@ public class VolumeCloudsConfig : ScriptableObject
 
 	public float CurlNoiseStrength = 50f;
 
-	[Header("Density")]
 	[Range(0f, 1f)]
+	[Header("Density")]
 	public float DensityScale = 0.05f;
 
 	[Range(0f, 1f)]
@@ -16043,8 +16044,8 @@ public class VolumeCloudsConfig : ScriptableObject
 	[Range(0f, 3f)]
 	public float AmbientScatterContrast = 1f;
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float CoverageScale = 1f;
 
 	[Range(0f, 1f)]
@@ -16385,8 +16386,8 @@ public class ClothWindModify : FacepunchBehaviour
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(WindZone))]
+[ExecuteInEditMode]
 public class WindZoneEx : MonoBehaviour
 {
 }
@@ -16394,8 +16395,8 @@ public class WindZoneEx : MonoBehaviour
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(WindZone))]
+[ExecuteInEditMode]
 public class WindZoneExManager : MonoBehaviour
 {
 	private enum TestMode
@@ -16475,8 +16476,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 	{
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	[ClientVar(Name = "pulse")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static void ConVar_Pulse(Arg args)
 	{
 	}
@@ -16516,7 +16517,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				ConVar.Server.queryport = Math.Max(ConVar.Server.port, RCon.Port) + 1;
 			}
-			return new ServerParameters("rust", "Rust", 2603.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
+			return new ServerParameters("rust", "Rust", 2604.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
 		}
 	}
 
@@ -20179,7 +20180,7 @@ public class ConnectionAuth : MonoBehaviour
 			Reject(connection, "Invalid SteamID");
 			return;
 		}
-		if (connection.protocol != 2603)
+		if (connection.protocol != 2604)
 		{
 			if (!DeveloperList.Contains(connection.userid))
 			{
@@ -23476,7 +23477,7 @@ public static class NexusServer
 		try
 		{
 			_database = new NexusDB();
-			((Database)_database).Open($"{ConVar.Server.rootFolder}/nexus.{272}.db", true);
+			((Database)_database).Open($"{ConVar.Server.rootFolder}/nexus.{273}.db", true);
 			_database.Initialize();
 		}
 		catch (Exception ex2)
@@ -24221,7 +24222,7 @@ public static class NexusServer
 		try
 		{
 			int valueOrDefault = (World.Config?.JsonString?.GetHashCode()).GetValueOrDefault();
-			string key = $"{2603}##{272}##{World.Name}##{World.Size}##{World.Seed}##{World.Salt}##{Nexus.mapImageScale}##{valueOrDefault}##{5}";
+			string key = $"{2604}##{273}##{World.Name}##{World.Size}##{World.Seed}##{World.Salt}##{Nexus.mapImageScale}##{valueOrDefault}##{5}";
 			if (!force && (await ZoneClient.CheckUploadedMap()).Key == key)
 			{
 				Debug.Log((object)"Nexus already has this map's image uploaded, will not render and upload again");
@@ -24249,7 +24250,7 @@ public static class NexusServer
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			if (packet.protocol != 272)
+			if (packet.protocol != 273)
 			{
 				Debug.LogWarning((object)"Received a nexus message with wrong protocol, ignoring");
 				return;
@@ -24294,7 +24295,7 @@ public static class NexusServer
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		Packet val = Pool.Get<Packet>();
-		val.protocol = 272u;
+		val.protocol = 273u;
 		val.sourceZone = ZoneClient.Zone.ZoneId;
 		val.request = request;
 		return SendPacket(id, val, toZoneKey, ttl);
@@ -24305,7 +24306,7 @@ public static class NexusServer
 		try
 		{
 			Packet val = Pool.Get<Packet>();
-			val.protocol = 272u;
+			val.protocol = 273u;
 			val.sourceZone = ZoneClient.Zone.ZoneId;
 			val.response = response;
 			await SendPacket(Uuid.Generate(), val, toZoneKey, ttl);
@@ -25227,7 +25228,7 @@ public class NexusServerLogger : INexusLogger
 
 public static class NexusVariables
 {
-	public static readonly string Blueprints = $"blueprints.{5}";
+	public static readonly string Blueprints = $"blueprints.{7}";
 }
 
 

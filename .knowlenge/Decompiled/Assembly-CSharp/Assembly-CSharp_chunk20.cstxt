@@ -1548,28 +1548,28 @@ public class LegStepAnimatingParameters
 	[Tooltip("Curve of ik point going towards desired position (just XZ movement, to Y - no leg rise curve)")]
 	public AnimationCurve MoveToGoalCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
-	[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0.4f, 0.6f, 0.9f, 1f)]
 	[Tooltip("Making foot motion move towards target not in full linear straight towards target motion but adding a bit curve back (positive value) or forward (negative values) making movement a bit more natural")]
+	[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0.4f, 0.6f, 0.9f, 1f)]
 	public AnimationCurve SpherizeTrack = AnimationCurve.EaseInOut(0f, 0f, 1f, 0f);
 
 	[Range(0f, 2f)]
 	public float SpherizePower = 0.3f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Minimum leg raise height. If distance of target step animation is small, then foot raise is smaller - down to this minimum raise value.")]
+	[Range(0f, 1f)]
 	public float MinFootRaise = 0.1f;
 
-	[Tooltip("Maximum leg raise height. If distance of target step animation is very big, then foot raise is bigger - up to this maximum raise value.")]
 	[Range(0f, 1f)]
+	[Tooltip("Maximum leg raise height. If distance of target step animation is very big, then foot raise is bigger - up to this maximum raise value.")]
 	public float MaxFootRaise = 0.4f;
 
-	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.5f, 1f, 0.5f, 1f)]
 	[Tooltip("Raise height step animation curve evaluated on step animation duration.")]
+	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.5f, 1f, 0.5f, 1f)]
 	public AnimationCurve RaiseYAxisCurve;
 
-	[Range(0f, 1f)]
 	[Tooltip("Allowing to speed up leg adjusting animation when leg is getting stretched, when opposite leg is requesting adjustement or when main character is rotating in place quickly")]
 	[Space(3f)]
+	[Range(0f, 1f)]
 	public float AllowSpeedups = 0.4f;
 
 	[Tooltip("You can allow to use opposite leg before idle glue leg adjustement finishes")]
@@ -5979,8 +5979,8 @@ public class FGroundFitter_Demo_NavMesh : MonoBehaviour
 	[Range(0.5f, 50f)]
 	public float RotationSpeed = 3f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Moving Accordingly to rotation after acceleration")]
+	[Range(0f, 1f)]
 	public float DirectMovement = 0.8f;
 
 	public float AnimationSpeedScale = 1f;
@@ -6574,12 +6574,12 @@ public class FGroundFitter_Movement : MonoBehaviour
 	[Tooltip("If you want to set some animator parameter during being grounded")]
 	public string SetIsGroundedParam = "";
 
-	[HideInInspector]
 	[Tooltip("If you want to set some animator parameter during accelerating moving")]
+	[HideInInspector]
 	public string SetIsMovingParam = "";
 
-	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	[HideInInspector]
+	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	public bool UseSlidingMat = true;
 
 	private static PhysicMaterial pm_Sliding = null;
@@ -7254,14 +7254,14 @@ using UnityEngine;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
-	[Space(4f, order = 1)]
-	[Header("> Main Variables <", order = 0)]
-	[Tooltip("How quick rotation should be corrected to target")]
 	[Range(1f, 30f)]
+	[Tooltip("How quick rotation should be corrected to target")]
+	[Header("> Main Variables <", order = 0)]
+	[Space(4f, order = 1)]
 	public float FittingSpeed = 6f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing whole rotation motion")]
+	[Range(0f, 1f)]
 	public float TotalSmoother;
 
 	[HideInInspector]
@@ -7269,31 +7269,31 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Space(3f)]
 	public Transform TransformToRotate;
 
-	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	[Space(3f)]
+	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
-	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
-	[Header("> Tweaking Settings <", order = 0)]
 	[Space(4f, order = 1)]
+	[Header("> Tweaking Settings <", order = 0)]
 	[Range(0f, 1f)]
+	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	public float MildForwardValue;
 
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
 	[Range(0f, 90f)]
 	public float MaxForwardRotation = 90f;
 
-	[Space(5f)]
-	[Range(0f, 1f)]
 	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
+	[Range(0f, 1f)]
+	[Space(5f)]
 	public float MildHorizontalValue;
 
 	[Range(0f, 90f)]
 	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	public float MaxHorizontalRotation = 90f;
 
-	[Header("> Advanced settings <", order = 0)]
 	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
+	[Header("> Advanced settings <", order = 0)]
 	[Space(4f, order = 1)]
 	public float RaycastHeightOffset = 0.5f;
 
@@ -7306,12 +7306,12 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Tooltip("Blending with predicted forward raycast rotation")]
 	public float AheadBlend = 0.5f;
 
-	[HideInInspector]
 	[Tooltip("Offset over ground")]
+	[HideInInspector]
 	public float UpOffset;
 
-	[Space(8f)]
 	[Tooltip("What collision layers should be included by algorithm")]
+	[Space(8f)]
 	public LayerMask GroundLayerMask = LayerMask.op_Implicit(1);
 
 	[Tooltip("When casting down vector should adjust with transform's rotation")]
@@ -7333,8 +7333,8 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Range(0f, 10f)]
 	public float ZoneCastBias;
 
-	[Range(0f, 1f)]
 	[Tooltip("More precision = more raycasts = lower performance")]
+	[Range(0f, 1f)]
 	public float ZoneCastPrecision = 0.25f;
 
 	[NonSerialized]
@@ -7750,8 +7750,8 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 	[SerializeField]
 	protected CharacterController optionalCharContr;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool rootMotionRotation = true;
 
 	protected Animator rootMAnimator;
@@ -10126,7 +10126,7 @@ public abstract class BaseTip
 
 using UnityEngine;
 
-public class EnableCanvasOnClientConnect : MonoBehaviour
+public class EnableGameObjectOnClientConnect : MonoBehaviour
 {
 }
 
@@ -11373,7 +11373,6 @@ using ConVar;
 using Facepunch;
 using Network;
 using Newtonsoft.Json;
-using ProtoBuf;
 using UnityEngine;
 
 public class NotificationList
@@ -11432,12 +11431,12 @@ public class NotificationList
 		}
 	}
 
-	public void IntersectWith(HashSet<PlayerNameID> players)
+	public void IntersectWith(HashSet<ulong> players)
 	{
 		List<ulong> list = Pool.Get<List<ulong>>();
-		foreach (PlayerNameID player in players)
+		foreach (ulong player in players)
 		{
-			list.Add(player.userid);
+			list.Add(player);
 		}
 		_subscriptions.IntersectWith(list);
 		Pool.FreeUnmanaged<ulong>(ref list);
@@ -14341,8 +14340,8 @@ public struct RaycastRaySetupJob : IJobParallelFor
 	[ReadOnly]
 	public NativeArray<int2> samplePositions;
 
-	[NativeMatchesParallelForLength]
 	[WriteOnly]
+	[NativeMatchesParallelForLength]
 	public NativeArray<RaycastCommand> raycastCommands;
 
 	public void Execute(int index)
@@ -14406,12 +14405,12 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 	[ReadOnly]
 	public NativeArray<byte> colliderMaterials;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<int> colliderHits;
 
-	[NativeMatchesParallelForLength]
 	[WriteOnly]
+	[NativeMatchesParallelForLength]
 	public NativeArray<int> outputs;
 
 	[NativeDisableParallelForRestriction]
@@ -21707,8 +21706,8 @@ public struct CheckBoundsJobIndirect : IJob
 	[WriteOnly]
 	public NativeList<int> OverlapIndices;
 
-	[NativeDisableContainerSafetyRestriction]
 	[ReadOnly]
+	[NativeDisableContainerSafetyRestriction]
 	public CoarseQueryGrid Grid;
 
 	[ReadOnly]
@@ -22992,9 +22991,9 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.CinematicEffects;
 
+[ExecuteInEditMode]
 [ImageEffectAllowedInSceneView]
 [AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
-[ExecuteInEditMode]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -23052,8 +23051,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	{
 		public bool enabled;
 
-		[Min(0f)]
 		[Tooltip("Midpoint Adjustment.")]
+		[Min(0f)]
 		public float middleGrey;
 
 		[Tooltip("The lowest possible exposure value; adjust this value to modify the brightest areas of your level.")]
@@ -23104,8 +23103,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Min(0f)]
 		[Tooltip("Adjusts the overall exposure of the scene.")]
+		[Min(0f)]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -23157,8 +23156,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Tooltip("Blending factor.")]
 		[Range(0f, 1f)]
+		[Tooltip("Blending factor.")]
 		public float contribution;
 
 		public static LUTSettings defaultSettings
@@ -23208,29 +23207,29 @@ public class TonemappingColorGrading : MonoBehaviour
 	[Serializable]
 	public struct BasicsSettings
 	{
-		[Tooltip("Sets the white balance to a custom color temperature.")]
 		[Range(-2f, 2f)]
+		[Tooltip("Sets the white balance to a custom color temperature.")]
 		public float temperatureShift;
 
-		[Range(-2f, 2f)]
 		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
+		[Range(-2f, 2f)]
 		public float tint;
 
-		[Range(-0.5f, 0.5f)]
 		[Space]
+		[Range(-0.5f, 0.5f)]
 		[Tooltip("Shift the hue of all colors.")]
 		public float hue;
 
-		[Range(0f, 2f)]
 		[Tooltip("Pushes the intensity of all colors.")]
+		[Range(0f, 2f)]
 		public float saturation;
 
-		[Range(-1f, 1f)]
 		[Tooltip("Adjusts the saturation so that clipping is minimized as colors approach full saturation.")]
+		[Range(-1f, 1f)]
 		public float vibrance;
 
-		[Range(0f, 10f)]
 		[Tooltip("Brightens or darkens all colors.")]
+		[Range(0f, 10f)]
 		public float value;
 
 		[Space]
@@ -23238,12 +23237,12 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Expands or shrinks the overall range of tonal values.")]
 		public float contrast;
 
-		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		[Range(0.01f, 5f)]
+		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		public float gain;
 
-		[Tooltip("Applies a pow function to the source.")]
 		[Range(0.01f, 5f)]
+		[Tooltip("Applies a pow function to the source.")]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings
@@ -23344,24 +23343,24 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[ColorWheelGroup]
 		[Space]
+		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public BasicsSettings basics;
 
-		[Space]
 		[ChannelMixer]
+		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public CurvesSettings curves;
 
-		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 		[Space]
+		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 		public bool useDithering;
 
 		[Tooltip("Displays the generated LUT in the top left corner of the GameView.")]
@@ -23390,8 +23389,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		}
 	}
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
 	[SerializeField]
@@ -23402,8 +23401,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SettingsGroup]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]
@@ -23484,8 +23483,8 @@ public struct EyeAdaptationSettings
 {
 	public bool enabled;
 
-	[Min(0f)]
 	[Tooltip("Midpoint Adjustment.")]
+	[Min(0f)]
 	public float middleGrey;
 
 	[Tooltip("The lowest possible exposure value; adjust this value to modify the brightest areas of your level.")]
@@ -23541,8 +23540,8 @@ public struct TonemappingSettings
 	[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 	public Tonemapper tonemapper;
 
-	[Min(0f)]
 	[Tooltip("Adjusts the overall exposure of the scene.")]
+	[Min(0f)]
 	public float exposure;
 
 	[Tooltip("Custom tonemapping curve.")]
@@ -23598,8 +23597,8 @@ public struct LUTSettings
 	[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 	public Texture texture;
 
-	[Tooltip("Blending factor.")]
 	[Range(0f, 1f)]
+	[Tooltip("Blending factor.")]
 	public float contribution;
 
 	public static LUTSettings defaultSettings
@@ -23657,29 +23656,29 @@ using UnityEngine;
 [Serializable]
 public struct BasicsSettings
 {
-	[Tooltip("Sets the white balance to a custom color temperature.")]
 	[Range(-2f, 2f)]
+	[Tooltip("Sets the white balance to a custom color temperature.")]
 	public float temperatureShift;
 
-	[Range(-2f, 2f)]
 	[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
+	[Range(-2f, 2f)]
 	public float tint;
 
-	[Range(-0.5f, 0.5f)]
 	[Space]
+	[Range(-0.5f, 0.5f)]
 	[Tooltip("Shift the hue of all colors.")]
 	public float hue;
 
-	[Range(0f, 2f)]
 	[Tooltip("Pushes the intensity of all colors.")]
+	[Range(0f, 2f)]
 	public float saturation;
 
-	[Range(-1f, 1f)]
 	[Tooltip("Adjusts the saturation so that clipping is minimized as colors approach full saturation.")]
+	[Range(-1f, 1f)]
 	public float vibrance;
 
-	[Range(0f, 10f)]
 	[Tooltip("Brightens or darkens all colors.")]
+	[Range(0f, 10f)]
 	public float value;
 
 	[Space]
@@ -23687,12 +23686,12 @@ public struct BasicsSettings
 	[Tooltip("Expands or shrinks the overall range of tonal values.")]
 	public float contrast;
 
-	[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 	[Range(0.01f, 5f)]
+	[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 	public float gain;
 
-	[Tooltip("Applies a pow function to the source.")]
 	[Range(0.01f, 5f)]
+	[Tooltip("Applies a pow function to the source.")]
 	public float gamma;
 
 	public static BasicsSettings defaultSettings
@@ -23806,24 +23805,24 @@ public struct ColorGradingSettings
 	[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 	public ColorGradingPrecision precision;
 
-	[ColorWheelGroup]
 	[Space]
+	[ColorWheelGroup]
 	public ColorWheelsSettings colorWheels;
 
-	[IndentedGroup]
 	[Space]
+	[IndentedGroup]
 	public BasicsSettings basics;
 
-	[Space]
 	[ChannelMixer]
+	[Space]
 	public ChannelMixerSettings channelMixer;
 
-	[IndentedGroup]
 	[Space]
+	[IndentedGroup]
 	public CurvesSettings curves;
 
-	[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 	[Space]
+	[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 	public bool useDithering;
 
 	[Tooltip("Displays the generated LUT in the top left corner of the GameView.")]
@@ -23856,8 +23855,8 @@ public struct ColorGradingSettings
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
-[ExecuteInEditMode]
 [AddComponentMenu("Image Effects/Other/Scope Overlay")]
+[ExecuteInEditMode]
 public class ScopeEffect : PostEffectsBase, IImageEffect
 {
 	public Material overlayMaterial;
@@ -24883,10 +24882,258 @@ public class InstancedDebugDraw : SingletonComponent<InstancedDebugDraw>
 }
 
 
+using System;
 using UnityEngine;
 
 public class DDraw : MonoBehaviour
 {
+	public static void BroadcastArrow(Vector3 start, Vector3 end, Color color, float duration = 10f, float headSize = 0.5f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.arrow", duration, color, start, end, headSize, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastLine(Vector3 start, Vector3 end, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.line", duration, color, start, end, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastSphere(Vector3 pos, float radius, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.sphere", duration, color, pos, radius, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastText(Vector3 pos, string text, Color color, float duration = 10f, bool distanceFade = true, bool zTest = false)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.text", duration, color, pos, text, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastCapsule(Vector3 pos, Vector3 rot, float radius, float height, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.capsule", duration, color, pos, rot, radius, height, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastBox(Vector3 pos, Vector3 size, Vector3 rot, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.box", duration, color, pos, $"{size.x} {size.y} {size.z}", rot, distanceFade, zTest);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void BroadcastClear()
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && current.IsConnected)
+				{
+					current.SendConsoleCommand("ddraw.clear");
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+	}
+
+	public static void Arrow(BasePlayer player, Vector3 start, Vector3 end, Color color, float duration = 10f, float headSize = 0.5f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.arrow", duration, color, start, end, headSize, distanceFade, zTest);
+		}
+	}
+
+	public static void Line(BasePlayer player, Vector3 start, Vector3 end, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.line", duration, color, start, end, distanceFade, zTest);
+		}
+	}
+
+	public static void Sphere(BasePlayer player, Vector3 pos, float radius, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.sphere", duration, color, pos, radius, distanceFade, zTest);
+		}
+	}
+
+	public static void Text(BasePlayer player, Vector3 pos, string text, Color color, float duration = 10f, bool distanceFade = true, bool zTest = false)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.text", duration, color, pos, text, distanceFade, zTest);
+		}
+	}
+
+	public static void Capsule(BasePlayer player, Vector3 pos, Vector3 rot, float radius, float height, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.capsule", duration, color, pos, rot, radius, height, distanceFade, zTest);
+		}
+	}
+
+	public static void Box(BasePlayer player, Vector3 pos, Vector3 size, Vector3 rot, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.box", duration, color, pos, $"{size.x} {size.y} {size.z}", rot, distanceFade, zTest);
+		}
+	}
+
+	public static void Clear(BasePlayer player)
+	{
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			player.SendConsoleCommand("ddraw.clear");
+		}
+	}
 }
 
 
@@ -26255,9 +26502,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
-[AddComponentMenu("UI/Scroll Rect Ex", 37)]
-[SelectionBase]
 [ExecuteInEditMode]
+[SelectionBase]
+[AddComponentMenu("UI/Scroll Rect Ex", 37)]
 public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEventSystemHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ILayoutGroup, ILayoutController
 {
 	public enum MovementType
@@ -27888,12 +28135,12 @@ public class UICircle : UIPrimitiveBase
 	[Range(0f, 1f)]
 	public float Arc = 1f;
 
-	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	[Range(0f, 1000f)]
+	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	public int ArcSteps = 100;
 
-	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	[Range(0f, 360f)]
+	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	public int ArcRotation;
 
 	[Range(0f, 1f)]
@@ -28174,8 +28421,8 @@ using UnityEngine.UI.Extensions;
 [AddComponentMenu("UI/Extensions/Primitives/UI Circle Simple")]
 public class UICircleSimple : UIPrimitiveBase
 {
-	[Range(0f, 1000f)]
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
+	[Range(0f, 1000f)]
 	public int ArcSteps = 100;
 
 	public bool Fill = true;
@@ -28387,336 +28634,6 @@ public class UICircleSimple : UIPrimitiveBase
 	{
 		Thickness = thickness;
 		((Graphic)this).SetVerticesDirty();
-	}
-}
-
-
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UI.Extensions;
-
-[AddComponentMenu("UI/Extensions/Primitives/Cut Corners")]
-public class UICornerCut : UIPrimitiveBase
-{
-	public Vector2 cornerSize = new Vector2(16f, 16f);
-
-	[SerializeField]
-	[Header("Corners to cut")]
-	private bool m_cutUL = true;
-
-	[SerializeField]
-	private bool m_cutUR;
-
-	[SerializeField]
-	private bool m_cutLL;
-
-	[SerializeField]
-	private bool m_cutLR;
-
-	[SerializeField]
-	[Tooltip("Up-Down colors become Left-Right colors")]
-	private bool m_makeColumns;
-
-	[SerializeField]
-	[Header("Color the cut bars differently")]
-	private bool m_useColorUp;
-
-	[SerializeField]
-	private Color32 m_colorUp;
-
-	[SerializeField]
-	private bool m_useColorDown;
-
-	[SerializeField]
-	private Color32 m_colorDown;
-
-	public bool CutUL
-	{
-		get
-		{
-			return m_cutUL;
-		}
-		set
-		{
-			m_cutUL = value;
-			((Graphic)this).SetAllDirty();
-		}
-	}
-
-	public bool CutUR
-	{
-		get
-		{
-			return m_cutUR;
-		}
-		set
-		{
-			m_cutUR = value;
-			((Graphic)this).SetAllDirty();
-		}
-	}
-
-	public bool CutLL
-	{
-		get
-		{
-			return m_cutLL;
-		}
-		set
-		{
-			m_cutLL = value;
-			((Graphic)this).SetAllDirty();
-		}
-	}
-
-	public bool CutLR
-	{
-		get
-		{
-			return m_cutLR;
-		}
-		set
-		{
-			m_cutLR = value;
-			((Graphic)this).SetAllDirty();
-		}
-	}
-
-	public bool MakeColumns
-	{
-		get
-		{
-			return m_makeColumns;
-		}
-		set
-		{
-			m_makeColumns = value;
-			((Graphic)this).SetAllDirty();
-		}
-	}
-
-	public bool UseColorUp
-	{
-		get
-		{
-			return m_useColorUp;
-		}
-		set
-		{
-			m_useColorUp = value;
-		}
-	}
-
-	public Color32 ColorUp
-	{
-		get
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return m_colorUp;
-		}
-		set
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			m_colorUp = value;
-		}
-	}
-
-	public bool UseColorDown
-	{
-		get
-		{
-			return m_useColorDown;
-		}
-		set
-		{
-			m_useColorDown = value;
-		}
-	}
-
-	public Color32 ColorDown
-	{
-		get
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return m_colorDown;
-		}
-		set
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			m_colorDown = value;
-		}
-	}
-
-	protected override void OnPopulateMesh(VertexHelper vh)
-	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0304: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0306: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0329: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0394: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0399: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0370: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0337: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0213: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		Rect rect = ((Graphic)this).rectTransform.rect;
-		Rect val = rect;
-		Color32 val2 = Color32.op_Implicit(((Graphic)this).color);
-		bool flag = m_cutUL | m_cutUR;
-		bool flag2 = m_cutLL | m_cutLR;
-		bool flag3 = m_cutLL | m_cutUL;
-		bool flag4 = m_cutLR | m_cutUR;
-		if (!(flag || flag2) || !(((Vector2)(ref cornerSize)).sqrMagnitude > 0f))
-		{
-			return;
-		}
-		vh.Clear();
-		if (flag3)
-		{
-			((Rect)(ref val)).xMin = ((Rect)(ref val)).xMin + cornerSize.x;
-		}
-		if (flag2)
-		{
-			((Rect)(ref val)).yMin = ((Rect)(ref val)).yMin + cornerSize.y;
-		}
-		if (flag)
-		{
-			((Rect)(ref val)).yMax = ((Rect)(ref val)).yMax - cornerSize.y;
-		}
-		if (flag4)
-		{
-			((Rect)(ref val)).xMax = ((Rect)(ref val)).xMax - cornerSize.x;
-		}
-		Vector2 val3 = default(Vector2);
-		Vector2 val4 = default(Vector2);
-		Vector2 val5 = default(Vector2);
-		Vector2 val6 = default(Vector2);
-		if (m_makeColumns)
-		{
-			((Vector2)(ref val3))..ctor(((Rect)(ref rect)).xMin, m_cutUL ? ((Rect)(ref val)).yMax : ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val4))..ctor(((Rect)(ref rect)).xMax, m_cutUR ? ((Rect)(ref val)).yMax : ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val5))..ctor(((Rect)(ref rect)).xMin, m_cutLL ? ((Rect)(ref val)).yMin : ((Rect)(ref rect)).yMin);
-			((Vector2)(ref val6))..ctor(((Rect)(ref rect)).xMax, m_cutLR ? ((Rect)(ref val)).yMin : ((Rect)(ref rect)).yMin);
-			if (flag3)
-			{
-				AddSquare(val5, val3, new Vector2(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMax), new Vector2(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMin), rect, m_useColorUp ? m_colorUp : val2, vh);
-			}
-			if (flag4)
-			{
-				AddSquare(val4, val6, new Vector2(((Rect)(ref val)).xMax, ((Rect)(ref rect)).yMin), new Vector2(((Rect)(ref val)).xMax, ((Rect)(ref rect)).yMax), rect, m_useColorDown ? m_colorDown : val2, vh);
-			}
-		}
-		else
-		{
-			((Vector2)(ref val3))..ctor(m_cutUL ? ((Rect)(ref val)).xMin : ((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val4))..ctor(m_cutUR ? ((Rect)(ref val)).xMax : ((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val5))..ctor(m_cutLL ? ((Rect)(ref val)).xMin : ((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMin);
-			((Vector2)(ref val6))..ctor(m_cutLR ? ((Rect)(ref val)).xMax : ((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMin);
-			if (flag2)
-			{
-				AddSquare(val6, val5, new Vector2(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMin), new Vector2(((Rect)(ref rect)).xMax, ((Rect)(ref val)).yMin), rect, m_useColorDown ? m_colorDown : val2, vh);
-			}
-			if (flag)
-			{
-				AddSquare(val3, val4, new Vector2(((Rect)(ref rect)).xMax, ((Rect)(ref val)).yMax), new Vector2(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMax), rect, m_useColorUp ? m_colorUp : val2, vh);
-			}
-		}
-		if (m_makeColumns)
-		{
-			AddSquare(new Rect(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMin, ((Rect)(ref val)).width, ((Rect)(ref rect)).height), rect, val2, vh);
-		}
-		else
-		{
-			AddSquare(new Rect(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMin, ((Rect)(ref rect)).width, ((Rect)(ref val)).height), rect, val2, vh);
-		}
-	}
-
-	private static void AddSquare(Rect rect, Rect rectUV, Color32 color32, VertexHelper vh)
-	{
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		int num = AddVert(((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMin, rectUV, color32, vh);
-		int num2 = AddVert(((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMax, rectUV, color32, vh);
-		int num3 = AddVert(((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMax, rectUV, color32, vh);
-		int num4 = AddVert(((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMin, rectUV, color32, vh);
-		vh.AddTriangle(num, num2, num3);
-		vh.AddTriangle(num3, num4, num);
-	}
-
-	private static void AddSquare(Vector2 a, Vector2 b, Vector2 c, Vector2 d, Rect rectUV, Color32 color32, VertexHelper vh)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		int num = AddVert(a.x, a.y, rectUV, color32, vh);
-		int num2 = AddVert(b.x, b.y, rectUV, color32, vh);
-		int num3 = AddVert(c.x, c.y, rectUV, color32, vh);
-		int num4 = AddVert(d.x, d.y, rectUV, color32, vh);
-		vh.AddTriangle(num, num2, num3);
-		vh.AddTriangle(num3, num4, num);
-	}
-
-	private static int AddVert(float x, float y, Rect area, Color32 color32, VertexHelper vh)
-	{
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))..ctor(Mathf.InverseLerp(((Rect)(ref area)).xMin, ((Rect)(ref area)).xMax, x), Mathf.InverseLerp(((Rect)(ref area)).yMin, ((Rect)(ref area)).yMax, y));
-		vh.AddVert(new Vector3(x, y), color32, val);
-		return vh.currentVertCount - 1;
 	}
 }
 

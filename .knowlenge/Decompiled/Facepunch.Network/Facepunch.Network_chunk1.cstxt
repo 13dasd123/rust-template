@@ -2,8 +2,8 @@ using System;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 
-[Embedded]
 [CompilerGenerated]
+[Embedded]
 internal sealed class IsUnmanagedAttribute : Attribute
 {
 }
@@ -801,7 +801,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			80, 108, 117, 103, 105, 110, 115, 92, 70, 97,
 			99, 101, 112, 117, 110, 99, 104, 46, 78, 101,
 			116, 119, 111, 114, 107, 92, 78, 101, 116, 82,
-			101, 97, 100, 46, 99, 115, 0, 0, 0, 2,
+			101, 97, 100, 46, 99, 115, 0, 0, 0, 3,
 			0, 0, 0, 48, 92, 65, 115, 115, 101, 116,
 			115, 92, 80, 108, 117, 103, 105, 110, 115, 92,
 			70, 97, 99, 101, 112, 117, 110, 99, 104, 46,
@@ -824,7 +824,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			99, 101, 112, 117, 110, 99, 104, 46, 78, 101,
 			116, 119, 111, 114, 107, 92, 83, 101, 110, 100,
 			73, 110, 102, 111, 46, 99, 115, 0, 0, 0,
-			3, 0, 0, 0, 43, 92, 65, 115, 115, 101,
+			4, 0, 0, 0, 43, 92, 65, 115, 115, 101,
 			116, 115, 92, 80, 108, 117, 103, 105, 110, 115,
 			92, 70, 97, 99, 101, 112, 117, 110, 99, 104,
 			46, 78, 101, 116, 119, 111, 114, 107, 92, 83,
@@ -841,7 +841,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			86, 105, 115, 105, 98, 105, 108, 105, 116, 121,
 			46, 99, 115
 		};
-		result.TypesData = new byte[1187]
+		result.TypesData = new byte[1257]
 		{
 			0, 0, 0, 0, 15, 78, 101, 116, 119, 111,
 			114, 107, 124, 68, 101, 102, 105, 110, 101, 115,
@@ -925,26 +925,33 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			0, 0, 0, 22, 78, 101, 116, 119, 111, 114,
 			107, 124, 78, 101, 116, 119, 111, 114, 107, 72,
 			97, 110, 100, 108, 101, 114, 0, 0, 0, 0,
-			19, 78, 101, 116, 119, 111, 114, 107, 124, 78,
-			101, 116, 119, 111, 114, 107, 97, 98, 108, 101,
-			0, 0, 0, 0, 16, 78, 101, 116, 119, 111,
-			114, 107, 124, 78, 101, 116, 87, 114, 105, 116,
-			101, 0, 0, 0, 0, 22, 78, 101, 116, 119,
-			111, 114, 107, 124, 80, 97, 99, 107, 101, 116,
-			80, 114, 111, 102, 105, 108, 101, 114, 0, 0,
-			0, 0, 36, 78, 101, 116, 119, 111, 114, 107,
-			46, 80, 97, 99, 107, 101, 116, 80, 114, 111,
-			102, 105, 108, 101, 114, 124, 65, 110, 97, 108,
-			121, 116, 105, 99, 115, 75, 101, 121, 115, 0,
-			0, 0, 0, 16, 78, 101, 116, 119, 111, 114,
-			107, 124, 83, 101, 110, 100, 73, 110, 102, 111,
-			0, 0, 0, 0, 18, 78, 101, 116, 119, 111,
-			114, 107, 124, 83, 101, 114, 118, 101, 114, 73,
-			110, 102, 111, 0, 0, 0, 0, 23, 78, 101,
-			116, 119, 111, 114, 107, 124, 73, 83, 101, 114,
-			118, 101, 114, 67, 97, 108, 108, 98, 97, 99,
-			107, 0, 0, 0, 0, 14, 78, 101, 116, 119,
-			111, 114, 107, 124, 83, 101, 114, 118, 101, 114,
+			27, 78, 101, 116, 119, 111, 114, 107, 124, 73,
+			83, 117, 98, 115, 99, 114, 105, 98, 101, 114,
+			83, 116, 114, 97, 116, 101, 103, 121, 0, 0,
+			0, 0, 19, 78, 101, 116, 119, 111, 114, 107,
+			124, 78, 101, 116, 119, 111, 114, 107, 97, 98,
+			108, 101, 0, 0, 0, 0, 16, 78, 101, 116,
+			119, 111, 114, 107, 124, 78, 101, 116, 87, 114,
+			105, 116, 101, 0, 0, 0, 0, 22, 78, 101,
+			116, 119, 111, 114, 107, 124, 80, 97, 99, 107,
+			101, 116, 80, 114, 111, 102, 105, 108, 101, 114,
+			0, 0, 0, 0, 36, 78, 101, 116, 119, 111,
+			114, 107, 46, 80, 97, 99, 107, 101, 116, 80,
+			114, 111, 102, 105, 108, 101, 114, 124, 65, 110,
+			97, 108, 121, 116, 105, 99, 115, 75, 101, 121,
+			115, 0, 0, 0, 0, 16, 78, 101, 116, 119,
+			111, 114, 107, 124, 83, 101, 110, 100, 73, 110,
+			102, 111, 0, 0, 0, 0, 18, 78, 101, 116,
+			119, 111, 114, 107, 124, 83, 101, 114, 118, 101,
+			114, 73, 110, 102, 111, 0, 0, 0, 0, 23,
+			78, 101, 116, 119, 111, 114, 107, 124, 73, 83,
+			101, 114, 118, 101, 114, 67, 97, 108, 108, 98,
+			97, 99, 107, 0, 0, 0, 0, 14, 78, 101,
+			116, 119, 111, 114, 107, 124, 83, 101, 114, 118,
+			101, 114, 0, 0, 0, 0, 33, 78, 101, 116,
+			119, 111, 114, 107, 124, 68, 101, 102, 97, 117,
+			108, 116, 83, 117, 98, 115, 99, 114, 105, 98,
+			101, 114, 83, 116, 114, 97, 116, 101, 103, 121,
 			0, 0, 0, 0, 13, 78, 101, 116, 119, 111,
 			114, 107, 124, 83, 116, 97, 116, 115, 0, 0,
 			0, 0, 18, 78, 101, 116, 119, 111, 114, 107,
@@ -964,7 +971,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 			77, 97, 110, 97, 103, 101, 114
 		};
 		result.TotalFiles = 24;
-		result.TotalTypes = 46;
+		result.TotalTypes = 48;
 		result.IsEditorOnly = false;
 		return result;
 	}
@@ -3305,6 +3312,17 @@ public interface NetworkHandler
 }
 
 
+using Network;
+using Network.Visibility;
+
+public interface ISubscriberStrategy
+{
+	void GatherHighPrioSubscriptions(Networkable net, ListHashSet<Group> visible);
+
+	void GatherSubscriptions(Networkable net, ListHashSet<Group> visible);
+}
+
+
 using System;
 using System.Collections.Generic;
 using Facepunch;
@@ -3334,6 +3352,8 @@ public class Networkable : IPooled
 
 	public Connection connection { get; private set; }
 
+	public ISubscriberStrategy SubStrategy { get; set; }
+
 	public void Destroy()
 	{
 		CloseSubscriber();
@@ -3358,6 +3378,7 @@ public class Networkable : IPooled
 		cl = null;
 		handler = null;
 		updateSubscriptions = false;
+		SubStrategy = null;
 	}
 
 	public void LeavePool()
@@ -3555,20 +3576,6 @@ public class Networkable : IPooled
 		return true;
 	}
 
-	private void AddVisibleFromNear(Group additionalGroup, ListHashSet<Group> groupsVisible)
-	{
-		if (additionalGroup != null)
-		{
-			ListHashSet<Group> val = Pool.Get<ListHashSet<Group>>();
-			sv.visibility.GetVisibleFromNear(additionalGroup, val);
-			for (int i = 0; i < val.Count; i++)
-			{
-				groupsVisible.TryAdd(val[i]);
-			}
-			Pool.FreeUnmanaged<Group>(ref val);
-		}
-	}
-
 	public bool UpdateSubscriptions(int removeLimit, int addLimit)
 	{
 		if (!updateSubscriptions)
@@ -3586,44 +3593,44 @@ public class Networkable : IPooled
 			List<Group> list = Pool.Get<List<Group>>();
 			List<Group> list2 = Pool.Get<List<Group>>();
 			ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
-			sv.visibility.GetVisibleFromFar(this.group, val2);
-			AddVisibleFromNear(secondaryGroup, val2);
+			SubStrategy.GatherSubscriptions(this, val2);
 			ListHashSet<Group>.Compare(subscriber.subscribed, val2, list, list2, (List<Group>)null);
-			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)list2) == null)
+			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)list2) != null)
 			{
-				for (int i = 0; i < list2.Count; i++)
+				/*Error: Could not find block for branch target IL_0140*/;
+			}
+			for (int i = 0; i < list2.Count; i++)
+			{
+				Group group = list2[i];
+				if (removeLimit > 0)
 				{
-					Group group = list2[i];
-					if (removeLimit > 0)
+					subscriber.Unsubscribe(group);
+					if (handler != null)
 					{
-						subscriber.Unsubscribe(group);
-						if (handler != null)
-						{
-							handler.OnNetworkGroupLeave(group);
-						}
-						removeLimit -= group.networkables.Count;
+						handler.OnNetworkGroupLeave(group);
 					}
-					else
-					{
-						updateSubscriptions = true;
-					}
+					removeLimit -= group.networkables.Count;
 				}
-				for (int j = 0; j < list.Count; j++)
+				else
 				{
-					Group group2 = list[j];
-					if (addLimit > 0)
+					updateSubscriptions = true;
+				}
+			}
+			for (int j = 0; j < list.Count; j++)
+			{
+				Group group2 = list[j];
+				if (addLimit > 0)
+				{
+					subscriber.Subscribe(group2);
+					if (handler != null)
 					{
-						subscriber.Subscribe(group2);
-						if (handler != null)
-						{
-							handler.OnNetworkGroupEnter(group2);
-						}
-						addLimit -= group2.networkables.Count;
+						handler.OnNetworkGroupEnter(group2);
 					}
-					else
-					{
-						updateSubscriptions = true;
-					}
+					addLimit -= group2.networkables.Count;
+				}
+				else
+				{
+					updateSubscriptions = true;
 				}
 			}
 			Pool.FreeUnmanaged<Group>(ref list);
@@ -3648,19 +3655,19 @@ public class Networkable : IPooled
 		{
 			List<Group> list = Pool.Get<List<Group>>();
 			ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
-			sv.visibility.GetVisibleFromNear(this.group, val2);
-			AddVisibleFromNear(secondaryGroup, val2);
+			SubStrategy.GatherHighPrioSubscriptions(this, val2);
 			ListHashSet<Group>.Compare(subscriber.subscribed, val2, list, (List<Group>)null, (List<Group>)null);
-			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)null) == null)
+			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)null) != null)
 			{
-				for (int i = 0; i < list.Count; i++)
+				/*Error: Could not find block for branch target IL_00a2*/;
+			}
+			for (int i = 0; i < list.Count; i++)
+			{
+				Group group = list[i];
+				subscriber.Subscribe(group);
+				if (handler != null)
 				{
-					Group group = list[i];
-					subscriber.Subscribe(group);
-					if (handler != null)
-					{
-						handler.OnNetworkGroupEnter(group);
-					}
+					handler.OnNetworkGroupEnter(group);
 				}
 			}
 			Pool.FreeUnmanaged<Group>(ref list);
@@ -3671,6 +3678,76 @@ public class Networkable : IPooled
 			((IDisposable)val)?.Dispose();
 		}
 		return true;
+	}
+
+	public void InvalidateSubscriptions(int maxNewCells)
+	{
+		if (subscriber == null)
+		{
+			return;
+		}
+		bool flag = false;
+		TimeWarning val = TimeWarning.New("InvalidateSubscriptions", 0);
+		try
+		{
+			List<Group> list = Pool.Get<List<Group>>();
+			List<Group> list2 = Pool.Get<List<Group>>();
+			ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
+			SubStrategy.GatherHighPrioSubscriptions(this, val2);
+			TimeWarning val3 = TimeWarning.New("Compare", 0);
+			try
+			{
+				ListHashSet<Group>.Compare(subscriber.subscribed, val2, list, list2, (List<Group>)null);
+			}
+			finally
+			{
+				((IDisposable)val3)?.Dispose();
+			}
+			val3 = TimeWarning.New("Unsubscribe", 0);
+			try
+			{
+				for (int i = 0; i < list2.Count; i++)
+				{
+					Group group = list2[i];
+					subscriber.Unsubscribe(group);
+					if (handler != null)
+					{
+						handler.OnNetworkGroupLeave(group);
+					}
+				}
+			}
+			finally
+			{
+				((IDisposable)val3)?.Dispose();
+			}
+			val3 = TimeWarning.New("Subscribe", 0);
+			try
+			{
+				int num = Mathf.Min(list.Count, maxNewCells);
+				for (int j = 0; j < num; j++)
+				{
+					Group group2 = list[j];
+					subscriber.Subscribe(group2);
+					if (handler != null)
+					{
+						handler.OnNetworkGroupEnter(group2);
+					}
+				}
+				flag = num == list.Count;
+			}
+			finally
+			{
+				((IDisposable)val3)?.Dispose();
+			}
+			Pool.FreeUnmanaged<Group>(ref list);
+			Pool.FreeUnmanaged<Group>(ref list2);
+			Pool.FreeUnmanaged<Group>(ref val2);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+		updateSubscriptions = !flag;
 	}
 }
 
@@ -4319,6 +4396,8 @@ public abstract class Server : BaseNetwork
 
 	public IServerCallback callbackHandler;
 
+	public static readonly DefaultSubscriberStrategy DefaultSubscriberStrategy = new DefaultSubscriberStrategy();
+
 	public bool debug;
 
 	internal ulong lastValueGiven = 1024uL;
@@ -4429,6 +4508,7 @@ public abstract class Server : BaseNetwork
 		Networkable networkable = Pool.Get<Networkable>();
 		networkable.ID = new NetworkableId(TakeUID());
 		networkable.sv = this;
+		networkable.SubStrategy = DefaultSubscriberStrategy;
 		return networkable;
 	}
 
@@ -4436,10 +4516,11 @@ public abstract class Server : BaseNetwork
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		Networkable networkable = Pool.Get<Networkable>();
 		networkable.ID = uid;
 		networkable.sv = this;
+		networkable.SubStrategy = DefaultSubscriberStrategy;
 		RegisterUID(uid.Value);
 		return networkable;
 	}
@@ -4539,6 +4620,41 @@ public abstract class Server : BaseNetwork
 	public virtual int GetAveragePing(Connection connection)
 	{
 		return 0;
+	}
+}
+
+
+using Facepunch;
+using Network;
+using Network.Visibility;
+
+public class DefaultSubscriberStrategy : ISubscriberStrategy
+{
+	public void GatherHighPrioSubscriptions(Networkable net, ListHashSet<Group> visible)
+	{
+		net.sv.visibility.GetVisibleFromNear(net.group, visible);
+		AddSecondaryGroup(net, visible);
+	}
+
+	public void GatherSubscriptions(Networkable net, ListHashSet<Group> visible)
+	{
+		net.sv.visibility.GetVisibleFromFar(net.group, visible);
+		AddSecondaryGroup(net, visible);
+	}
+
+	private void AddSecondaryGroup(Networkable net, ListHashSet<Group> groupsVisible)
+	{
+		Group secondaryGroup = net.secondaryGroup;
+		if (secondaryGroup != null)
+		{
+			ListHashSet<Group> val = Pool.Get<ListHashSet<Group>>();
+			net.sv.visibility.GetVisibleFromNear(secondaryGroup, val);
+			for (int i = 0; i < val.Count; i++)
+			{
+				groupsVisible.TryAdd(val[i]);
+			}
+			Pool.FreeUnmanaged<Group>(ref val);
+		}
 	}
 }
 

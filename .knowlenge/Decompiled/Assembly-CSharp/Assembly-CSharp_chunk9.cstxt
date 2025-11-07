@@ -1,3 +1,453 @@
+using UnityEngine;
+
+public class AttackState : BasicAIState
+{
+	private IAIAttack attack;
+
+	private float originalStoppingDistance;
+
+	public AttackState()
+		: base(AIState.Attack)
+	{
+		base.AgrresiveState = true;
+	}
+
+	public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
+	{
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		entity.SetFlag(BaseEntity.Flags.Reserved3, b: true);
+		originalStoppingDistance = brain.Navigator.StoppingDistance;
+		brain.Navigator.Agent.stoppingDistance = 1f;
+		brain.Navigator.StoppingDistance = 1f;
+		base.StateEnter(brain, entity);
+		attack = entity as IAIAttack;
+		BaseEntity baseEntity = brain.Events.Memory.Entity.Get(brain.Events.CurrentInputMemorySlot);
+		if ((Object)(object)baseEntity != (Object)null)
+		{
+			Vector3 aimDirection = GetAimDirection(((Component)brain.Navigator).transform.position, ((Component)baseEntity).transform.position);
+			brain.Navigator.SetFacingDirectionOverride(aimDirection);
+			if (attack.CanAttack(baseEntity))
+			{
+				StartAttacking(baseEntity);
+			}
+			brain.Navigator.SetDestination(((Component)baseEntity).transform.position, BaseNavigator.NavigationSpeed.Fast);
+		}
+	}
+
+	public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
+	{
+		base.StateLeave(brain, entity);
+		entity.SetFlag(BaseEntity.Flags.Reserved3, b: false);
+		brain.Navigator.Agent.stoppingDistance = originalStoppingDistance;
+		brain.Navigator.StoppingDistance = originalStoppingDistance;
+		brain.Navigator.ClearFacingDirectionOverride();
+		brain.Navigator.Stop();
+		StopAttacking();
+	}
+
+	private void StopAttacking()
+	{
+		attack.StopAttacking();
+	}
+
+	public override StateStatus StateThink(float delta, BaseAIBrain brain, BaseEntity entity)
+	{
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		base.StateThink(delta, brain, entity);
+		BaseEntity baseEntity = brain.Events.Memory.Entity.Get(brain.Events.CurrentInputMemorySlot);
+		if (attack == null)
+		{
+			return StateStatus.Error;
+		}
+		if ((Object)(object)baseEntity == (Object)null)
+		{
+			brain.Navigator.ClearFacingDirectionOverride();
+			StopAttacking();
+			return StateStatus.Finished;
+		}
+		if (brain.Senses.ignoreSafeZonePlayers)
+		{
+			BasePlayer basePlayer = baseEntity as BasePlayer;
+			if ((Object)(object)basePlayer != (Object)null && basePlayer.InSafeZone())
+			{
+				return StateStatus.Error;
+			}
+		}
+		Vector3Ex.Direction2D(((Component)baseEntity).transform.position, ((Component)entity).transform.position);
+		Vector3 position = ((Component)baseEntity).transform.position;
+		if (!brain.Navigator.SetDestination(position, BaseNavigator.NavigationSpeed.Fast, 0.2f))
+		{
+			return StateStatus.Error;
+		}
+		Vector3 aimDirection = GetAimDirection(((Component)brain.Navigator).transform.position, ((Component)baseEntity).transform.position);
+		brain.Navigator.SetFacingDirectionOverride(aimDirection);
+		if (attack.CanAttack(baseEntity))
+		{
+			StartAttacking(baseEntity);
+		}
+		else
+		{
+			StopAttacking();
+		}
+		return StateStatus.Running;
+	}
+
+	private static Vector3 GetAimDirection(Vector3 from, Vector3 target)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return Vector3Ex.Direction2D(target, from);
+	}
+
+	private void StartAttacking(BaseEntity entity)
+	{
+		attack.StartAttacking(entity);
+	}
+}
+
+
+using UnityEngine;
+
+public class RoamState : BasicAIState
+{
+	private StateStatus status = StateStatus.Error;
+
+	public RoamState()
+		: base(AIState.Roam)
+	{
+	}
+
+	public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
+	{
+		base.StateLeave(brain, entity);
+		Stop();
+	}
+
+	public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
+	{
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		base.StateEnter(brain, entity);
+		status = StateStatus.Error;
+		if (brain.PathFinder == null)
+		{
+			return;
+		}
+		ScarecrowNPC scarecrowNPC = entity as ScarecrowNPC;
+		if (!((Object)(object)scarecrowNPC == (Object)null))
+		{
+			Vector3 val = brain.Events.Memory.Position.Get(4);
+			Vector3 val2 = val;
+			val2 = ((!scarecrowNPC.RoamAroundHomePoint) ? brain.PathFinder.GetBestRoamPosition(brain.Navigator, ((Component)brain.Navigator).transform.position, brain.Events.Memory.Position.Get(4), 10f, brain.Navigator.BestRoamPointMaxDistance) : brain.PathFinder.GetBestRoamPositionFromAnchor(brain.Navigator, val, val, 1f, brain.Navigator.BestRoamPointMaxDistance));
+			if (brain.Navigator.SetDestination(val2, BaseNavigator.NavigationSpeed.Slow))
+			{
+				status = StateStatus.Running;
+			}
+			else
+			{
+				status = StateStatus.Error;
+			}
+		}
+	}
+
+	private void Stop()
+	{
+		brain.Navigator.Stop();
+	}
+
+	public override StateStatus StateThink(float delta, BaseAIBrain brain, BaseEntity entity)
+	{
+		base.StateThink(delta, brain, entity);
+		if (status == StateStatus.Error)
+		{
+			return status;
+		}
+		if (brain.Navigator.Moving)
+		{
+			return StateStatus.Running;
+		}
+		return StateStatus.Finished;
+	}
+}
+
+
+using ConVar;
+using ProtoBuf;
+using UnityEngine;
+
+public class GingerbreadNPC : HumanNPC, IClientBrainStateListener
+{
+	public GameObjectRef OverrideCorpseMale;
+
+	public GameObjectRef OverrideCorpseFemale;
+
+	public PhysicMaterial HitMaterial;
+
+	public bool RoamAroundHomePoint;
+
+	protected override string CorpsePath => CorpseResourcePath;
+
+	protected override string OverrideCorpseName => "Gingerbread";
+
+	protected override bool ShouldCorpseTakeChildren => false;
+
+	protected override bool KeepCorpseClothingIntact => false;
+
+	protected override bool CopyInventoryToCorpse => false;
+
+	protected string CorpseResourcePath
+	{
+		get
+		{
+			bool flag = GetFloatBasedOnUserID(userID, 4332uL) > 0.5f;
+			if (OverrideCorpseMale.isValid && !flag)
+			{
+				return OverrideCorpseMale.resourcePath;
+			}
+			if (OverrideCorpseFemale.isValid && flag)
+			{
+				return OverrideCorpseFemale.resourcePath;
+			}
+			return "assets/prefabs/npc/murderer/murderer_corpse.prefab";
+			static float GetFloatBasedOnUserID(ulong steamid, ulong seed)
+			{
+				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+				//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+				State state = Random.state;
+				Random.InitState((int)(seed + steamid));
+				float result = Random.Range(0f, 1f);
+				Random.state = state;
+				return result;
+			}
+		}
+	}
+
+	public override void OnAttacked(HitInfo info)
+	{
+		base.OnAttacked(info);
+		info.HitMaterial = Global.GingerbreadMaterialID();
+	}
+
+	public override string Categorize()
+	{
+		return "Gingerbread";
+	}
+
+	public override bool ShouldDropActiveItem()
+	{
+		return false;
+	}
+
+	public override void AttackerInfo(DeathInfo info)
+	{
+		base.AttackerInfo(info);
+		info.inflictorName = base.inventory.containerBelt.GetSlot(0).info.shortname;
+		info.attackerName = base.ShortPrefabName;
+	}
+
+	public void OnClientStateChanged(AIState state)
+	{
+	}
+}
+
+
+using System;
+using UnityEngine;
+
+public class AIThinkManager : BaseMonoBehaviour, IServerComponent
+{
+	public enum QueueType
+	{
+		Human,
+		Animal,
+		Pets
+	}
+
+	public static ListHashSet<IThinker> _processQueue = new ListHashSet<IThinker>();
+
+	public static ListHashSet<IThinker> _removalQueue = new ListHashSet<IThinker>();
+
+	public static ListHashSet<IThinker> _animalProcessQueue = new ListHashSet<IThinker>();
+
+	public static ListHashSet<IThinker> _animalremovalQueue = new ListHashSet<IThinker>();
+
+	public static ListHashSet<IThinker> _petProcessQueue = new ListHashSet<IThinker>();
+
+	public static ListHashSet<IThinker> _petRemovalQueue = new ListHashSet<IThinker>();
+
+	[Help("How many miliseconds to budget for processing AI entities per server frame")]
+	[ServerVar]
+	public static float framebudgetms = 2.5f;
+
+	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
+	[ServerVar]
+	public static float animalframebudgetms = 2.5f;
+
+	[ServerVar]
+	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
+	public static float petframebudgetms = 1f;
+
+	private static int lastIndex = 0;
+
+	private static int lastAnimalIndex = 0;
+
+	private static int lastPetIndex;
+
+	public static void ProcessQueue(QueueType queueType)
+	{
+		if (queueType != 0)
+		{
+			_ = 2;
+		}
+		switch (queueType)
+		{
+		case QueueType.Human:
+			DoRemoval(_removalQueue, _processQueue);
+			AIInformationZone.BudgetedTick();
+			break;
+		case QueueType.Pets:
+			DoRemoval(_petRemovalQueue, _petProcessQueue);
+			break;
+		default:
+			DoRemoval(_animalremovalQueue, _animalProcessQueue);
+			break;
+		}
+		switch (queueType)
+		{
+		case QueueType.Human:
+			DoProcessing(_processQueue, framebudgetms / 1000f, ref lastIndex);
+			break;
+		case QueueType.Pets:
+			DoProcessing(_petProcessQueue, petframebudgetms / 1000f, ref lastPetIndex);
+			break;
+		default:
+			DoProcessing(_animalProcessQueue, animalframebudgetms / 1000f, ref lastAnimalIndex);
+			break;
+		}
+	}
+
+	private static void DoRemoval(ListHashSet<IThinker> removal, ListHashSet<IThinker> process)
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		if (removal.Count <= 0)
+		{
+			return;
+		}
+		Enumerator<IThinker> enumerator = removal.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				IThinker current = enumerator.Current;
+				process.Remove(current);
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
+		}
+		removal.Clear();
+	}
+
+	private static void DoProcessing(ListHashSet<IThinker> process, float budgetSeconds, ref int last)
+	{
+		float realtimeSinceStartup = Time.realtimeSinceStartup;
+		while (last < process.Count && Time.realtimeSinceStartup < realtimeSinceStartup + budgetSeconds)
+		{
+			IThinker thinker = process[last];
+			if (thinker != null)
+			{
+				try
+				{
+					thinker.TryThink();
+				}
+				catch (Exception ex)
+				{
+					Debug.LogWarning((object)ex);
+				}
+			}
+			last++;
+		}
+		if (last >= process.Count)
+		{
+			last = 0;
+		}
+	}
+
+	public static void Add(IThinker toAdd)
+	{
+		_processQueue.Add(toAdd);
+	}
+
+	public static void Remove(IThinker toRemove)
+	{
+		_removalQueue.Add(toRemove);
+	}
+
+	public static void AddAnimal(IThinker toAdd)
+	{
+		_animalProcessQueue.Add(toAdd);
+	}
+
+	public static void RemoveAnimal(IThinker toRemove)
+	{
+		_animalremovalQueue.Add(toRemove);
+	}
+
+	public static void AddPet(IThinker toAdd)
+	{
+		_petProcessQueue.Add(toAdd);
+	}
+
+	public static void RemovePet(IThinker toRemove)
+	{
+		_petRemovalQueue.Add(toRemove);
+	}
+}
+
+
+public enum QueueType
+{
+	Human,
+	Animal,
+	Pets
+}
+
+
+public class BanditGuard : HumanNPC
+{
+}
+
+
 using System;
 using System.Collections;
 using System.IO;
@@ -5043,12 +5493,13 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 
 	private AIInformationGrid grid;
 
+	[NonSerialized]
+	public List<TriggerWakeAIZ> wakeTriggers = new List<TriggerWakeAIZ>();
+
 	[ServerVar]
 	public static bool UseSimpleLOSCheck = false;
 
 	private List<IAISleepable> sleepables = new List<IAISleepable>();
-
-	private OBB areaBox;
 
 	private bool isDirty = true;
 
@@ -5083,6 +5534,8 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 			return sleepables.Count;
 		}
 	}
+
+	public OBB areaBox { get; private set; }
 
 	public static AIInformationZone Merge(List<AIInformationZone> zones, GameObject newRoot)
 	{
@@ -5190,7 +5643,6 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		areaBox = new OBB(((Component)this).transform.position, ((Component)this).transform.lossyScale, ((Component)this).transform.rotation, bounds);
 		if (!zones.Contains(this))
 		{
@@ -5501,9 +5953,12 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 
 	public Vector3 ClosestPointTo(Vector3 target)
 	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref areaBox)).ClosestPoint(target);
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		OBB val = areaBox;
+		return ((OBB)(ref val)).ClosestPoint(target);
 	}
 
 	public void AddInitialPoints()
@@ -5612,18 +6067,24 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 
 	public static AIInformationZone GetForPoint(Vector3 point, bool fallBackToNearest = true)
 	{
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		if (zones == null || zones.Count == 0)
 		{
 			return null;
 		}
 		foreach (AIInformationZone zone in zones)
 		{
-			if (!((Object)(object)zone == (Object)null) && !zone.Virtual && ((OBB)(ref zone.areaBox)).Contains(point))
+			if (!((Object)(object)zone == (Object)null) && !zone.Virtual)
 			{
-				return zone;
+				OBB val = zone.areaBox;
+				if (((OBB)(ref val)).Contains(point))
+				{
+					return zone;
+				}
 			}
 		}
 		if (!fallBackToNearest)
@@ -5653,8 +6114,11 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 
 	public bool PointInside(Vector3 point)
 	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref areaBox)).Contains(point);
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		OBB val = areaBox;
+		return ((OBB)(ref val)).Contains(point);
 	}
 
 	public AIMovePoint GetBestMovePointNear(BaseEntity targetEntity, BaseEntity fromEntity, float minRange, float maxRange, bool checkLOS = false, BaseEntity forObject = null, bool returnClosest = false, bool returnRandom = false)
@@ -12577,7 +13041,7 @@ public static class PlayerNetworkingProfiler
 
 	private static DateTime flushCooldown;
 
-	public static void Serialize(AzureAnalyticsUploader uploader, int frameIndex, DateTime timestamp)
+	public static void Serialize(AzureAnalyticsUploader uploader, AnalyticsTable table, int frameIndex, DateTime timestamp)
 	{
 		if (level == 0)
 		{
@@ -12596,21 +13060,21 @@ public static class PlayerNetworkingProfiler
 		Server val = (Server)(object)((sv is Server) ? sv : null);
 		if (val != null)
 		{
-			SerializeRaknet(uploader, frameIndex, timestamp, val);
+			SerializeRaknet(uploader, table, frameIndex, timestamp, val);
 		}
 	}
 
-	private static void SerializeRaknet(AzureAnalyticsUploader uploader, int frameIndex, DateTime timestamp, Server server)
+	private static void SerializeRaknet(AzureAnalyticsUploader uploader, AnalyticsTable table, int frameIndex, DateTime timestamp, Server server)
 	{
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
 		int num = Math.Min(((Server)server).connections.Count, currentIndex + ConnectionsPerFrame);
 		RaknetStats val2 = default(RaknetStats);
 		while (currentIndex < num)
@@ -12653,7 +13117,14 @@ public static class PlayerNetworkingProfiler
 				eventRecord.AddField("", Unsafe.Add(ref val2.runningTotal.FixedElementField, 4));
 				eventRecord.AddField("", Unsafe.Add(ref val2.runningTotal.FixedElementField, 5));
 				eventRecord.AddField("", Unsafe.Add(ref val2.runningTotal.FixedElementField, 6));
-				uploader.Append(eventRecord);
+				if (Analytics.UseV2)
+				{
+					table.Append(eventRecord);
+				}
+				else
+				{
+					uploader.Append(eventRecord);
+				}
 			}
 			currentIndex++;
 		}
@@ -12836,8 +13307,8 @@ public class AmbienceDefinition : ScriptableObject
 	[Horizontal(2, -1)]
 	public ValueRange stingFrequency = new ValueRange(15f, 30f);
 
-	[InspectorFlags]
 	[Header("Environment")]
+	[InspectorFlags]
 	public Enum biomes = (Enum)(-1);
 
 	[InspectorFlags]
@@ -16418,6 +16889,8 @@ public class Construction : PrefabAttribute
 	public float minPlaceDistance = 1f;
 
 	public Mesh guideMesh;
+
+	public Material[] guideMeshMaterial;
 
 	[NonSerialized]
 	public Socket_Base[] allSockets;
@@ -21044,25 +21517,25 @@ public class Socket_Free_Snappable : Socket_Free
 	[Range(-1f, 1f)]
 	private float generalPadding;
 
-	[Range(-1f, 1f)]
-	[SerializeField]
 	[Header("Snapping - Walls")]
+	[SerializeField]
+	[Range(-1f, 1f)]
 	private float snappingPadding;
 
-	[SerializeField]
 	[Header("Snapping - Corners")]
+	[SerializeField]
 	private bool allowSnappingToCorners = true;
 
 	[Range(-1f, 1f)]
 	[SerializeField]
 	private float cornerPadding = -0.01f;
 
-	[Header("Snapping - Same Deployable")]
 	[SerializeField]
+	[Header("Snapping - Same Deployable")]
 	private bool allowSnappingToSameDeployable = true;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float sameDeployablePadding;
 
 	private BaseEntity staticEntity;
@@ -22916,8 +23389,8 @@ public class GameObjectToggleState : StateMachineBehaviour
 {
 	public bool UseCurve;
 
-	[Tooltip("The normalised range in the animation in which to apply the TargetState")]
 	[MinMax(0f, 1f)]
+	[Tooltip("The normalised range in the animation in which to apply the TargetState")]
 	public Vector2 ValidNormalisedRange;
 
 	public AnimationCurve CurveRange = AnimationCurve.Linear(0f, 0f, 1f, 0f);
@@ -25939,6 +26412,8 @@ public class MeshPaintController : MonoBehaviour, IClientComponent
 
 	public GameObject BackgroundBlocker;
 
+	public FlexibleColorPicker ColourPicker;
+
 	private Vector3 lastPosition;
 }
 
@@ -26003,6 +26478,33 @@ public class OverlayMeshPaintableSource : MeshPaintableSource
 			block.SetTexture(baseTextureName, (Texture)(object)Texture2D.blackTexture);
 		}
 	}
+}
+
+
+using UnityEngine;
+using UnityEngine.UI;
+
+public class PaintingFavouriteColorButton : MonoBehaviour
+{
+	public Image colorImage;
+
+	public Color initialColor;
+}
+
+
+using UnityEngine;
+
+public class PaintingFavouriteColours : SingletonComponent<PaintingFavouriteColours>
+{
+	public MeshPaintController meshPaintController;
+
+	public GameObject panelIcon;
+
+	public PaintingFavouriteColorButton buttonPrefab;
+
+	public Transform buttonContainer;
+
+	public GameObject addColourButton;
 }
 
 

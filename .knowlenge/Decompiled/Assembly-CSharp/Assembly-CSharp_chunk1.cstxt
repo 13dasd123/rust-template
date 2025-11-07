@@ -9,6 +9,235 @@ internal sealed class IsUnmanagedAttribute : Attribute
 }
 
 
+using UnityEngine;
+
+public class CopyPasteDataAsset : BaseScriptableObject
+{
+	[SerializeField]
+	private byte[] data;
+
+	public void SetData(byte[] newData)
+	{
+		data = newData;
+	}
+
+	public byte[] GetData()
+	{
+		return data;
+	}
+}
+
+
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public static class CustomAssert
+{
+	public static void That(bool condition, string message = null)
+	{
+		Assert.IsTrue(condition, message);
+	}
+
+	public static void IsOn(BaseEntity entity, string message = null)
+	{
+		Assert.IsTrue(entity.IsOn(), message ?? (((Object)entity).name + " didn't have the On flag"));
+	}
+
+	public static void IsOff(BaseEntity entity, string message = null)
+	{
+		Assert.IsFalse(entity.IsOn(), message ?? (((Object)entity).name + " had the On flag"));
+	}
+
+	public static void IsBusy(BaseEntity entity, string message = null)
+	{
+		Assert.IsTrue(entity.IsBusy(), message ?? (((Object)entity).name + " didn't have the Busy flag"));
+	}
+
+	public static void HasPower(IOEntity entity, string message = null)
+	{
+		Assert.IsTrue(entity.HasFlag(BaseEntity.Flags.Reserved8), message ?? (((Object)entity).name + " didn't have the HasPower flag"));
+	}
+
+	public static void HasNoPower(IOEntity entity, string message = null)
+	{
+		Assert.IsFalse(entity.HasFlag(BaseEntity.Flags.Reserved8), message ?? (((Object)entity).name + " did have the HasPower flag"));
+	}
+
+	public static void IsGreater(float actual, float expected, string message = null)
+	{
+		Assert.IsTrue(actual > expected, message ?? $"Expected {actual} to be greater than {expected}.");
+	}
+
+	public static void IsGreaterOrEqual(float actual, float expected, string message = null)
+	{
+		Assert.IsTrue(actual >= expected, message ?? $"Expected {actual} to be at least {expected}, but got {actual}.");
+	}
+
+	public static void IsLess(float actual, float expected, string message = null)
+	{
+		Assert.IsTrue(actual < expected, message ?? $"Expected {actual} to be less than {expected}.");
+	}
+
+	public static void IsLessOrEqual(float actual, float expected, string message = null)
+	{
+		Assert.IsTrue(actual <= expected, message ?? $"Expected {actual} to be at most {expected}, but got {actual}.");
+	}
+}
+
+
+using System;
+using UnityEngine;
+
+public class ExecuteForSeconds : CustomYieldInstruction
+{
+	private readonly float endTime;
+
+	private readonly Action action;
+
+	public override bool keepWaiting
+	{
+		get
+		{
+			if (Time.time >= endTime)
+			{
+				return false;
+			}
+			action?.Invoke();
+			return true;
+		}
+	}
+
+	public ExecuteForSeconds(Action action, float duration)
+	{
+		this.action = action;
+		endTime = Time.time + duration;
+	}
+}
+
+
+using System;
+
+[AttributeUsage(AttributeTargets.Class)]
+public class TestClassAttribute : Attribute
+{
+	public string Category;
+
+	public string GetCategory()
+	{
+		return Category ?? "Uncategorized";
+	}
+}
+
+
+using System;
+using JetBrains.Annotations;
+
+[MeansImplicitUse]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class TestMethodAttribute : Attribute
+{
+	public object[] TestParameters { get; private set; }
+
+	public TestMethodAttribute(params object[] testParameters)
+	{
+		TestParameters = testParameters;
+	}
+}
+
+
+using System;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class TestMethodAsyncAttribute : TestMethodAttribute
+{
+	public TestMethodAsyncAttribute(params object[] testParameters)
+		: base(testParameters)
+	{
+	}
+}
+
+
+using System;
+
+[AttributeUsage(AttributeTargets.Method)]
+public class TestParameterSourceAttribute : Attribute
+{
+	public string SourceName { get; private set; }
+
+	public TestParameterSourceAttribute(string sourceName)
+	{
+		SourceName = sourceName;
+	}
+}
+
+
+using System;
+
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class TestRepeatCountAttribute : Attribute
+{
+	public int RepeatCount { get; }
+
+	public TestRepeatCountAttribute(int repeatCount)
+	{
+		RepeatCount = Math.Max(1, repeatCount);
+	}
+}
+
+
+using System;
+
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class TestDescriptionAttribute : Attribute
+{
+	public string Description { get; set; }
+
+	public TestDescriptionAttribute(string description)
+	{
+		Description = description;
+	}
+}
+
+
+using System;
+using UnityEngine;
+
+public class WaitUntilWithTimeout : CustomYieldInstruction
+{
+	private readonly float timeoutTime;
+
+	private readonly Func<bool> condition;
+
+	public string Message { get; private set; }
+
+	public bool TimedOut { get; private set; }
+
+	public override bool keepWaiting
+	{
+		get
+		{
+			if (condition())
+			{
+				return false;
+			}
+			if (Time.time >= timeoutTime)
+			{
+				TimedOut = true;
+				return false;
+			}
+			return true;
+		}
+	}
+
+	public WaitUntilWithTimeout(Func<bool> condition, float timeoutSeconds, string message = null)
+	{
+		this.condition = condition;
+		timeoutTime = Time.time + timeoutSeconds;
+		Message = message;
+	}
+}
+
+
 using System;
 using UnityEngine;
 
@@ -224,7 +453,7 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 			{
 				continue;
 			}
-			if ((Object)(object)renderSetting.ItemDefinition == (Object)(object)itemDef || renderSetting.itemID == skinID)
+			if ((Object)(object)renderSetting.ItemDefinition == (Object)(object)itemDef || (skinID != 0 && renderSetting.itemID == skinID))
 			{
 				val = ((Component)renderSetting).gameObject;
 				((Component)renderSetting).gameObject.SetActive(true);
@@ -3027,8 +3256,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 
 	private float soundCullDistanceSq;
 
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineLoopDef;
 
 	private Sound engineLoop;
@@ -3670,9 +3899,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void SetShellFuseLength(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))
@@ -4595,8 +4824,8 @@ public class StrobeLight : IOEntity
 		return speedSlow;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetStrobe(RPCMessage msg)
 	{
 		bool strobe = msg.read.Bit();
@@ -4827,8 +5056,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		TrainHasThrottle
 	}
 
-	[Header("Coaling Tower")]
 	[SerializeField]
+	[Header("Coaling Tower")]
 	private BoxCollider unloadingBounds;
 
 	[SerializeField]
@@ -4887,8 +5116,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private TokenisedPhrase trainHasThrottle;
 
-	[Header("Coaling Tower Audio")]
 	[SerializeField]
+	[Header("Coaling Tower Audio")]
 	private GameObject buttonSoundPos;
 
 	[SerializeField]
@@ -5499,8 +5728,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", (object)this, (object)msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)
@@ -5509,8 +5738,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Next(RPCMessage msg)
 	{
 		if (TryShuntTrain(next: true, out var attemptStatus))
@@ -5955,6 +6184,18 @@ using UnityEngine;
 
 public class CargoShip : BaseEntity
 {
+	[Serializable]
+	public struct CargoshipCamera
+	{
+		public Transform cameraPoint;
+
+		public Quaternion cameraRotation;
+
+		public Transform cameraLookAtPoint;
+
+		public string cameraIdentifier;
+	}
+
 	public struct HarborInfo
 	{
 		public BasePath harborPath;
@@ -6032,6 +6273,10 @@ public class CargoShip : BaseEntity
 
 	public const Flags Egressing = Flags.Reserved8;
 
+	public GameObjectRef cctvCameraPrefab;
+
+	public CargoshipCamera[] cctvCameras;
+
 	[ServerVar]
 	public static bool docking_debug = false;
 
@@ -6093,6 +6338,8 @@ public class CargoShip : BaseEntity
 	public float turnScale;
 
 	public int lootRoundsPassed;
+
+	private List<CCTV_RC> cameraEntities;
 
 	public int hornCount;
 
@@ -6550,8 +6797,11 @@ public class CargoShip : BaseEntity
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
 		if (!Application.isLoadingSave)
 		{
 			string strPrefab = (cargo_escape_boat_rhib ? escapeBoatPrefab.resourcePath : primitiveEscapeBoatPrefab.resourcePath);
@@ -6589,6 +6839,28 @@ public class CargoShip : BaseEntity
 			}
 			microphoneStand.ioEntity.Get(serverside: true).MarkDirtyForceUpdateOutputs();
 		}
+		cameraEntities = Pool.Get<List<CCTV_RC>>();
+		CargoshipCamera[] array2 = cctvCameras;
+		for (int i = 0; i < array2.Length; i++)
+		{
+			CargoshipCamera cargoshipCamera = array2[i];
+			CCTV_RC cCTV_RC = GameManager.server.CreateEntity(cctvCameraPrefab.resourcePath, cargoshipCamera.cameraPoint.position, cargoshipCamera.cameraRotation) as CCTV_RC;
+			if (Object.op_Implicit((Object)(object)cCTV_RC))
+			{
+				cCTV_RC.enableSaving = false;
+				cCTV_RC.SetParent(this, worldPositionStays: true);
+				cCTV_RC.Spawn();
+				cCTV_RC.rcIdentifier = cargoshipCamera.cameraIdentifier;
+				cCTV_RC.SetLookingAtPoint(cargoshipCamera.cameraLookAtPoint.position);
+				cameraEntities.Add(cCTV_RC);
+			}
+		}
+	}
+
+	internal override void DoServerDestroy()
+	{
+		Pool.FreeUnmanaged<CCTV_RC>(ref cameraEntities);
+		base.DoServerDestroy();
 	}
 
 	protected override void OnChildAdded(BaseEntity child)
@@ -6793,24 +7065,29 @@ public class CargoShip : BaseEntity
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		if (IsOceanPatrolPathAvailable() && IsValidTargetNode())
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsOceanPatrolPathAvailable() || !IsValidTargetNode())
 		{
-			InitializeHarborApproach();
-			Vector3 approachRotationNode = Vector3.zero;
-			CalculateDesiredNodes(out var desiredMoveNode, out approachRotationNode);
-			float num = 0f;
-			num = CalculateDesiredThrottle(desiredMoveNode);
-			UpdateShip(num, desiredMoveNode, approachRotationNode);
-			float num2 = (isDoingHarborApproach ? 8f : 80f);
-			if (Vector3.Distance(((Component)this).transform.position, desiredMoveNode) < num2)
-			{
-				HandleNodeArrival(desiredMoveNode);
-			}
-			UpdateHarborApproachProgress();
+			return;
 		}
+		InitializeHarborApproach();
+		Vector3 approachRotationNode = Vector3.zero;
+		CalculateDesiredNodes(out var desiredMoveNode, out approachRotationNode);
+		float num = 0f;
+		num = CalculateDesiredThrottle(desiredMoveNode);
+		UpdateShip(num, desiredMoveNode, approachRotationNode);
+		foreach (CCTV_RC cameraEntity in cameraEntities)
+		{
+			cameraEntity.UpdateNetworkGroup();
+		}
+		float num2 = (isDoingHarborApproach ? 8f : 80f);
+		if (Vector3.Distance(((Component)this).transform.position, desiredMoveNode) < num2)
+		{
+			HandleNodeArrival(desiredMoveNode);
+		}
+		UpdateHarborApproachProgress();
 	}
 
 	[ContextMenu("Break")]
@@ -6957,8 +7234,8 @@ public class CargoShip : BaseEntity
 	{
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0327: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0315: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
@@ -6995,41 +7272,36 @@ public class CargoShip : BaseEntity
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0254: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0263: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0300: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0305: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0284: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
 		if (isDoingHarborApproach)
 		{
 			int index = (shouldLookAhead ? Mathf.Min(currentHarborApproachNode + 1, harborApproachPath.nodes.Count - 1) : currentHarborApproachNode);
@@ -7061,7 +7333,7 @@ public class CargoShip : BaseEntity
 				{
 					RaycastHit current = item;
 					BaseEntity entity = current.GetEntity();
-					if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && ((RaycastHit)(ref current)).collider.isTrigger && ((Component)((RaycastHit)(ref current)).collider).CompareTag("FerryAvoid"))
+					if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && !(entity is CargoShip) && ((RaycastHit)(ref current)).collider.isTrigger && ((Component)((RaycastHit)(ref current)).collider).CompareTag("FerryAvoid"))
 					{
 						num = ((i != 0) ? 1 : (-1));
 						flag = true;
@@ -7081,10 +7353,6 @@ public class CargoShip : BaseEntity
 				val = Quaternion.Euler(0f, 45f, 0f) * normalized2;
 				Vector3 normalized4 = ((Vector3)(ref val)).normalized;
 				Vector3 val3 = ((num == -1) ? normalized4 : normalized3);
-				if (Vector3.Dot(val3, normalized) < 0f)
-				{
-					val3 = -val3;
-				}
 				desiredMoveNode = ((Component)this).transform.position + val3 * 10000f;
 			}
 			else
@@ -7389,6 +7657,22 @@ public class CargoShip : BaseEntity
 		}
 		return base.OnRpcMessage(player, rpc, msg);
 	}
+}
+
+
+using System;
+using UnityEngine;
+
+[Serializable]
+public struct CargoshipCamera
+{
+	public Transform cameraPoint;
+
+	public Quaternion cameraRotation;
+
+	public Transform cameraLookAtPoint;
+
+	public string cameraIdentifier;
 }
 
 

@@ -1718,9 +1718,9 @@ public class RustCore : CSPlugin
 	}
 
 	[HookMethod("IOnTeamInvite")]
-	private void IOnTeamInvite(BasePlayer basePlayer, BasePlayer basePlayer2)
+	private object IOnTeamInvite(BasePlayer basePlayer, BasePlayer basePlayer2)
 	{
-		Interface.Oxide.CallDeprecatedHook("OnTeamInvite", "OnTeamMemberInvite(PlayerTeam playerTeam, BasePlayer basePlayer, ulong userId)", Eoy, new object[2] { basePlayer, basePlayer2 });
+		return Interface.Oxide.CallDeprecatedHook("OnTeamInvite", "OnTeamMemberInvite(PlayerTeam playerTeam, BasePlayer basePlayer, ulong userId)", Eoy, new object[2] { basePlayer, basePlayer2 });
 	}
 }
 
@@ -3918,7 +3918,7 @@ public class Player : Library
 
 	public void GiveItem(BasePlayer player, Item item, int quantity = 1)
 	{
-		player.inventory.GiveItem(ItemManager.CreateByItemID(item.info.itemid, quantity, 0uL), (ItemContainer)null);
+		player.inventory.GiveItem(ItemManager.CreateByItemID(item.info.itemid, quantity, 0uL), (ItemContainer)null, (GiveItemOptions)0);
 	}
 
 	public PlayerInventory Inventory(BasePlayer player)
@@ -3954,7 +3954,6 @@ using Network;
 using Oxide.Core;
 using Oxide.Core.Libraries;
 using Oxide.Game.Rust.Libraries;
-using ProtoBuf;
 
 public class Rust : Library
 {
@@ -4009,7 +4008,7 @@ public class Rust : Library
 	[LibraryFunction("UserIDsFromBuildingPrivilege")]
 	public Array UserIDsFromBuildingPrivlidge(BuildingPrivlidge priv)
 	{
-		return priv.authorizedPlayers.Select((PlayerNameID eid) => eid.userid.ToString()).ToArray();
+		return priv.authorizedPlayers.Select((ulong playerId) => playerId.ToString()).ToArray();
 	}
 
 	[LibraryFunction("UserIDFromPlayer")]

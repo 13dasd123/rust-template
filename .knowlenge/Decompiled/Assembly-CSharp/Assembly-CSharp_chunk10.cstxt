@@ -3308,6 +3308,47 @@ public static class DamageUtil
 }
 
 
+using UnityEngine;
+
+public class DDrawCommand
+{
+	public static string Sphere(Vector3 position, float duration, Color color, float radius, bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		return ConsoleSystem.BuildCommand("ddraw.sphere", new object[6] { duration, color, position, radius, distanceFade, zTest });
+	}
+
+	public static string Box(Vector3 position, float duration, Color color, Vector3 size, Quaternion rotation = default(Quaternion), bool distanceFade = true, bool zTest = true)
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		object[] obj = new object[7] { duration, color, position, size, null, null, null };
+		Quaternion val = default(Quaternion);
+		val = ((rotation != val) ? rotation : Quaternion.identity);
+		obj[4] = ((Quaternion)(ref val)).eulerAngles;
+		obj[5] = distanceFade;
+		obj[6] = zTest;
+		return ConsoleSystem.BuildCommand("ddraw.box", obj);
+	}
+
+	public static string Text(Vector3 position, float duration, Color color, string text, bool distanceFade = true, bool zTest = false)
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		return ConsoleSystem.BuildCommand("ddraw.text", new object[6] { duration, color, position, text, distanceFade, zTest });
+	}
+}
+
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -3428,6 +3469,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Facepunch;
 using Facepunch.Rust;
 using Network;
 using UnityEngine;
@@ -3436,6 +3478,34 @@ using UnityEngine.SceneManagement;
 [Factory("global")]
 public class DiagnosticsConSys : ConsoleSystem
 {
+	public class SceneDumpOutput
+	{
+		public string SceneName;
+
+		public int SceneIndex;
+
+		public int TransformCount;
+
+		public int TransfromPlusComponentCount;
+
+		public Transform[] Roots;
+	}
+
+	private class GameObjectRecursiveData
+	{
+		public GameObject GameObject;
+
+		public Component[] Components;
+
+		public int Depth;
+
+		public int TotalTransformCount;
+
+		public int TotalComponentCount;
+
+		public List<GameObjectRecursiveData> Children = new List<GameObjectRecursiveData>();
+	}
+
 	private static void DumpAnimators(string targetFolder)
 	{
 		Animator[] array = Object.FindObjectsOfType<Animator>();
@@ -3475,8 +3545,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
+	[ClientVar(ClientAdmin = true)]
 	[ServerVar]
-	[ClientVar]
 	public static void dump(Arg args)
 	{
 		if (Directory.Exists("diagnostics"))
@@ -3492,11 +3562,20 @@ public class DiagnosticsConSys : ConsoleSystem
 		string targetFolder = "diagnostics/" + num + "/";
 		DumpLODGroups(targetFolder);
 		DumpSystemInformation(targetFolder);
+		List<SceneDumpOutput> list = new List<SceneDumpOutput>();
 		for (int i = 0; i < SceneManager.sceneCount; i++)
 		{
-			DumpSceneGameObjects(targetFolder, i);
+			list.Add(DumpSceneGameObjects(targetFolder, i));
 		}
-		DumpAllGameObjects(targetFolder);
+		HashSet<Transform> sceneRoots = list.SelectMany((SceneDumpOutput x) => x.Roots).ToHashSet();
+		Transform[] allRootObjects = TransformUtil.GetAllRootObjects();
+		allRootObjects.Where((Transform x) => !sceneRoots.Contains(x)).ToArray();
+		SceneDumpOutput sceneDumpOutput = DumpSceneGameObjects(targetFolder, "DontDestroyOnLoad", allRootObjects);
+		sceneDumpOutput.SceneName = "DontDestroyOnLoad";
+		sceneDumpOutput.SceneIndex = -1;
+		list.Add(sceneDumpOutput);
+		DumpObjectsPerScene(targetFolder, list);
+		DumpGameObjects(targetFolder, allRootObjects);
 		DumpObjects(targetFolder);
 		DumpEntities(targetFolder);
 		DumpNetwork(targetFolder);
@@ -3654,10 +3733,10 @@ public class DiagnosticsConSys : ConsoleSystem
 		}
 		WriteTextToFile(targetFolder + "UnityEngine.Object_All.Count.txt", stringBuilder2.ToString());
 		StringBuilder stringBuilder3 = new StringBuilder();
-		stringBuilder3.AppendLine("All active + inactive UnityEngine.Object, ordered by count");
-		stringBuilder3.AppendLine($"Total: {array.Length}");
+		stringBuilder3.AppendLine("All active UnityEngine.ScriptableObject, ordered by count");
 		stringBuilder3.AppendLine();
 		foreach (IGrouping<Type, Object> item3 in from x in array
+			where x is ScriptableObject
 			group x by ((object)x).GetType() into x
 			orderby x.Count() descending
 			select x)
@@ -3665,20 +3744,7 @@ public class DiagnosticsConSys : ConsoleSystem
 			stringBuilder3.AppendFormat("{1:N0}\t{0}", ((object)item3.First()).GetType().Name, item3.Count());
 			stringBuilder3.AppendLine();
 		}
-		WriteTextToFile(targetFolder + "UnityEngine.Object.Count.txt", stringBuilder3.ToString());
-		StringBuilder stringBuilder4 = new StringBuilder();
-		stringBuilder4.AppendLine("All active UnityEngine.ScriptableObject, ordered by count");
-		stringBuilder4.AppendLine();
-		foreach (IGrouping<Type, Object> item4 in from x in array
-			where x is ScriptableObject
-			group x by ((object)x).GetType() into x
-			orderby x.Count() descending
-			select x)
-		{
-			stringBuilder4.AppendFormat("{1:N0}\t{0}", ((object)item4.First()).GetType().Name, item4.Count());
-			stringBuilder4.AppendLine();
-		}
-		WriteTextToFile(targetFolder + "UnityEngine.ScriptableObject.Count.txt", stringBuilder4.ToString());
+		WriteTextToFile(targetFolder + "UnityEngine.ScriptableObject.Count.txt", stringBuilder3.ToString());
 	}
 
 	private static void DumpPhysics(string targetFolder)
@@ -3760,120 +3826,231 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Physics.RigidBody.All.txt", stringBuilder2.ToString());
 	}
 
-	private static string GetOutputDirectoryForScene(string targetFolder, int sceneIndex, Scene scene)
+	private static string GetOutputDirectoryForScene(string targetFolder, string sceneName)
 	{
-		string arg = ((Scene)(ref scene)).name.Replace("\\", "_").Replace("/", "_").Replace(" ", "_");
-		targetFolder = Path.Combine(targetFolder, "Scenes", $"{sceneIndex}_{arg}/");
-		Directory.CreateDirectory(targetFolder);
-		return targetFolder;
+		string path = sceneName.Replace("\\", "_").Replace("/", "_").Replace(" ", "_");
+		targetFolder = Path.Combine(targetFolder, "Scenes", path);
+		string fullName = Directory.CreateDirectory(targetFolder).FullName;
+		char directorySeparatorChar = Path.DirectorySeparatorChar;
+		return fullName + directorySeparatorChar;
 	}
 
-	private static void DumpSceneGameObjects(string targetFolder, int sceneIndex)
+	private static SceneDumpOutput DumpSceneGameObjects(string targetFolder, int sceneIndex)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		Scene sceneAt = SceneManager.GetSceneAt(sceneIndex);
-		Transform[] rootObjects = (from x in ((Scene)(ref sceneAt)).GetRootGameObjects()
+		Transform[] array = (from x in ((Scene)(ref sceneAt)).GetRootGameObjects()
 			select x.transform).ToArray();
-		targetFolder = GetOutputDirectoryForScene(targetFolder, sceneIndex, sceneAt);
-		DumpGameObjects(targetFolder, rootObjects);
+		string sceneFolderName = $"{sceneIndex}_{((Scene)(ref sceneAt)).name}";
+		SceneDumpOutput sceneDumpOutput = DumpSceneGameObjects(targetFolder, sceneFolderName, array);
+		sceneDumpOutput.Roots = array;
+		sceneDumpOutput.SceneName = ((Scene)(ref sceneAt)).name;
+		sceneDumpOutput.SceneIndex = sceneIndex;
+		return sceneDumpOutput;
 	}
 
-	private static void DumpAllGameObjects(string targetFolder)
-	{
-		Transform[] rootObjects = TransformUtil.GetRootObjects();
-		DumpGameObjects(targetFolder, rootObjects);
-	}
-
-	private static void DumpGameObjects(string targetFolder, Transform[] rootObjects)
+	private static void DumpObjectsPerScene(string targetFolder, List<SceneDumpOutput> scenes)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("All active game objects");
+		stringBuilder.AppendLine("Summary of all scenes");
+		stringBuilder.AppendLine($"Total Transforms: {scenes.Sum((SceneDumpOutput x) => x.TransformCount)}");
+		stringBuilder.AppendLine($"Total Components + Transforms: {scenes.Sum((SceneDumpOutput x) => x.TransfromPlusComponentCount)}");
 		stringBuilder.AppendLine();
-		Transform[] array = rootObjects;
-		foreach (Transform tx in array)
+		TextTable val = Pool.Get<TextTable>();
+		try
 		{
-			DumpGameObjectRecursive(stringBuilder, tx, 0);
-			stringBuilder.AppendLine();
+			val.AddColumns(new string[4] { "Index", "Scene", "Transforms", "Transforms + Components" });
+			foreach (SceneDumpOutput item in scenes.OrderByDescending((SceneDumpOutput x) => x.TransfromPlusComponentCount))
+			{
+				val.AddValue(item.SceneIndex);
+				val.AddValue(item.SceneName ?? "Unknown");
+				val.AddValue(item.TransformCount.ToString("N0"));
+				val.AddValue(item.TransfromPlusComponentCount.ToString("N0"));
+			}
+			stringBuilder.AppendLine(((object)val).ToString());
 		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+		WriteTextToFile(targetFolder + "Scenes.Summary.txt", stringBuilder.ToString());
+	}
+
+	private static SceneDumpOutput DumpSceneGameObjects(string targetFolder, string sceneFolderName, Transform[] rootObjects)
+	{
+		return DumpGameObjects(GetOutputDirectoryForScene(targetFolder, sceneFolderName), rootObjects);
+	}
+
+	private static SceneDumpOutput DumpGameObjects(string targetFolder, Transform[] allRootObjects)
+	{
+		SceneDumpOutput sceneDumpOutput = new SceneDumpOutput();
+		Transform[] source = allRootObjects.Where((Transform x) => ((Component)x).gameObject.activeSelf).ToArray();
+		Transform[] source2 = allRootObjects.Where((Transform x) => !((Component)x).gameObject.activeSelf).ToArray();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("All active + inactive game objects");
+		stringBuilder.AppendLine();
+		DumpHierarchy(stringBuilder, allRootObjects);
 		WriteTextToFile(targetFolder + "GameObject.Hierarchy.txt", stringBuilder.ToString());
-		stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("All active game objects including components");
-		stringBuilder.AppendLine();
-		array = rootObjects;
-		foreach (Transform tx2 in array)
-		{
-			DumpGameObjectRecursive(stringBuilder, tx2, 0, includeComponents: true);
-			stringBuilder.AppendLine();
-		}
-		WriteTextToFile(targetFolder + "GameObject.Hierarchy.Components.txt", stringBuilder.ToString());
-		stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("Root gameobjects, grouped by name, ordered by the total number of objects excluding children");
-		stringBuilder.AppendLine();
-		foreach (IGrouping<string, Transform> item in from x in rootObjects
+		StringBuilder stringBuilder2 = new StringBuilder();
+		stringBuilder2.AppendLine("All active + inactive game objects including components");
+		stringBuilder2.AppendLine();
+		DumpHierarchy(stringBuilder2, allRootObjects, includeComponents: true);
+		WriteTextToFile(targetFolder + "GameObject.Hierarchy.Components.txt", stringBuilder2.ToString());
+		StringBuilder stringBuilder3 = new StringBuilder();
+		stringBuilder3.AppendLine("All active + inactive game objects including components");
+		stringBuilder3.AppendLine();
+		DumpHierarchy(stringBuilder3, allRootObjects, includeComponents: false, showTotals: true);
+		WriteTextToFile(targetFolder + "GameObject.Hierarchy.Totals.txt", stringBuilder3.ToString());
+		StringBuilder stringBuilder4 = new StringBuilder();
+		stringBuilder4.AppendLine("Active + inactive root gameobjects, grouped by name, ordered by the total count of root objects");
+		stringBuilder4.AppendLine();
+		foreach (IGrouping<string, Transform> item in from x in source
 			group x by ((Object)x).name into x
 			orderby x.Count() descending
 			select x)
 		{
 			Transform val = item.First();
-			stringBuilder.AppendFormat("{1:N0}\t{0}", ((Object)val).name, item.Count());
-			stringBuilder.AppendLine();
+			stringBuilder4.AppendFormat("{1:N0}\t{0}", ((Object)val).name, item.Count());
+			stringBuilder4.AppendLine();
 		}
-		WriteTextToFile(targetFolder + "GameObject.Count.txt", stringBuilder.ToString());
-		stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("Root gameobjects, grouped by name, ordered by the total number of objects including children");
-		stringBuilder.AppendLine();
-		foreach (KeyValuePair<Transform, int> item2 in from x in rootObjects
+		WriteTextToFile(targetFolder + "GameObject.Roots.txt", stringBuilder4.ToString());
+		stringBuilder4 = new StringBuilder();
+		stringBuilder4.AppendLine("Active root gameobjects, grouped by name, ordered by the total count of root objects");
+		stringBuilder4.AppendLine();
+		foreach (IGrouping<string, Transform> item2 in from x in source
+			group x by ((Object)x).name into x
+			orderby x.Count() descending
+			select x)
+		{
+			Transform val2 = item2.First();
+			stringBuilder4.AppendFormat("{1:N0}\t{0}", ((Object)val2).name, item2.Count());
+			stringBuilder4.AppendLine();
+		}
+		WriteTextToFile(targetFolder + "GameObject.Roots.Active.txt", stringBuilder4.ToString());
+		stringBuilder4 = new StringBuilder();
+		stringBuilder4.AppendLine("Inactive root gameobjects, grouped by name, ordered by the total count of root objects");
+		stringBuilder4.AppendLine();
+		foreach (IGrouping<string, Transform> item3 in from x in source2
+			group x by ((Object)x).name into x
+			orderby x.Count() descending
+			select x)
+		{
+			Transform val3 = item3.First();
+			stringBuilder4.AppendFormat("{1:N0}\t{0}", ((Object)val3).name, item3.Count());
+			stringBuilder4.AppendLine();
+		}
+		WriteTextToFile(targetFolder + "GameObject.Roots.Inactive.txt", stringBuilder4.ToString());
+		StringBuilder stringBuilder5 = new StringBuilder();
+		stringBuilder5.AppendLine("Active + inactive hierachies, ordered by the size of the root + all children transforms");
+		stringBuilder5.AppendLine();
+		IOrderedEnumerable<KeyValuePair<Transform, int>> orderedEnumerable = from x in allRootObjects
+			group x by ((Object)x).name into x
+			select new KeyValuePair<Transform, int>(x.First(), x.Sum((Transform y) => y.GetAllChildren().Count)) into x
+			orderby x.Value descending
+			select x;
+		sceneDumpOutput.TransformCount = orderedEnumerable.Sum((KeyValuePair<Transform, int> x) => x.Value);
+		foreach (KeyValuePair<Transform, int> item4 in orderedEnumerable)
+		{
+			stringBuilder5.AppendFormat("{1:N0}\t{0}", ((Object)item4.Key).name, item4.Value);
+			stringBuilder5.AppendLine();
+		}
+		WriteTextToFile(targetFolder + "GameObject.Children.txt", stringBuilder5.ToString());
+		stringBuilder5 = new StringBuilder();
+		stringBuilder5.AppendLine("Active hierachies, ordered by the size of the root + all children transforms");
+		stringBuilder5.AppendLine();
+		foreach (KeyValuePair<Transform, int> item5 in from x in source
 			group x by ((Object)x).name into x
 			select new KeyValuePair<Transform, int>(x.First(), x.Sum((Transform y) => y.GetAllChildren().Count)) into x
 			orderby x.Value descending
 			select x)
 		{
-			stringBuilder.AppendFormat("{1:N0}\t{0}", ((Object)item2.Key).name, item2.Value);
-			stringBuilder.AppendLine();
+			stringBuilder5.AppendFormat("{1:N0}\t{0}", ((Object)item5.Key).name, item5.Value);
+			stringBuilder5.AppendLine();
 		}
-		WriteTextToFile(targetFolder + "GameObject.Count.Children.txt", stringBuilder.ToString());
-		Component[] source = (from x in rootObjects.SelectMany((Transform x) => ((Component)x).GetComponentsInChildren<Component>(true))
-			where (Object)(object)x != (Object)null
-			select x).ToArray();
-		Object[] array2 = source.Select((Component x) => x.gameObject).Distinct().ToArray()
-			.OfType<Object>()
-			.Concat(source.OfType<Object>())
-			.ToArray();
-		stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("All UnityEngine.Object active + inactive, ordered by count");
-		stringBuilder.AppendLine($"Total: {array2.Length}");
-		foreach (IGrouping<Type, Object> item3 in from x in array2
-			group x by ((object)x).GetType() into x
-			orderby x.Count() descending
+		WriteTextToFile(targetFolder + "GameObject.Children.Active.txt", stringBuilder5.ToString());
+		stringBuilder5 = new StringBuilder();
+		stringBuilder5.AppendLine("Inactive hierachies, ordered by the size of the root + all children transforms");
+		stringBuilder5.AppendLine();
+		foreach (KeyValuePair<Transform, int> item6 in from x in source2
+			group x by ((Object)x).name into x
+			select new KeyValuePair<Transform, int>(x.First(), x.Sum((Transform y) => y.GetAllChildren().Count)) into x
+			orderby x.Value descending
 			select x)
 		{
-			stringBuilder.AppendFormat("{1:N0}\t{0}", ((object)item3.First()).GetType().Name, item3.Count());
-			stringBuilder.AppendLine();
+			stringBuilder5.AppendFormat("{1:N0}\t{0}", ((Object)item6.Key).name, item6.Value);
+			stringBuilder5.AppendLine();
 		}
-		WriteTextToFile(targetFolder + "UnityEngine.Object.Count.txt", stringBuilder.ToString());
+		WriteTextToFile(targetFolder + "GameObject.Children.Inactive.txt", stringBuilder5.ToString());
+		Component[] array = (from x in allRootObjects.SelectMany((Transform x) => ((Component)x).GetComponentsInChildren<Component>(true))
+			where (Object)(object)x != (Object)null
+			select x).ToArray();
+		Dictionary<Type, int> source3 = (from x in array
+			group x by ((object)x).GetType()).ToDictionary((IGrouping<Type, Component> x) => x.Key, (IGrouping<Type, Component> x) => x.Count());
+		sceneDumpOutput.TransfromPlusComponentCount = array.Length;
+		StringBuilder stringBuilder6 = new StringBuilder();
+		stringBuilder6.AppendLine("All transform roots and all it's children + components active + inactive, ordered by count");
+		stringBuilder6.AppendLine($"Total: {array.Length}");
+		foreach (KeyValuePair<Type, int> item7 in source3.OrderByDescending((KeyValuePair<Type, int> x) => x.Value))
+		{
+			stringBuilder6.AppendFormat("{1:N0}\t{0}", item7.Key.Name, item7.Value);
+			stringBuilder6.AppendLine();
+		}
+		WriteTextToFile(targetFolder + "UnityEngine.Object.Count.txt", stringBuilder6.ToString());
+		return sceneDumpOutput;
 	}
 
-	private static void DumpGameObjectRecursive(StringBuilder str, Transform tx, int indent, bool includeComponents = false)
+	private static void DumpHierarchy(StringBuilder str, Transform[] roots, bool includeComponents = false, bool showTotals = false)
 	{
-		if ((Object)(object)tx == (Object)null)
+		foreach (GameObjectRecursiveData item in from x in roots.Select((Transform x) => CollectGameObjectRecursive(x)).ToArray()
+			orderby x.TotalComponentCount descending
+			select x)
 		{
-			return;
+			PrintGameObjectRecursive(str, item, includeComponents, showTotals);
+			str.AppendLine();
 		}
-		str.Append(' ', indent);
-		str.Append(((Component)tx).gameObject.activeSelf ? "+ " : "- ");
-		str.Append(((Object)tx).name);
-		str.Append(" [").Append(((Component)tx).GetComponents<Component>().Length - 1).Append(']');
+	}
+
+	private static GameObjectRecursiveData CollectGameObjectRecursive(Transform tx, int depth = 0)
+	{
+		GameObjectRecursiveData gameObjectRecursiveData = new GameObjectRecursiveData
+		{
+			GameObject = ((Component)tx).gameObject,
+			Depth = depth,
+			Components = ((Component)tx).GetComponents<Component>()
+		};
+		gameObjectRecursiveData.TotalTransformCount = 1;
+		gameObjectRecursiveData.TotalComponentCount = gameObjectRecursiveData.Components.Length + 1;
+		for (int i = 0; i < tx.childCount; i++)
+		{
+			GameObjectRecursiveData gameObjectRecursiveData2 = CollectGameObjectRecursive(tx.GetChild(i), depth + 1);
+			gameObjectRecursiveData.Children.Add(gameObjectRecursiveData2);
+			gameObjectRecursiveData.TotalTransformCount += gameObjectRecursiveData2.TotalTransformCount;
+			gameObjectRecursiveData.TotalComponentCount += gameObjectRecursiveData2.TotalComponentCount;
+		}
+		return gameObjectRecursiveData;
+	}
+
+	private static void PrintGameObjectRecursive(StringBuilder str, GameObjectRecursiveData data, bool includeComponents, bool showTotals)
+	{
+		int num = data.Depth * 4;
+		str.Append(' ', num);
+		str.Append(data.GameObject.activeSelf ? "+ " : "- ");
+		str.Append(((Object)data.GameObject).name);
+		str.Append(" [").Append(data.Components.Length - 1).Append(']');
+		if (showTotals)
+		{
+			str.Append(" (").Append(data.TotalComponentCount.ToString("N0")).Append(")");
+		}
 		str.AppendLine();
 		if (includeComponents)
 		{
-			Component[] components = ((Component)tx).GetComponents<Component>();
+			Component[] components = data.Components;
 			foreach (Component val in components)
 			{
 				if (!(val is Transform))
 				{
-					str.Append(' ', indent + 3);
+					str.Append(' ', num + 3);
 					bool? flag = val.IsEnabled();
 					if (!flag.HasValue)
 					{
@@ -3892,9 +4069,9 @@ public class DiagnosticsConSys : ConsoleSystem
 				}
 			}
 		}
-		for (int j = 0; j < tx.childCount; j++)
+		foreach (GameObjectRecursiveData item in data.Children.OrderByDescending((GameObjectRecursiveData x) => x.TotalComponentCount))
 		{
-			DumpGameObjectRecursive(str, tx.GetChild(j), indent + 4, includeComponents);
+			PrintGameObjectRecursive(str, item, includeComponents, showTotals);
 		}
 	}
 
@@ -3917,7 +4094,7 @@ public class DiagnosticsConSys : ConsoleSystem
 		{
 			object arg = num;
 			var (arg2, timeSpan) = warmupTime;
-			stringBuilder.AppendLine($"{arg},{arg2},{timeSpan.Ticks * EventRecord.TicksToNS}");
+			stringBuilder.AppendLine($"{arg},{arg2},{timeSpan.Ticks * EventRecord.NSPerTick}");
 			num++;
 		}
 		WriteTextToFile(targetFolder + "Asset.Warmup.csv", stringBuilder.ToString());
@@ -3946,7 +4123,7 @@ public class DiagnosticsConSys : ConsoleSystem
 				null
 			};
 			TimeSpan time = spawnTiming.time;
-			obj[2] = time.Ticks * EventRecord.TicksToNS;
+			obj[2] = time.Ticks * EventRecord.NSPerTick;
 			obj[3] = spawnTiming.category;
 			obj[4] = spawnTiming.position;
 			obj[5] = spawnTiming.rotation;
@@ -3955,6 +4132,41 @@ public class DiagnosticsConSys : ConsoleSystem
 		}
 		WriteTextToFile(targetFolder + "World.Spawn.csv", stringBuilder.ToString());
 	}
+}
+
+
+using UnityEngine;
+
+public class SceneDumpOutput
+{
+	public string SceneName;
+
+	public int SceneIndex;
+
+	public int TransformCount;
+
+	public int TransfromPlusComponentCount;
+
+	public Transform[] Roots;
+}
+
+
+using System.Collections.Generic;
+using UnityEngine;
+
+private class GameObjectRecursiveData
+{
+	public GameObject GameObject;
+
+	public Component[] Components;
+
+	public int Depth;
+
+	public int TotalTransformCount;
+
+	public int TotalComponentCount;
+
+	public List<GameObjectRecursiveData> Children = new List<GameObjectRecursiveData>();
 }
 
 
@@ -4749,11 +4961,13 @@ public class SeedPosInfo : MonoBehaviour
 
 
 using System;
+using UnityEngine;
 
 public class ServerConsole : SingletonComponent<ServerConsole>
 {
 	public static void PrintColoured(string text, ConsoleColor color)
 	{
+		DebugEx.Log((object)text, (StackTraceLogType)0);
 	}
 }
 
@@ -4993,6 +5207,202 @@ public class TriangleIdentifier : MonoBehaviour
 				Vector3 val7 = (val + val2 + val3) / 3f;
 				Vector3 val8 = (val4 + val5 + val6) / 3f;
 				Gizmos.DrawLine(val7, val7 + val8 * LineLength);
+			}
+		}
+	}
+}
+
+
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class VehicleButtonTools : MonoBehaviour, IBeginDragHandler, IEventSystemHandler, IDragHandler, IEndDragHandler, IScrollHandler
+{
+	public ScrollRect MainScroll;
+
+	public Image image;
+
+	public Image backgroundImage;
+
+	public ItemDefinition itemDef;
+
+	public void Spawn()
+	{
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		DebugLog();
+		string text = itemDef.shortname;
+		ItemModEntityReference component = ((Component)itemDef).GetComponent<ItemModEntityReference>();
+		if (Object.op_Implicit((Object)(object)component))
+		{
+			text = ((Object)component.entityPrefab.Get()).name;
+		}
+		ConsoleSystem.Run(Option.Client, "spawn", new object[1] { text });
+	}
+
+	private void DebugLog()
+	{
+		if (Input.GetKey((KeyCode)308))
+		{
+			Debug.Log((object)((Object)((Component)itemDef).gameObject).name, (Object)(object)((Component)itemDef).gameObject);
+		}
+	}
+
+	public void OnBeginDrag(PointerEventData eventData)
+	{
+		MainScroll.OnBeginDrag(eventData);
+	}
+
+	public void OnDrag(PointerEventData eventData)
+	{
+		MainScroll.OnDrag(eventData);
+	}
+
+	public void OnEndDrag(PointerEventData eventData)
+	{
+		MainScroll.OnEndDrag(eventData);
+	}
+
+	public void OnScroll(PointerEventData data)
+	{
+		MainScroll.OnScroll(data);
+	}
+}
+
+
+using System.Linq;
+using Facepunch.Extend;
+using Rust;
+using Rust.UI;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
+public class VehicleListTools : MonoBehaviour
+{
+	public GameObject categoryButton;
+
+	public GameObject vehicleButtonPrefab;
+
+	public Transform vehicleButtonParent;
+
+	public RustInput searchInputText;
+
+	internal Button lastCategory;
+
+	public ScrollRect MainScrollRect;
+
+	private IOrderedEnumerable<ItemDefinition> currentItems;
+
+	private IOrderedEnumerable<ItemDefinition> allItems;
+
+	public void OnPanelOpened()
+	{
+		CacheAllItems();
+		Refresh();
+		searchInputText.InputField.ActivateInputField();
+	}
+
+	private void OnOpenDevTools()
+	{
+		searchInputText.InputField.ActivateInputField();
+	}
+
+	private void CacheAllItems()
+	{
+		if (allItems == null)
+		{
+			allItems = from x in ItemManager.GetItemDefinitions()
+				where x.vehicleItem
+				orderby x.displayName.translated
+				select x;
+		}
+	}
+
+	public void Refresh()
+	{
+		RebuildCategories();
+	}
+
+	private void RebuildCategories()
+	{
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Expected O, but got Unknown
+		for (int i = 0; i < categoryButton.transform.parent.childCount; i++)
+		{
+			Transform child = categoryButton.transform.parent.GetChild(i);
+			if (!((Object)(object)child == (Object)(object)categoryButton.transform))
+			{
+				GameManager.Destroy(((Component)child).gameObject);
+			}
+		}
+		categoryButton.SetActive(true);
+		foreach (IGrouping<VehicleCategory, ItemDefinition> item in from x in ItemManager.GetItemDefinitions()
+			group x by x.vehicleCategory into x
+			orderby x.First().vehicleCategory
+			select x)
+		{
+			GameObject val = Object.Instantiate<GameObject>(categoryButton);
+			val.transform.SetParent(categoryButton.transform.parent, false);
+			((TMP_Text)val.GetComponentInChildren<TextMeshProUGUI>()).text = item.First().vehicleCategory.ToString();
+			Button btn = val.GetComponentInChildren<Button>();
+			ItemDefinition[] itemArray = item.ToArray();
+			((UnityEvent)btn.onClick).AddListener((UnityAction)delegate
+			{
+				if (Object.op_Implicit((Object)(object)lastCategory))
+				{
+					((Selectable)lastCategory).interactable = true;
+				}
+				lastCategory = btn;
+				((Selectable)lastCategory).interactable = false;
+				SwitchItemCategory(itemArray);
+			});
+			if ((Object)(object)lastCategory == (Object)null)
+			{
+				lastCategory = btn;
+				((Selectable)lastCategory).interactable = false;
+				SwitchItemCategory(itemArray);
+			}
+		}
+		categoryButton.SetActive(false);
+	}
+
+	private void SwitchItemCategory(ItemDefinition[] defs)
+	{
+		currentItems = defs.OrderBy((ItemDefinition x) => x.displayName.translated);
+		searchInputText.Text = "";
+		FilterItems(null);
+		MainScrollRect.verticalNormalizedPosition = 1f;
+	}
+
+	public void FilterItems(string searchText)
+	{
+		if ((Object)(object)vehicleButtonPrefab == (Object)null)
+		{
+			return;
+		}
+		TransformEx.DestroyAllChildren(vehicleButtonParent, false);
+		bool flag = !string.IsNullOrEmpty(searchText);
+		string value = (flag ? searchText.ToLower() : null);
+		IOrderedEnumerable<ItemDefinition> obj = (flag ? allItems : currentItems);
+		int num = 0;
+		foreach (ItemDefinition item in obj)
+		{
+			if (item.vehicleItem && (!flag || item.shortname.ToLower().Contains(value)))
+			{
+				GameObject obj2 = Object.Instantiate<GameObject>(vehicleButtonPrefab, vehicleButtonParent);
+				VehicleButtonTools componentInChildren = obj2.GetComponentInChildren<VehicleButtonTools>();
+				componentInChildren.itemDef = item;
+				componentInChildren.MainScroll = MainScrollRect;
+				componentInChildren.image.sprite = item.iconSprite;
+				((Behaviour)componentInChildren.backgroundImage).enabled = !item.IsAllowed((EraRestriction)0);
+				((TMP_Text)obj2.GetComponentInChildren<TextMeshProUGUI>()).text = item.displayName.translated;
+				num++;
+				if (num >= 160)
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -5280,7 +5690,7 @@ public class DevMovePlayer : BaseMonoBehaviour
 
 	public void LateSpawn()
 	{
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		Item item = ItemManager.CreateByName("rifle.semiauto", 1, 0uL);
 		player.inventory.GiveItem(item, player.inventory.containerBelt);
 		player.UpdateActiveItem(item.uid);
@@ -5736,6 +6146,98 @@ using UnityEngine;
 
 public class SteamInventoryGen : MonoBehaviour
 {
+}
+
+
+using UnityEngine;
+
+public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
+{
+	public Vector3 Size = new Vector3(100f, 10f, 100f);
+
+	public bool CopyHeightMap = true;
+
+	public bool CopySplatMap = true;
+
+	public bool CopyBiomeMap = true;
+
+	public bool CopyAlphaMap = true;
+
+	public bool CopyTopologyMap = true;
+
+	public bool CopyWaterMap = true;
+
+	[HideInInspector]
+	[SerializeField]
+	private bool _hasCopied;
+
+	[SerializeField]
+	[HideInInspector]
+	private bool _isUndo;
+
+	[HideInInspector]
+	[SerializeField]
+	private Vector3 _copySize;
+
+	[HideInInspector]
+	[SerializeField]
+	private RectInt _heightMapRect;
+
+	[SerializeField]
+	[HideInInspector]
+	private Color[] _heightMapData;
+
+	[SerializeField]
+	[HideInInspector]
+	private RectInt _splat0Rect;
+
+	[HideInInspector]
+	[SerializeField]
+	private Color[] _splat0Data;
+
+	[SerializeField]
+	[HideInInspector]
+	private RectInt _splat1Rect;
+
+	[SerializeField]
+	[HideInInspector]
+	private Color[] _splat1Data;
+
+	[HideInInspector]
+	[SerializeField]
+	private RectInt _biomeRect;
+
+	[SerializeField]
+	[HideInInspector]
+	private Color[] _biomeData;
+
+	[HideInInspector]
+	[SerializeField]
+	private RectInt _alphaRect;
+
+	[HideInInspector]
+	[SerializeField]
+	private Color[] _alphaData;
+
+	[HideInInspector]
+	[SerializeField]
+	private RectInt _topologyRect;
+
+	[SerializeField]
+	[HideInInspector]
+	private Color[] _topologyData;
+
+	[SerializeField]
+	[HideInInspector]
+	private RectInt _waterRect;
+
+	[SerializeField]
+	[HideInInspector]
+	private Color[] _waterData;
+
+	public bool HasCopied => _hasCopied;
+
+	public bool IsUndo => _isUndo;
 }
 
 
@@ -13764,8 +14266,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float sampleIntervalSeconds = 1f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private int minInitialPoints = 5;
 
 	[SerializeField]
@@ -14942,8 +15444,8 @@ public class PhoneController : EntityComponent<BaseEntity>
 	public void OnReceivedDataFromConnectedPhone(byte[] data)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity obj = base.baseEntity;
 		SendInfo sendInfo = default(SendInfo);
 		((SendInfo)(ref sendInfo))..ctor(BaseNetworkable.GetConnectionsWithin(((Component)this).transform.position, 15f));
@@ -15898,6 +16400,13 @@ public static class BaseEntityEx
 }
 
 
+public enum GiveItemOptions
+{
+	None,
+	BackpackOverflow
+}
+
+
 public interface IServerFileReceiver
 {
 }
@@ -16392,9 +16901,9 @@ public class Compass : HeldEntity
 
 	private const string ADMIRE_ANIMEVENT_TAP2 = "AdmireTap2";
 
-	[Header("Compass")]
-	[SerializeField]
 	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
+	[SerializeField]
+	[Header("Compass")]
 	private float needleYawAngleOffset;
 
 	[Min(0f)]
@@ -16405,17 +16914,17 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float needleDamping = 0.5f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float maxAcceleration = 1500f;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float maxSpeed = 360f;
 
 	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
-	[SerializeField]
 	[MinMax(0f, 180f)]
+	[SerializeField]
 	private MinMax startingAngleDelta;
 
 	[SerializeField]
@@ -16424,9 +16933,9 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float wiggleFrequency = 1.5f;
 
-	[Tooltip("Velocity change when the admire animation taps the needle")]
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
+	[Tooltip("Velocity change when the admire animation taps the needle")]
 	private float admireTapNeedleVelocity = 300f;
 }
 
@@ -16532,6 +17041,21 @@ public class Hammer : BaseMelee
 		}
 		StartAttackCooldown(repeatDelay);
 	}
+}
+
+
+public interface IMedicalToolTarget
+{
+	BaseEntity GetEntity();
+
+	bool IsAlive();
+
+	bool IsValidMedicalToolItem(ItemDefinition itemDef)
+	{
+		return true;
+	}
+
+	void OnMedicalToolApplied(BasePlayer fromPlayer, ItemDefinition itemDef, ItemModConsumable consumable, MedicalTool medicalToolEntity, bool canRevive);
 }
 
 
@@ -16832,6 +17356,18 @@ public class Paddle : BaseMelee
 
 using UnityEngine;
 
+public class RPGLauncher : BaseLauncher
+{
+	public SwapAmmo WorldSwapAmmo;
+
+	public Transform LeftHandRoot;
+
+	public Transform LoadedAmmoRoot;
+}
+
+
+using UnityEngine;
+
 public class Speargun : CrossbowWeapon
 {
 	public GameObject worldAmmoModel;
@@ -16910,6 +17446,7 @@ public class GunshotLayer
 }
 
 
+using System;
 using System.Collections.Generic;
 using Facepunch;
 using Network;
@@ -17015,8 +17552,8 @@ public struct RpcTarget
 
 	public static RpcTarget PlayerAndSpectators(string funcName, BasePlayer player)
 	{
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		List<Connection> list = Pool.Get<List<Connection>>();
 		if (player.IsValid())
 		{
@@ -17024,14 +17561,13 @@ public struct RpcTarget
 			{
 				list.Add(player.net.connection);
 			}
-			if (player.IsBeingSpectated && player.children != null)
+			if (player.IsBeingSpectated)
 			{
-				foreach (BaseEntity child in player.children)
+				ReadOnlySpan<BasePlayer> spectators = player.GetSpectators();
+				for (int i = 0; i < spectators.Length; i++)
 				{
-					if (child is BasePlayer basePlayer)
-					{
-						list.Add(basePlayer.net.connection);
-					}
+					BasePlayer basePlayer = spectators[i];
+					list.Add(basePlayer.net.connection);
 				}
 			}
 		}
@@ -17091,7 +17627,6 @@ using System.Linq;
 using System.Text;
 using ConVar;
 using Facepunch;
-using Facepunch.Rust;
 using Facepunch.Rust.Profiling;
 using Network;
 using Network.Visibility;
@@ -17178,6 +17713,13 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 				return null;
 			}
 			return result;
+		}
+
+		public bool TryGetEntity(NetworkableId uid, out BaseEntity entity)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			entity = Find(uid) as BaseEntity;
+			return (Object)(object)entity != (Object)null;
 		}
 
 		public void RegisterID(BaseNetworkable ent)
@@ -17286,8 +17828,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 		Gib
 	}
 
-	[ReadOnly]
 	[Header("BaseNetworkable")]
+	[ReadOnly]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -17588,9 +18130,9 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 
 	public void OnNetworkSubscribersLeave(List<Connection> connections)
 	{
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		if (((BaseNetwork)Net.sv).IsConnected() && (!(this is BasePlayer basePlayer) || !basePlayer.IsSpectating()))
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		if (((BaseNetwork)Net.sv).IsConnected())
 		{
 			LogEntry(RustLog.EntryType.Network, 2, "LeaveVisibility");
 			NetWrite obj = ((BaseNetwork)Net.sv).StartWrite();
@@ -17754,17 +18296,23 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 		return EqualityComparer<T>.Default.Equals(oldValue, newValue);
 	}
 
-	public static List<Connection> GetConnectionsWithin(Vector3 position, float distance, bool addSecondaryConnections = false, bool useRcEntityPosition = true)
+	public static List<Connection> GetConnectionsWithin(Vector3 position, float distance, bool addSecondaryConnections = false, bool useRcEntityPosition = true, bool includeInvisPlayers = false)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		connectionsInSphereList.Clear();
 		PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
 		try
 		{
 			BaseEntity.Query.Server.GetPlayersInSphere(position, distance, (List<BasePlayer>)(object)val);
-			float sqrDistance = distance * distance;
+			float num = distance * distance;
 			foreach (BasePlayer item in (List<BasePlayer>)(object)val)
 			{
 				if ((Object)(object)item == (Object)null || item.isClient || item.Connection == null)
@@ -17777,15 +18325,44 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 					{
 						if (item.RcEntityPosition.HasValue)
 						{
-							AddSecondaryConnectionsWithin(item.RcEntityPosition.Value, sqrDistance, item);
+							AddSecondaryConnectionsWithin(item.RcEntityPosition.Value, num, item);
 						}
 					}
 					else
 					{
-						AddSecondaryConnectionsWithin(position, sqrDistance, item);
+						AddSecondaryConnectionsWithin(position, num, item);
 					}
 				}
 				connectionsInSphereList.Add(item.Connection);
+				if (item.IsBeingSpectated)
+				{
+					ReadOnlySpan<BasePlayer> spectators = item.GetSpectators();
+					for (int i = 0; i < spectators.Length; i++)
+					{
+						BasePlayer basePlayer = spectators[i];
+						connectionsInSphereList.Add(basePlayer.Connection);
+					}
+				}
+			}
+			if (includeInvisPlayers)
+			{
+				Enumerator<BasePlayer> enumerator2 = BasePlayer.invisPlayers.GetEnumerator();
+				try
+				{
+					while (enumerator2.MoveNext())
+					{
+						BasePlayer current2 = enumerator2.Current;
+						Vector3 val2 = ((Component)current2).transform.position - position;
+						if (((Vector3)(ref val2)).sqrMagnitude <= num)
+						{
+							connectionsInSphereList.Add(current2.Connection);
+						}
+					}
+				}
+				finally
+				{
+					((IDisposable)enumerator2/*cast due to .constrained prefix*/).Dispose();
+				}
 			}
 			return connectionsInSphereList;
 		}
@@ -18181,7 +18758,6 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 	internal virtual void DoServerDestroy()
 	{
 		isSpawned = false;
-		Analytics.Azure.OnEntityDestroyed(this);
 	}
 
 	public virtual bool ShouldNetworkTo(BasePlayer player)
@@ -18200,9 +18776,9 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 
 	public void SendNetworkGroupChange()
 	{
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		if (isSpawned && ((BaseNetwork)Net.sv).IsConnected() && (!(this is BasePlayer basePlayer) || !basePlayer.IsSpectating()))
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		if (isSpawned && ((BaseNetwork)Net.sv).IsConnected())
 		{
 			if (net.group == null)
 			{
@@ -18232,6 +18808,27 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 			val.UInt32(num);
 			ToStreamForNetwork((Stream)(object)val, saveInfo2);
 			val.Send(new SendInfo(connection));
+			if (DemoConVars.ServerDemosEnabled)
+			{
+				lastDemoIndex = ((BaseNetwork)Net.sv).serverDemos.DemoCount;
+			}
+		}
+	}
+
+	public void SendAsSnapshot(Connection connection, NetWrite write, bool ordered = true)
+	{
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		uint num = (ordered ? (++connection.validate.entityUpdates) : uint.MaxValue);
+		if (Interface.CallHook("OnEntitySnapshot", (object)this, (object)connection) == null)
+		{
+			SaveInfo saveInfo = default(SaveInfo);
+			saveInfo.forConnection = connection;
+			saveInfo.forDisk = false;
+			SaveInfo saveInfo2 = saveInfo;
+			write.PacketID((Type)5);
+			write.UInt32(num);
+			ToStreamForNetwork((Stream)(object)write, saveInfo2);
+			write.Send(new SendInfo(connection));
 			if (DemoConVars.ServerDemosEnabled)
 			{
 				lastDemoIndex = ((BaseNetwork)Net.sv).serverDemos.DemoCount;
@@ -18656,6 +19253,13 @@ public abstract class EntityRealm : IEnumerable<BaseNetworkable>, IEnumerable
 		return result;
 	}
 
+	public bool TryGetEntity(NetworkableId uid, out BaseEntity entity)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		entity = Find(uid) as BaseEntity;
+		return (Object)(object)entity != (Object)null;
+	}
+
 	public void RegisterID(BaseNetworkable ent)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -18813,8 +19417,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[Header("Ragdolling")]
 	[SerializeField]
+	[Header("Ragdolling")]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]
@@ -19623,8 +20227,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 	[SerializeField]
 	private CanvasGroup screenCanvas;
 
-	[Header("PROTECTED TIME")]
 	[Space]
+	[Header("PROTECTED TIME")]
 	public RustText protectedTimeText;
 
 	public int decayWarningThreshold = 130;
@@ -19748,14 +20352,13 @@ public class SimpleBuildingBlockModelVariant : PrefabAttribute
 
 
 using System.Collections.Generic;
-using System.Linq;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
 
 public class SimplePrivilege : BaseEntity
 {
-	public List<PlayerNameID> authorizedPlayers = new List<PlayerNameID>();
+	public HashSet<ulong> authorizedPlayers = new HashSet<ulong>();
 
 	public const Flags Flag_MaxAuths = Flags.Reserved5;
 
@@ -19767,12 +20370,12 @@ public class SimplePrivilege : BaseEntity
 
 	public bool IsAuthed(BasePlayer player)
 	{
-		return authorizedPlayers.Any((PlayerNameID x) => x.userid == (ulong)player.userID);
+		return IsAuthed(player.userID);
 	}
 
 	public bool IsAuthed(ulong userID)
 	{
-		return authorizedPlayers.Any((PlayerNameID x) => x.userid == userID);
+		return authorizedPlayers.Contains(userID);
 	}
 
 	public bool AnyAuthed()
@@ -19789,9 +20392,11 @@ public class SimplePrivilege : BaseEntity
 			return;
 		}
 		info.msg.buildingPrivilege.users = Pool.Get<List<PlayerNameID>>();
-		foreach (PlayerNameID authorizedPlayer in authorizedPlayers)
+		foreach (ulong authorizedPlayer in authorizedPlayers)
 		{
-			info.msg.buildingPrivilege.users.Add(authorizedPlayer.Copy());
+			PlayerNameID val = Pool.Get<PlayerNameID>();
+			val.userid = authorizedPlayer;
+			info.msg.buildingPrivilege.users.Add(val);
 		}
 	}
 
@@ -19799,10 +20404,13 @@ public class SimplePrivilege : BaseEntity
 	{
 		base.Load(info);
 		authorizedPlayers.Clear();
-		if (info.msg.buildingPrivilege != null && info.msg.buildingPrivilege.users != null)
+		if (info.msg.buildingPrivilege == null || info.msg.buildingPrivilege.users == null)
 		{
-			authorizedPlayers = info.msg.buildingPrivilege.users;
-			info.msg.buildingPrivilege.users = null;
+			return;
+		}
+		foreach (PlayerNameID user in info.msg.buildingPrivilege.users)
+		{
+			authorizedPlayers.Add(user.userid);
 		}
 	}
 
@@ -20624,8 +21232,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public BaseEntity.Flags flag;
 
-	[SerializeField]
 	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
+	[SerializeField]
 	private FlagCheck flagCheck;
 
 	[SerializeField]
@@ -20854,7 +21462,7 @@ public class HeadDispenser : EntityComponent<BaseEntity>
 
 	public void DispenseHead(HitInfo info, BaseCorpse corpse)
 	{
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		if (hasDispensed || !(info.Weapon is BaseMelee baseMelee) || !baseMelee.gathering.ProduceHeadItem)
 		{
 			return;
@@ -21192,9 +21800,9 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 				while (item.amount > item.MaxStackable())
 				{
 					Item item2 = item.SplitItem(item.MaxStackable());
-					player.GiveItem(item2, BaseEntity.GiveItemReason.ResourceHarvested);
+					player.GiveItem(item2, BaseEntity.GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
 				}
-				player.GiveItem(item, BaseEntity.GiveItemReason.ResourceHarvested);
+				player.GiveItem(item, BaseEntity.GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
 			}
 		}
 	}
@@ -21309,9 +21917,9 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 			while (item.amount > item.MaxStackable())
 			{
 				Item item2 = item.SplitItem(item.MaxStackable());
-				entity.GiveItem(item2, BaseEntity.GiveItemReason.ResourceHarvested);
+				entity.GiveItem(item2, BaseEntity.GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
 			}
-			entity.GiveItem(item, BaseEntity.GiveItemReason.ResourceHarvested);
+			entity.GiveItem(item, BaseEntity.GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
 		}
 	}
 
@@ -22550,6 +23158,8 @@ public class WaterPump : LiquidContainer
 
 	public int PowerConsumption = 5;
 
+	private Action createWaterAction;
+
 	public override bool IsGravitySource => true;
 
 	public override int ConsumptionAmount()
@@ -22579,16 +23189,20 @@ public class WaterPump : LiquidContainer
 		{
 			return;
 		}
+		if (createWaterAction == null)
+		{
+			createWaterAction = CreateWater;
+		}
 		if (flag)
 		{
-			if (!((FacepunchBehaviour)this).IsInvoking((Action)CreateWater))
+			if (!((FacepunchBehaviour)this).IsInvoking(createWaterAction))
 			{
-				((FacepunchBehaviour)this).InvokeRandomized((Action)CreateWater, PumpInterval, PumpInterval, PumpInterval * 0.1f);
+				((FacepunchBehaviour)this).InvokeRandomized(createWaterAction, PumpInterval, PumpInterval, PumpInterval * 0.1f);
 			}
 		}
-		else if (((FacepunchBehaviour)this).IsInvoking((Action)CreateWater))
+		else if (((FacepunchBehaviour)this).IsInvoking(createWaterAction))
 		{
-			((FacepunchBehaviour)this).CancelInvoke((Action)CreateWater);
+			((FacepunchBehaviour)this).CancelInvoke(createWaterAction);
 		}
 		if (flag)
 		{
@@ -22612,6 +23226,12 @@ public class WaterPump : LiquidContainer
 			return false;
 		}
 		return true;
+	}
+
+	public override void UpdateOutputs()
+	{
+		ensureOutputsUpdated = true;
+		base.UpdateOutputs();
 	}
 }
 
@@ -23234,7 +23854,7 @@ public class DestroyOutsideMonument : FacepunchBehaviour
 		}
 		if ((Object)(object)ourMonument == (Object)null)
 		{
-			DoOutsideMonument();
+			((FacepunchBehaviour)this).Invoke((Action)DoOutsideMonument, 0.5f);
 		}
 		else
 		{
@@ -26337,8 +26957,8 @@ using UnityEngine;
 
 public class BlackjackMachine : BaseCardGameEntity
 {
-	[Header("Blackjack Machine")]
 	[SerializeField]
+	[Header("Blackjack Machine")]
 	private GameObjectRef mainScreenPrefab;
 
 	[SerializeField]
@@ -26635,8 +27255,8 @@ public class CardTable : BaseCardGameEntity
 		}
 	}
 
-	[SerializeField]
 	[Header("Card Table")]
+	[SerializeField]
 	private ViewModel viewModel;
 
 	[SerializeField]
@@ -28170,6 +28790,8 @@ public class HelicopterDebris : ServerGib
 
 	public float tooHotUntil;
 
+	private static Phrase TooHotToHarvestPhrase = new Phrase("debris_too_hot", "The debris is too hot to harvest! Wait for it to cool off");
+
 	public override void ServerInit()
 	{
 		base.ServerInit();
@@ -28211,13 +28833,13 @@ public class HelicopterDebris : ServerGib
 
 	public override void OnAttacked(HitInfo info)
 	{
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		if (IsTooHot() && info.WeaponPrefab is BaseMelee)
 		{
-			if (info.Initiator is BasePlayer)
+			if (info.Initiator is BasePlayer basePlayer)
 			{
 				HitInfo hitInfo = new HitInfo();
 				hitInfo.damageTypes.Add(DamageType.Heat, 5f);
@@ -28227,6 +28849,7 @@ public class HelicopterDebris : ServerGib
 				hitInfo.Initiator = this;
 				hitInfo.PointStart = ((Component)this).transform.position;
 				Effect.server.Run("assets/bundled/prefabs/fx/impacts/additive/fire.prefab", info.Initiator, 0u, new Vector3(0f, 1f, 0f), Vector3.up);
+				basePlayer.ShowToast(GameTip.Styles.Red_Normal, TooHotToHarvestPhrase, false);
 			}
 		}
 		else
@@ -31330,745 +31953,6 @@ public enum aiState
 	GUARD,
 	FLEE,
 	DEATH
-}
-
-
-using System;
-using System.Collections.Generic;
-using Facepunch;
-using Oxide.Core;
-using ProtoBuf;
-using UnityEngine;
-
-public class ServerGib : BaseCombatEntity
-{
-	public GameObject _gibSource;
-
-	public string _gibName;
-
-	public PhysicMaterial physicsMaterial;
-
-	public bool useContinuousCollision;
-
-	private MeshCollider meshCollider;
-
-	private Rigidbody rigidBody;
-
-	public override float BoundsPadding()
-	{
-		return 3f;
-	}
-
-	public static List<ServerGib> CreateGibs(string entityToCreatePath, GameObject creator, GameObject gibSource, Vector3 inheritVelocity, float spreadVelocity)
-	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
-		List<ServerGib> list = new List<ServerGib>();
-		MeshRenderer[] componentsInChildren = gibSource.GetComponentsInChildren<MeshRenderer>(true);
-		foreach (MeshRenderer val in componentsInChildren)
-		{
-			MeshFilter component = ((Component)val).GetComponent<MeshFilter>();
-			Vector3 val2 = ((Component)val).transform.localPosition;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
-			Matrix4x4 localToWorldMatrix = creator.transform.localToWorldMatrix;
-			Vector3 val3 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint(((Component)val).transform.localPosition) + normalized * 0.5f;
-			Quaternion val4 = creator.transform.rotation * ((Component)val).transform.localRotation;
-			BaseEntity baseEntity = GameManager.server.CreateEntity(entityToCreatePath, val3, val4);
-			if (Object.op_Implicit((Object)(object)baseEntity))
-			{
-				ServerGib component2 = ((Component)baseEntity).GetComponent<ServerGib>();
-				((Component)component2).transform.SetPositionAndRotation(val3, val4);
-				component2._gibName = ((Object)val).name;
-				MeshCollider component3 = ((Component)val).GetComponent<MeshCollider>();
-				Mesh physicsMesh = (((Object)(object)component3 != (Object)null) ? component3.sharedMesh : component.sharedMesh);
-				component2.PhysicsInit(physicsMesh);
-				val2 = ((Component)val).transform.localPosition;
-				Vector3 val5 = ((Vector3)(ref val2)).normalized * spreadVelocity;
-				component2.rigidBody.velocity = inheritVelocity + val5;
-				Rigidbody obj = component2.rigidBody;
-				val2 = Vector3Ex.Range(-1f, 1f);
-				obj.angularVelocity = ((Vector3)(ref val2)).normalized * 1f;
-				component2.rigidBody.WakeUp();
-				component2.Spawn();
-				list.Add(component2);
-			}
-		}
-		foreach (ServerGib item in list)
-		{
-			foreach (ServerGib item2 in list)
-			{
-				if (!((Object)(object)item == (Object)(object)item2))
-				{
-					Physics.IgnoreCollision((Collider)(object)item2.GetCollider(), (Collider)(object)item.GetCollider(), true);
-				}
-			}
-		}
-		Interface.CallHook("OnGibsSpawned", (object)list, (object)creator);
-		return list;
-	}
-
-	public override void Save(SaveInfo info)
-	{
-		base.Save(info);
-		if (!info.forDisk && _gibName != "")
-		{
-			info.msg.servergib = Pool.Get<ServerGib>();
-			info.msg.servergib.gibName = _gibName;
-		}
-	}
-
-	public MeshCollider GetCollider()
-	{
-		if ((Object)(object)meshCollider == (Object)null)
-		{
-			meshCollider = ((Component)this).GetComponent<MeshCollider>();
-		}
-		if ((Object)(object)meshCollider == (Object)null)
-		{
-			meshCollider = ((Component)this).GetComponentInChildren<MeshCollider>();
-		}
-		return meshCollider;
-	}
-
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		((FacepunchBehaviour)this).Invoke((Action)RemoveMe, 1800f);
-	}
-
-	public void RemoveMe()
-	{
-		Kill();
-	}
-
-	public virtual void PhysicsInit(Mesh physicsMesh)
-	{
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		Mesh sharedMesh = null;
-		MeshFilter component = ((Component)this).gameObject.GetComponent<MeshFilter>();
-		if ((Object)(object)component != (Object)null)
-		{
-			sharedMesh = component.sharedMesh;
-			component.sharedMesh = physicsMesh;
-		}
-		meshCollider = ((Component)this).gameObject.AddComponent<MeshCollider>();
-		meshCollider.sharedMesh = physicsMesh;
-		meshCollider.convex = true;
-		((Collider)meshCollider).material = physicsMaterial;
-		if ((Object)(object)component != (Object)null)
-		{
-			component.sharedMesh = sharedMesh;
-		}
-		Rigidbody val = ((Component)this).gameObject.AddComponent<Rigidbody>();
-		val.useGravity = true;
-		Bounds val2 = ((Collider)meshCollider).bounds;
-		Vector3 size = ((Bounds)(ref val2)).size;
-		float magnitude = ((Vector3)(ref size)).magnitude;
-		val2 = ((Collider)meshCollider).bounds;
-		size = ((Bounds)(ref val2)).size;
-		val.mass = Mathf.Clamp(magnitude * ((Vector3)(ref size)).magnitude * 20f, 10f, 2000f);
-		val.interpolation = (RigidbodyInterpolation)1;
-		val.collisionDetectionMode = (CollisionDetectionMode)(useContinuousCollision ? 2 : 0);
-		if (base.isServer)
-		{
-			val.drag = 0.1f;
-			val.angularDrag = 0.1f;
-		}
-		rigidBody = val;
-		((Component)this).gameObject.layer = LayerMask.NameToLayer("Default");
-		if (base.isClient)
-		{
-			val.isKinematic = true;
-		}
-	}
-}
-
-
-using System;
-
-public class TimedUnlootableCrate : LootContainer
-{
-	public bool unlootableOnSpawn = true;
-
-	public float unlootableDuration = 300f;
-
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		if (unlootableOnSpawn)
-		{
-			SetUnlootableFor(unlootableDuration);
-		}
-	}
-
-	public void SetUnlootableFor(float duration)
-	{
-		SetFlag(Flags.OnFire, b: true);
-		SetFlag(Flags.Locked, b: true);
-		unlootableDuration = duration;
-		((FacepunchBehaviour)this).Invoke((Action)MakeLootable, duration);
-	}
-
-	public void MakeLootable()
-	{
-		SetFlag(Flags.OnFire, b: false);
-		SetFlag(Flags.Locked, b: false);
-	}
-}
-
-
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class PlanterBoxStatic : PlanterBox
-{
-	[ServerVar(Help = "Chance of a favourable gene being picked [0-1]. Setting this to 0 does not ensure no favourable genes are picked up, but it greatly reduces the chances.")]
-	public static float FavourableGeneChance = 0.5f;
-
-	public List<GameObjectRef> staticPlantsSpawnlist;
-
-	public bool randomPerSlot;
-
-	public float respawnCheckTimer = 30f;
-
-	public override void SetupTimeCaches()
-	{
-	}
-
-	public override void RefreshGrowables(GrowableEntity ignoreEntity = null)
-	{
-	}
-
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		((FacepunchBehaviour)this).InvokeRepeating((Action)CreateStaticPlants, 1f, respawnCheckTimer);
-	}
-
-	public void CreateStaticPlants()
-	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		soilSaturation = soilSaturationMax;
-		GameObjectRef randomStaticPlant = GetRandomStaticPlant();
-		Socket_Base[] array = PrefabAttribute.server.FindAll<Socket_Base>(prefabID);
-		foreach (Socket_Base socket_Base in array)
-		{
-			if (socket_Base is Socket_Specific_Female && IsSpawnPointFreeSearch(socket_Base.localPosition))
-			{
-				if (randomPerSlot)
-				{
-					randomStaticPlant = GetRandomStaticPlant();
-				}
-				Vector3 pos = ((Component)this).transform.TransformPoint(socket_Base.localPosition);
-				BaseEntity baseEntity = GameManager.server.CreateEntity(randomStaticPlant.resourcePath, pos, Quaternion.identity);
-				baseEntity.SetParent(this, worldPositionStays: true);
-				baseEntity.Spawn();
-				GrowableEntity growableEntity = baseEntity as GrowableEntity;
-				if ((Object)(object)growableEntity != (Object)null)
-				{
-					growableEntity.Fertilize();
-					growableEntity.SetGodQuality(qual: true);
-					growableEntity.SetMaxGrowingConditions();
-					growableEntity.Genes.GenerateFavourableGenes(growableEntity);
-					growableEntity.SendNetworkUpdate();
-					OnPlantInserted(growableEntity, null);
-				}
-			}
-		}
-	}
-
-	private GameObjectRef GetRandomStaticPlant()
-	{
-		if (staticPlantsSpawnlist == null || staticPlantsSpawnlist.Count == 0)
-		{
-			return null;
-		}
-		int index = Random.Range(0, staticPlantsSpawnlist.Count);
-		return staticPlantsSpawnlist[index];
-	}
-
-	private bool IsSpawnPointFreeSearch(Vector3 localPos)
-	{
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		foreach (BaseEntity child in children)
-		{
-			if (child is GrowableEntity && Vector3.Distance(((Component)child).transform.localPosition, localPos) < 0.05f)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-}
-
-
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SeekerTarget
-{
-	public enum SeekerStrength
-	{
-		OFF = 0,
-		LOW = 100,
-		MEDIUM = 200,
-		HIGH = 1000,
-		HIGHEST = 1000
-	}
-
-	public interface ISeekerTargetOwner
-	{
-		Vector3 CenterPoint();
-
-		bool InSafeZone();
-
-		bool IsValidHomingTarget();
-
-		bool IsVisible(Vector3 position, float maxDistance = float.PositiveInfinity);
-
-		void OnEntityMessage(BaseEntity from, string msg);
-	}
-
-	[NonSerialized]
-	public SeekerStrength strength;
-
-	public ISeekerTargetOwner owner;
-
-	private static Dictionary<ISeekerTargetOwner, SeekerTarget> seekerTargets = new Dictionary<ISeekerTargetOwner, SeekerTarget>();
-
-	public bool IsValidTarget()
-	{
-		if (owner.IsUnityNull())
-		{
-			return false;
-		}
-		if (!owner.InSafeZone())
-		{
-			return owner.IsValidHomingTarget();
-		}
-		return false;
-	}
-
-	public bool TryGetPosition(out Vector3 result)
-	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		if (owner.IsUnityNull())
-		{
-			result = Vector3.zero;
-			return false;
-		}
-		result = owner.CenterPoint();
-		return true;
-	}
-
-	public void SendOwnerMessage(BaseEntity from, string message)
-	{
-		if (!owner.IsUnityNull())
-		{
-			owner.OnEntityMessage(from, message);
-		}
-	}
-
-	public static SeekerTarget GetBestForPoint(Vector3 from, Vector3 forward, float maxCone, float maxDist, SeekerStrength minStrength = SeekerStrength.LOW)
-	{
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		SeekerTarget result = null;
-		float num = 0f;
-		foreach (KeyValuePair<ISeekerTargetOwner, SeekerTarget> seekerTarget in seekerTargets)
-		{
-			ISeekerTargetOwner key = seekerTarget.Key;
-			SeekerTarget value = seekerTarget.Value;
-			if (value.strength < minStrength || !value.IsValidTarget() || !value.TryGetPosition(out var result2))
-			{
-				continue;
-			}
-			Vector3 val = Vector3Ex.Direction(result2, from);
-			float num2 = Vector3.Dot(forward, val);
-			float num3 = Vector3.Distance(result2, from);
-			if (num3 < maxDist && num2 > maxCone)
-			{
-				float num4 = 1f - num3 / maxDist * 0.3f;
-				float num5 = num2 / maxCone * 1f;
-				float num6 = (float)value.strength / 1000f * 0.5f;
-				float num7 = num4 + num5 + num6;
-				if (num7 > num && key.IsVisible(from, maxDist))
-				{
-					result = value;
-					num = num7;
-				}
-			}
-		}
-		return result;
-	}
-
-	public static void SetSeekerTarget(ISeekerTargetOwner toAdd, SeekerStrength strength)
-	{
-		if (strength == SeekerStrength.OFF)
-		{
-			if (seekerTargets.ContainsKey(toAdd))
-			{
-				seekerTargets.Remove(toAdd);
-			}
-		}
-		else if (!seekerTargets.ContainsKey(toAdd))
-		{
-			SeekerTarget value = new SeekerTarget
-			{
-				strength = strength,
-				owner = toAdd
-			};
-			seekerTargets.Add(toAdd, value);
-		}
-	}
-}
-
-
-public enum SeekerStrength
-{
-	OFF = 0,
-	LOW = 100,
-	MEDIUM = 200,
-	HIGH = 1000,
-	HIGHEST = 1000
-}
-
-
-using UnityEngine;
-
-public interface ISeekerTargetOwner
-{
-	Vector3 CenterPoint();
-
-	bool InSafeZone();
-
-	bool IsValidHomingTarget();
-
-	bool IsVisible(Vector3 position, float maxDistance = float.PositiveInfinity);
-
-	void OnEntityMessage(BaseEntity from, string msg);
-}
-
-
-using System;
-using UnityEngine;
-
-public class SeekingServerProjectile : ServerProjectile
-{
-	public float courseAdjustRate = 1f;
-
-	public float maxTrackDistance = 500f;
-
-	public float minLockDot;
-
-	public float flareLockDot = 0.6f;
-
-	public bool autoSeek;
-
-	public float swimAfter = 6f;
-
-	public float launchingDuration = 0.15f;
-
-	public float armingDuration = 0.75f;
-
-	public float velocityRampUpTime = 6f;
-
-	public Vector3 armingFinalDir;
-
-	public AnimationCurve airmingDirCurve;
-
-	public AnimationCurve armingVelocityCurve;
-
-	public float armingVelocity;
-
-	public AnimationCurve velocityCurve;
-
-	public float orphanedVectorChangeRate = 30f;
-
-	public SeekerTarget lockedTarget;
-
-	private float nextTargetUpdateTime = float.NegativeInfinity;
-
-	private Vector3 seekingDestination;
-
-	private float launchTime;
-
-	private Vector3 initialDir = Vector3.forward;
-
-	private bool orphanedProjectile;
-
-	private Vector3 orphanedTargetVector;
-
-	private Vector3 orphanedRotationAxis;
-
-	public float totalArmingPhaseDuration => launchingDuration + armingDuration;
-
-	public void NotifyOrphaned()
-	{
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		orphanedProjectile = true;
-		orphanedTargetVector = Random.onUnitSphere;
-	}
-
-	public virtual void UpdateTarget()
-	{
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		if (orphanedProjectile)
-		{
-			lockedTarget = null;
-			return;
-		}
-		if (Time.realtimeSinceStartup >= nextTargetUpdateTime)
-		{
-			if (autoSeek)
-			{
-				lockedTarget = SeekerTarget.GetBestForPoint(((Component)this).transform.position, ((Component)this).transform.forward, minLockDot, maxTrackDistance);
-			}
-			else
-			{
-				SeekerTarget bestForPoint = SeekerTarget.GetBestForPoint(((Component)this).transform.position, ((Component)this).transform.forward, flareLockDot, maxTrackDistance, SeekerTarget.SeekerStrength.HIGH);
-				if (bestForPoint != null)
-				{
-					lockedTarget = bestForPoint;
-				}
-			}
-			nextTargetUpdateTime = Time.realtimeSinceStartup + 0.1f;
-		}
-		if (lockedTarget != null && lockedTarget.TryGetPosition(out var result))
-		{
-			seekingDestination = result;
-		}
-		else
-		{
-			seekingDestination = ((Component)this).transform.position + ((Component)this).transform.forward * 1000f;
-		}
-		if (lockedTarget != null)
-		{
-			lockedTarget.SendOwnerMessage(base.baseEntity, "RadarLock");
-		}
-	}
-
-	public Vector3 GetSeekingDestination()
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		return seekingDestination;
-	}
-
-	public override bool DoMovement()
-	{
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-		float num = TimeSinceLaunch();
-		if (!(num < launchingDuration))
-		{
-			if (num < totalArmingPhaseDuration)
-			{
-				float num2 = num - launchingDuration;
-				Vector3 val = Vector3.Lerp(initialDir, armingFinalDir, Mathf.Clamp01(num2 / armingDuration));
-				base.CurrentVelocity = val * armingVelocity * armingVelocityCurve.Evaluate(num);
-			}
-			else
-			{
-				UpdateTarget();
-				Vector3 val2 = base.CurrentVelocity;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
-				Vector3 normalized2;
-				if (orphanedProjectile)
-				{
-					normalized2 = orphanedTargetVector;
-					orphanedTargetVector = Quaternion.AngleAxis(orphanedVectorChangeRate * Time.deltaTime, orphanedRotationAxis) * orphanedTargetVector;
-					if (Random.value < 0.02f)
-					{
-						PickNewRotationAxis();
-					}
-				}
-				else
-				{
-					val2 = GetSeekingDestination() - ((Component)this).transform.position;
-					normalized2 = ((Vector3)(ref val2)).normalized;
-				}
-				Vector3 val3 = Vector3.MoveTowards(normalized, normalized2, Time.fixedDeltaTime * courseAdjustRate);
-				((Vector3)(ref val3)).Normalize();
-				float num3 = armingVelocity + velocityCurve.Evaluate(TimeSinceArmed() / velocityRampUpTime) * speed;
-				base.CurrentVelocity = val3 * num3;
-			}
-		}
-		return base.DoMovement();
-	}
-
-	public float TimeSinceArmed()
-	{
-		return TimeSinceLaunch() - totalArmingPhaseDuration;
-	}
-
-	public float TimeSinceLaunch()
-	{
-		return Mathf.Max(Time.time - launchTime, 0f);
-	}
-
-	public void EnableBoosters()
-	{
-		base.baseEntity.SetFlag(BaseEntity.Flags.On, b: true);
-		((FacepunchBehaviour)this).Invoke((Action)DisableBoosters, 1f);
-	}
-
-	public void DisableBoosters()
-	{
-		base.baseEntity.SetFlag(BaseEntity.Flags.On, b: false);
-	}
-
-	public override void InitializeVelocity(Vector3 overrideVel)
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normalized = ((Vector3)(ref overrideVel)).normalized;
-		launchTime = Time.time;
-		initialDir = normalized;
-		((FacepunchBehaviour)this).Invoke((Action)EnableBoosters, 0.5f);
-		base.InitializeVelocity(overrideVel);
-	}
-
-	private void PickNewRotationAxis()
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = Vector3.Cross(orphanedTargetVector, Random.onUnitSphere);
-		orphanedRotationAxis = ((Vector3)(ref val)).normalized;
-	}
-}
-
-
-using System;
-using System.Linq;
-using Rust.Workshop;
-using UnityEngine;
-
-public static class SkinHelpers
-{
-	public static void SetSkin(GameObject itemModel, ItemDefinition itemDef, ulong skinID)
-	{
-		if ((Object)(object)itemDef == (Object)null)
-		{
-			return;
-		}
-		ItemSkinDirectory.Skin skin = itemDef.skins.FirstOrDefault((ItemSkinDirectory.Skin x) => (ulong)x.id == skinID);
-		if ((ulong)skin.id == skinID)
-		{
-			ItemSkin itemSkin = skin.invItem as ItemSkin;
-			if ((Object)(object)itemSkin != (Object)null)
-			{
-				itemSkin.ApplySkin(itemModel);
-			}
-		}
-		else if (skinID != 0L)
-		{
-			WorkshopSkin.Apply(itemModel, skinID, (Action<Skin>)null, (Action)null);
-		}
-	}
-}
-
-
-public class SmokeBomb : TimedExplosive
-{
 }
 
 

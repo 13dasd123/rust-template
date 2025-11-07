@@ -5655,9 +5655,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 public static class UnsafeListAccess
 {
+	[Preserve]
 	private class ListPrivateFieldAccess<T>
 	{
 		internal T[] _items;
@@ -5673,7 +5675,7 @@ public static class UnsafeListAccess
 		return Unsafe.As<ListPrivateFieldAccess<T>>(list);
 	}
 
-	public static T[] GetInternalArrayUnsafe<T>(this List<T> list)
+	private static T[] GetInternalArrayUnsafe<T>(this List<T> list)
 	{
 		return list.GetPrivateFieldsUnsafe()._items;
 	}
@@ -5686,6 +5688,12 @@ public static class UnsafeListAccess
 	public static ReadOnlySpan<T> ListAsReadOnlySpan<T>(this List<T> list)
 	{
 		return list.GetInternalArrayUnsafe().AsSpan(0, list.Count);
+	}
+
+	public static ReadOnlySpan<U> ListAsReadOnlySpanOf<T, U>(this List<T> list) where T : class, U
+	{
+		U[] internalArrayUnsafe = list.GetInternalArrayUnsafe();
+		return new ReadOnlySpan<U>(internalArrayUnsafe, 0, list.Count);
 	}
 }
 
@@ -8024,8 +8032,8 @@ public static class Global
 
 	public static void Init()
 	{
-		LaunchCountThisVersion = PlayerPrefs.GetInt($"launch{2603}", 0) + 1;
-		PlayerPrefs.SetInt($"launch{2603}", LaunchCountThisVersion);
+		LaunchCountThisVersion = PlayerPrefs.GetInt($"launch{2604}", 0) + 1;
+		PlayerPrefs.SetInt($"launch{2604}", LaunchCountThisVersion);
 	}
 }
 
@@ -8633,19 +8641,19 @@ public class PropRendererDebug : MonoBehaviour
 
 public static class Protocol
 {
-	public const int network = 2603;
+	public const int network = 2604;
 
-	public const int save = 272;
+	public const int save = 273;
 
 	public const int report = 1;
 
-	public const int persistance = 5;
+	public const int persistance = 7;
 
 	public const int analytics_db = 1;
 
 	public const int ping = 1;
 
-	public static string printable => 2603 + "." + 272 + "." + 1;
+	public static string printable => 2604 + "." + 273 + "." + 1;
 }
 
 
@@ -9525,6 +9533,9 @@ private struct Column
 }
 
 
+using UnityEngine.Scripting;
+
+[Preserve]
 private class ListPrivateFieldAccess<T>
 {
 	internal T[] _items;

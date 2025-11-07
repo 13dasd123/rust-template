@@ -1,4 +1,749 @@
 using System;
+using System.Collections.Generic;
+using ConVar;
+using Facepunch;
+using Network;
+using ProtoBuf;
+using Rust.UI;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, IServerFileReceiver
+{
+	public uint imageCrc;
+
+	public ulong playerId;
+
+	public string playerName;
+
+	public MeshRenderer PhotoImage;
+
+	public RustText WantedName;
+
+	public GameObjectRef AssignDialog;
+
+	public const Flags HasTarget = Flags.Reserved1;
+
+	public uiPlayerPreview.EffectMode EffectMode = uiPlayerPreview.EffectMode.Polaroid;
+
+	public uint[] GetContentCRCs
+	{
+		get
+		{
+			if (imageCrc == 0)
+			{
+				return null;
+			}
+			return new uint[1] { imageCrc };
+		}
+	}
+
+	public UGCType ContentType => UGCType.ImageJpg;
+
+	public List<ulong> EditingHistory { get; } = new List<ulong>();
+
+	public BaseNetworkable UgcEntity => this;
+
+	public string ContentString => string.Empty;
+
+	public Vector2i TextureSize => new Vector2i(1024, 1024);
+
+	public int TextureCount => 1;
+
+	public NetworkableId NetworkID => net.ID;
+
+	public FileStorage.Type FileType => FileStorage.Type.jpg;
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		TimeWarning val = TimeWarning.New("WantedPoster.OnRpcMessage", 0);
+		try
+		{
+			if (rpc == 2419123501u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ClearPlayer "));
+				}
+				TimeWarning val2 = TimeWarning.New("ClearPlayer", 0);
+				try
+				{
+					TimeWarning val3 = TimeWarning.New("Conditions", 0);
+					try
+					{
+						if (!RPC_Server.CallsPerSecond.Test(2419123501u, "ClearPlayer", this, player, 5uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(2419123501u, "ClearPlayer", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					finally
+					{
+						((IDisposable)val3)?.Dispose();
+					}
+					try
+					{
+						val3 = TimeWarning.New("Call", 0);
+						try
+						{
+							RPCMessage rPCMessage = default(RPCMessage);
+							rPCMessage.connection = msg.connection;
+							rPCMessage.player = player;
+							rPCMessage.read = msg.read;
+							RPCMessage msg2 = rPCMessage;
+							ClearPlayer(msg2);
+						}
+						finally
+						{
+							((IDisposable)val3)?.Dispose();
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in ClearPlayer");
+					}
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+				return true;
+			}
+			if (rpc == 657465493 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - UpdatePoster "));
+				}
+				TimeWarning val2 = TimeWarning.New("UpdatePoster", 0);
+				try
+				{
+					TimeWarning val3 = TimeWarning.New("Conditions", 0);
+					try
+					{
+						if (!RPC_Server.CallsPerSecond.Test(657465493u, "UpdatePoster", this, player, 5uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(657465493u, "UpdatePoster", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					finally
+					{
+						((IDisposable)val3)?.Dispose();
+					}
+					try
+					{
+						val3 = TimeWarning.New("Call", 0);
+						try
+						{
+							RPCMessage rPCMessage = default(RPCMessage);
+							rPCMessage.connection = msg.connection;
+							rPCMessage.player = player;
+							rPCMessage.read = msg.read;
+							RPCMessage msg3 = rPCMessage;
+							UpdatePoster(msg3);
+						}
+						finally
+						{
+							((IDisposable)val3)?.Dispose();
+						}
+					}
+					catch (Exception ex2)
+					{
+						Debug.LogException(ex2);
+						player.Kick("RPC Error in UpdatePoster");
+					}
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+				return true;
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	private void UpdatePoster(RPCMessage msg)
+	{
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)msg.player == (Object)null || !CanUpdateSign(msg.player))
+		{
+			return;
+		}
+		ulong num = msg.read.UInt64();
+		string text = msg.read.String(256, false);
+		byte[] array = msg.read.BytesWithSize(10485760u, false);
+		playerId = num;
+		playerName = text;
+		SetFlag(Flags.Reserved1, b: true);
+		if (array == null)
+		{
+			if (imageCrc != 0)
+			{
+				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
+			}
+			imageCrc = 0u;
+		}
+		else
+		{
+			if (!ImageProcessing.IsValidJPG(array, 1024, 1024))
+			{
+				return;
+			}
+			if (imageCrc != 0)
+			{
+				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
+			}
+			imageCrc = FileStorage.server.Store(array, FileType, net.ID);
+		}
+		SendNetworkUpdate();
+	}
+
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	private void ClearPlayer(RPCMessage msg)
+	{
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)msg.player == (Object)null) && CanUpdateSign(msg.player))
+		{
+			playerId = 0uL;
+			playerName = string.Empty;
+			SetFlag(Flags.Reserved1, b: false);
+			if (imageCrc != 0)
+			{
+				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
+				imageCrc = 0u;
+			}
+			SendNetworkUpdate();
+		}
+	}
+
+	public void SetTextureCRCs(uint[] crcs)
+	{
+		imageCrc = crcs[0];
+		SendNetworkUpdate();
+	}
+
+	public void ClearContent()
+	{
+		imageCrc = 0u;
+		SendNetworkUpdate();
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		info.msg.wantedPoster = Pool.Get<WantedPoster>();
+		info.msg.wantedPoster.imageCrc = imageCrc;
+		info.msg.wantedPoster.playerId = playerId;
+		info.msg.wantedPoster.playerName = playerName;
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.msg.wantedPoster != null)
+		{
+			imageCrc = info.msg.wantedPoster.imageCrc;
+			playerName = info.msg.wantedPoster.playerName;
+			playerId = info.msg.wantedPoster.playerId;
+		}
+	}
+
+	public bool CanUpdateSign(BasePlayer player)
+	{
+		if (player.IsAdmin || player.IsDeveloper)
+		{
+			return true;
+		}
+		if (!player.CanBuild())
+		{
+			return false;
+		}
+		if (IsLocked())
+		{
+			return (ulong)player.userID == base.OwnerID;
+		}
+		return true;
+	}
+
+	public uint[] GetTextureCRCs()
+	{
+		return new uint[1] { imageCrc };
+	}
+}
+
+
+using System;
+using Network;
+using UnityEngine;
+
+public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
+{
+	private enum PaddleDirection
+	{
+		Forward,
+		Left,
+		Right,
+		Back
+	}
+
+	public Transform centerOfMass;
+
+	public float forwardPushForce = 5f;
+
+	public float rearPushForce = 5f;
+
+	public float rotationForce = 5f;
+
+	public float maxSpeed = 3f;
+
+	public float maxPaddleFrequency = 0.5f;
+
+	public SoundDefinition paddleSfx;
+
+	public SoundDefinition smallPlayerMovementSound;
+
+	public SoundDefinition largePlayerMovementSound;
+
+	public BlendedSoundLoops waterLoops;
+
+	public float waterSoundSpeedDivisor = 1f;
+
+	public float additiveDownhillVelocity;
+
+	public GameObjectRef handSplashForwardEffect;
+
+	public GameObjectRef handSplashBackEffect;
+
+	public GameObjectRef footSplashEffect;
+
+	public float animationLerpSpeed = 1f;
+
+	public Transform smoothedEyePosition;
+
+	public float smoothedEyeSpeed = 1f;
+
+	public Buoyancy buoyancy;
+
+	public bool driftTowardsIsland;
+
+	public GameObjectRef mountEffect;
+
+	[Range(0f, 1f)]
+	public float handSplashOffset = 1f;
+
+	public float velocitySplashMultiplier = 4f;
+
+	public Vector3 modifyEyeOffset = Vector3.zero;
+
+	[Range(0f, 1f)]
+	public float inheritVelocityMultiplier;
+
+	private TimeSince lastPaddle;
+
+	public ParticleSystem[] movingParticleSystems;
+
+	public float movingParticlesThreshold = 0.0005f;
+
+	public Transform headSpaceCheckPosition;
+
+	public float headSpaceCheckRadius = 0.4f;
+
+	private TimeSince landFacingCheck;
+
+	private bool isFacingLand;
+
+	private float landPushAcceleration;
+
+	private TimeSince inPoolCheck;
+
+	private bool isInPool;
+
+	private Vector3 lastPos = Vector3.zero;
+
+	private Vector3 lastClipCheckPosition;
+
+	private bool forceClippingCheck;
+
+	private bool prevSleeping;
+
+	public override bool IsSummerDlcVehicle => true;
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		TimeWarning val = TimeWarning.New("WaterInflatable.OnRpcMessage", 0);
+		try
+		{
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public override void ServerInit()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		rigidBody.centerOfMass = centerOfMass.localPosition;
+		prevSleeping = false;
+		((FacepunchBehaviour)this).InvokeRandomized((Action)LowPriorityCheck, 0f, 5f, 2.5f);
+	}
+
+	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		base.OnDeployed(parent, deployedBy, fromItem);
+		if ((Object)(object)deployedBy != (Object)null)
+		{
+			Vector3 estimatedVelocity = deployedBy.estimatedVelocity;
+			float num = Vector3.Dot(((Component)this).transform.forward, ((Vector3)(ref estimatedVelocity)).normalized);
+			Vector3 val = Vector3.Lerp(Vector3.zero, estimatedVelocity, Mathf.Clamp(num, 0f, 1f));
+			val *= inheritVelocityMultiplier;
+			rigidBody.AddForce(val, (ForceMode)2);
+		}
+	}
+
+	public override void VehicleFixedUpdate()
+	{
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		TimeWarning val = TimeWarning.New("WaterInflatable.VehicleFixedUpdate", 0);
+		try
+		{
+			base.VehicleFixedUpdate();
+			bool flag = rigidBody.IsSleeping();
+			if (prevSleeping && !flag && (Object)(object)buoyancy != (Object)null)
+			{
+				buoyancy.Wake();
+			}
+			prevSleeping = flag;
+			Vector3 velocity = rigidBody.velocity;
+			if (((Vector3)(ref velocity)).magnitude > maxSpeed)
+			{
+				rigidBody.velocity = Vector3.ClampMagnitude(rigidBody.velocity, maxSpeed);
+			}
+			if (!AnyMounted() || !((Object)(object)headSpaceCheckPosition != (Object)null))
+			{
+				return;
+			}
+			Vector3 position = ((Component)this).transform.position;
+			if (!forceClippingCheck && !(Vector3.Distance(position, lastClipCheckPosition) > headSpaceCheckRadius * 0.5f))
+			{
+				return;
+			}
+			forceClippingCheck = false;
+			if (GamePhysics.CheckSphere(headSpaceCheckPosition.position, headSpaceCheckRadius, 1218511105, (QueryTriggerInteraction)1))
+			{
+				if (!GetDismountPosition(GetMounted(), out var _))
+				{
+					((Component)this).transform.position = lastClipCheckPosition;
+				}
+				DismountAllPlayers();
+			}
+			lastClipCheckPosition = position;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private void LowPriorityCheck()
+	{
+		buoyancy.LowPriorityCheck(AnyMounted());
+	}
+
+	public override void OnPlayerMounted()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		base.OnPlayerMounted();
+		lastPos = ((Component)this).transform.position;
+		forceClippingCheck = true;
+	}
+
+	public override void PlayerServerInput(InputState inputState, BasePlayer player)
+	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0208: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0258: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0304: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0328: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0335: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033a: Unknown result type (might be due to invalid IL or missing references)
+		base.PlayerServerInput(inputState, player);
+		if (Vector3.Dot(((Component)this).transform.up, Vector3.up) < 0.1f)
+		{
+			DismountAllPlayers();
+		}
+		else
+		{
+			if (TimeSince.op_Implicit(lastPaddle) < maxPaddleFrequency || ((Object)(object)buoyancy != (Object)null && IsOutOfWaterServer()))
+			{
+				return;
+			}
+			if ((Object)(object)player.GetHeldEntity() == (Object)null)
+			{
+				if (inputState.IsDown(BUTTON.FORWARD))
+				{
+					Vector3 velocity = rigidBody.velocity;
+					if (((Vector3)(ref velocity)).magnitude < maxSpeed)
+					{
+						rigidBody.AddForce(((Component)this).transform.forward * forwardPushForce, (ForceMode)1);
+					}
+					rigidBody.angularVelocity = Vector3.Lerp(rigidBody.angularVelocity, ((Component)this).transform.forward, 0.5f);
+					lastPaddle = TimeSince.op_Implicit(0f);
+					ClientRPC(RpcTarget.NetworkGroup("OnPaddled"), 0);
+				}
+				if (inputState.IsDown(BUTTON.BACKWARD))
+				{
+					rigidBody.AddForce(-((Component)this).transform.forward * rearPushForce, (ForceMode)1);
+					rigidBody.angularVelocity = Vector3.Lerp(rigidBody.angularVelocity, -((Component)this).transform.forward, 0.5f);
+					lastPaddle = TimeSince.op_Implicit(0f);
+					ClientRPC(RpcTarget.NetworkGroup("OnPaddled"), 3);
+				}
+				if (inputState.IsDown(BUTTON.LEFT))
+				{
+					PaddleTurn(PaddleDirection.Left);
+				}
+				if (inputState.IsDown(BUTTON.RIGHT))
+				{
+					PaddleTurn(PaddleDirection.Right);
+				}
+			}
+			if (TimeSince.op_Implicit(inPoolCheck) > 2f)
+			{
+				isInPool = IsInWaterVolume(((Component)this).transform.position, out var natural) && !natural;
+				inPoolCheck = TimeSince.op_Implicit(0f);
+			}
+			if (additiveDownhillVelocity > 0f && !isInPool)
+			{
+				Vector3 val = ((Component)this).transform.TransformPoint(Vector3.forward);
+				Vector3 position = ((Component)this).transform.position;
+				if (val.y + 0.05f < position.y)
+				{
+					float num = additiveDownhillVelocity * (position.y - val.y);
+					rigidBody.AddForce(num * Time.fixedDeltaTime * ((Component)this).transform.forward, (ForceMode)5);
+				}
+				Vector3 velocity2 = rigidBody.velocity;
+				rigidBody.velocity = Vector3.Lerp(velocity2, ((Component)this).transform.forward * ((Vector3)(ref velocity2)).magnitude, 0.4f);
+			}
+			if (driftTowardsIsland && TimeSince.op_Implicit(landFacingCheck) > 2f && !isInPool)
+			{
+				isFacingLand = false;
+				landFacingCheck = TimeSince.op_Implicit(0f);
+				Vector3 position2 = ((Component)this).transform.position;
+				if (!WaterResource.IsFreshWater(position2))
+				{
+					int num2 = 5;
+					Vector3 forward = ((Component)this).transform.forward;
+					forward.y = 0f;
+					for (int i = 1; i <= num2; i++)
+					{
+						int mask = 128;
+						if (!TerrainMeta.TopologyMap.GetTopology(position2 + (float)i * 15f * forward, mask))
+						{
+							isFacingLand = true;
+							break;
+						}
+					}
+				}
+			}
+			if (driftTowardsIsland && isFacingLand && !isInPool)
+			{
+				landPushAcceleration = Mathf.Clamp(landPushAcceleration + Time.deltaTime, 0f, 3f);
+				rigidBody.AddForce(((Component)this).transform.forward * (Time.deltaTime * landPushAcceleration), (ForceMode)2);
+			}
+			else
+			{
+				landPushAcceleration = 0f;
+			}
+			lastPos = ((Component)this).transform.position;
+		}
+	}
+
+	private void PaddleTurn(PaddleDirection direction)
+	{
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		if (direction != 0 && direction != PaddleDirection.Back)
+		{
+			rigidBody.AddRelativeTorque(rotationForce * ((direction == PaddleDirection.Left) ? (-Vector3.up) : Vector3.up), (ForceMode)1);
+			lastPaddle = TimeSince.op_Implicit(0f);
+			ClientRPC(RpcTarget.NetworkGroup("OnPaddled"), (int)direction);
+		}
+	}
+
+	public override float WaterFactorForPlayer(BasePlayer player, out WaterLevel.WaterInfo info)
+	{
+		info = default(WaterLevel.WaterInfo);
+		return 0f;
+	}
+
+	public override void OnCollision(Collision collision, BaseEntity hitEntity)
+	{
+		if (hitEntity is BaseVehicle baseVehicle && (baseVehicle.HasDriver() || baseVehicle.IsMoving() || baseVehicle.HasFlag(Flags.On)))
+		{
+			Kill(DestroyMode.Gib);
+		}
+	}
+
+	private bool IsOutOfWaterServer()
+	{
+		return buoyancy.timeOutOfWater > 0.2f;
+	}
+
+	public void OnPoolDestroyed()
+	{
+		Kill(DestroyMode.Gib);
+	}
+
+	public void WakeUp()
+	{
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)rigidBody != (Object)null)
+		{
+			rigidBody.WakeUp();
+			rigidBody.AddForce(Vector3.up * 0.1f, (ForceMode)1);
+		}
+		if ((Object)(object)buoyancy != (Object)null)
+		{
+			buoyancy.Wake();
+		}
+	}
+
+	public void OnObjects(TriggerNotify trigger)
+	{
+		if (base.isClient)
+		{
+			return;
+		}
+		foreach (BaseEntity entityContent in trigger.entityContents)
+		{
+			if (entityContent is BaseVehicle baseVehicle && (baseVehicle.HasDriver() || baseVehicle.IsMoving() || baseVehicle.HasFlag(Flags.On)))
+			{
+				Kill(DestroyMode.Gib);
+				break;
+			}
+		}
+	}
+
+	public void OnEmpty()
+	{
+	}
+}
+
+
+private enum PaddleDirection
+{
+	Forward,
+	Left,
+	Right,
+	Back
+}
+
+
+using System;
 using ConVar;
 using Facepunch;
 using Network;
@@ -1020,9 +1765,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(2f)]
 	private void ReqSwapWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1071,9 +1816,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(2f)]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1140,8 +1885,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ReqTakeAll(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -1219,8 +1964,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -1251,9 +1996,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
 		if (base.inventory.itemList.Count != base.inventory.capacity)
@@ -1649,8 +2394,8 @@ public class WheelSwitch : IOEntity
 		SetFlag(Flags.Reserved4, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void CancelRotate(RPCMessage msg)
 	{
 		CancelPlayerRotation();
@@ -2546,10 +3291,10 @@ public class WireTool : HeldEntity
 		return 200f;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner(false)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
@@ -2598,9 +3343,9 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.FromOwner(false)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
@@ -2746,10 +3491,10 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner(false)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
@@ -3314,15 +4059,15 @@ public class Workbench : StorageContainer
 		return base.CanCompletePickup(player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_TechTreeUnlock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
 		int id = msg.read.Int32();
 		int level = msg.read.Int32();
 		TechTreeData techTreeForLevel = GetTechTreeForLevel(level);
-		if ((Object)(object)techTreeForLevel == (Object)null)
+		if ((Object)(object)techTreeForLevel == (Object)null || player.currentCraftLevel <= (float)techTreeForLevel.techTreeLevel)
 		{
 			return;
 		}
@@ -3375,8 +4120,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -3544,19 +4289,19 @@ public class Workbench : StorageContainer
 		int num = 0;
 		if ((int)info.rarity == 1)
 		{
-			num = 20;
+			num = 15;
 		}
 		if ((int)info.rarity == 2)
 		{
-			num = 75;
+			num = 30;
 		}
 		if ((int)info.rarity == 3)
 		{
-			num = 125;
+			num = 60;
 		}
 		if ((int)info.rarity == 4 || (int)info.rarity == 0)
 		{
-			num = 500;
+			num = 120;
 		}
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
 		if ((Object)(object)activeGameMode != (Object)null)
@@ -3946,7 +4691,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 				Analytics.Azure.OnItemPickup(msg.player, this);
 				RemoveItem();
 				TryApplyOwnershipOnPickup(msg.player, item);
-				msg.player.GiveItem(item, GiveItemReason.PickedUp);
+				msg.player.GiveItem(item, GiveItemReason.PickedUp, GiveItemOptions.BackpackOverflow);
 				msg.player.SignalBroadcast(Signal.Gesture, "pickup_item");
 			}
 		}
@@ -3956,8 +4701,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && item != null && allowPickup && CanOpenInSafeZone(msg.player))
@@ -4019,8 +4764,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		return true;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (item == null || item.contents == null)
@@ -4140,7 +4885,7 @@ public class XMasRefill : BaseEntity
 			BasePlayer basePlayer = null;
 			foreach (BasePlayer goodKid in goodKids)
 			{
-				if (!goodKid.IsSleeping() && !goodKid.IsWounded() && goodKid.IsAlive())
+				if (!goodKid.IsSleeping() && !goodKid.IsWounded() && goodKid.IsAlive() && !goodKid.isInvisible)
 				{
 					basePlayer = goodKid;
 					break;
@@ -4559,9 +5304,9 @@ public class ZiplineLaunchPoint : BaseEntity
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void MountPlayer(RPCMessage msg)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -5247,14 +5992,17 @@ public class LegacyShelter : DecayEntity
 
 	private void Setup(BaseEntity child)
 	{
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		LegacyShelterDoor legacyShelterDoor = (LegacyShelterDoor)child;
 		childDoorInstance.Set(legacyShelterDoor);
 		BasePlayer basePlayer = BasePlayer.FindByID(shelterOwnerID);
-		((Component)this).GetComponentInChildren<EntityPrivilege>().AddPlayer(basePlayer);
+		if ((Object)(object)basePlayer != (Object)null)
+		{
+			((Component)this).GetComponentInChildren<EntityPrivilege>().AddPlayer(basePlayer);
+		}
 		legacyShelterDoor.SetupDoor(this);
 		legacyShelterDoor.SetMaxHealth(MaxHealth());
 		UpdateDoorHp();
@@ -6704,8 +7452,8 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
-[AddComponentMenu("Image Effects/NVG Effect")]
 [ExecuteInEditMode]
+[AddComponentMenu("Image Effects/NVG Effect")]
 public class NVGEffect : PostEffectsBase, IImageEffect
 {
 	[Serializable]
@@ -7589,6 +8337,12 @@ public class BeehiveLootPanel : LootPanel
 }
 
 
+public interface IAdminUpdatableIdentifier
+{
+	void Server_AdminUpdateIdentifier(BaseEntity.RPCMessage msg);
+}
+
+
 using UnityEngine;
 
 public class IdentifierConfig : IOConfig<IRemoteControllable>
@@ -8155,6 +8909,21 @@ public class DroneStorage : StorageContainer
 		}
 	}
 
+	public override void OnItemAddedOrRemoved(Item item, bool added)
+	{
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		base.OnItemAddedOrRemoved(item, added);
+		if (added && !Drone.HasFlag(Flags.Reserved2) && !Drone.HasFlag(Flags.Reserved3))
+		{
+			Rigidbody body = Drone.body;
+			body.position += ((Component)Drone).transform.up * 0.14f;
+			Drone.body.WakeUp();
+		}
+	}
+
 	public bool TryServerDrop()
 	{
 		if (!TryGetItem(out var item))
@@ -8355,8 +9124,6 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public GameObjectRef LiftEntityPrefab;
 
-	public GameObjectRef IoEntityPrefab;
-
 	public Transform IoEntitySpawnPoint;
 
 	public GameObject FloorBlockerVolume;
@@ -8375,15 +9142,13 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public float LiftMoveDelay;
 
-	protected const Flags TopFloorFlag = Flags.Reserved1;
+	public float LiftEndMoveDelay = 1f;
 
-	public const Flags ElevatorPowered = Flags.Reserved2;
+	protected const Flags TopFloorFlag = Flags.Reserved1;
 
 	public EntityRef<ElevatorLift> liftEntity;
 
-	public IOEntity ioEntity;
-
-	public int[] previousPowerAmount = new int[2];
+	public int[] previousPowerAmount = new int[3];
 
 	public virtual bool IsStatic => false;
 
@@ -8408,6 +9173,11 @@ public class Elevator : IOEntity, IFlagNotify
 		}
 	}
 
+	public override int ConsumptionAmount()
+	{
+		return 5;
+	}
+
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
@@ -8420,6 +9190,7 @@ public class Elevator : IOEntity, IFlagNotify
 		SetFlag(Flags.Reserved1, b: true);
 		UpdateChildEntities(isTop: true);
 		SendNetworkUpdate();
+		RefreshPowerStatus();
 	}
 
 	public virtual void CallElevator()
@@ -8462,13 +9233,13 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public bool RequestMoveLiftTo(int targetFloor, out float timeToTravel, Elevator fromElevator)
 	{
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		timeToTravel = 0f;
 		if (Interface.CallHook("OnElevatorMove", (object)this, (object)targetFloor) != null)
 		{
@@ -8478,7 +9249,7 @@ public class Elevator : IOEntity, IFlagNotify
 		{
 			return false;
 		}
-		if (!IsStatic && (Object)(object)ioEntity != (Object)null && !ioEntity.IsPowered())
+		if (!IsStatic && !IsPowered())
 		{
 			return false;
 		}
@@ -8516,17 +9287,12 @@ public class Elevator : IOEntity, IFlagNotify
 			elevatorLift.ToggleHurtTrigger(state: true);
 		}
 		elevatorLift.SetFlag(Flags.Busy, b: true);
-		((FacepunchBehaviour)this).Invoke((Action)ClearBusy, timeToTravel + 1f);
+		((FacepunchBehaviour)this).Invoke((Action)ClearBusy, timeToTravel + LiftEndMoveDelay);
 		elevatorLift.NotifyNewFloor(targetFloor, Floor);
 		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
 		{
 			elevatorEnt.SetFlag(Flags.Busy, b: true);
 		}, (ConstructionSocket socket) => socket.socketType == ConstructionSocket.Type.Elevator);
-		if ((Object)(object)ioEntity != (Object)null)
-		{
-			ioEntity.SetFlag(Flags.Busy, b: true);
-			ioEntity.SendChangedToRoot(forceUpdate: true);
-		}
 		return true;
 	}
 
@@ -8566,11 +9332,6 @@ public class Elevator : IOEntity, IFlagNotify
 			liftEntity.Get(base.isServer).ToggleHurtTrigger(state: false);
 			liftEntity.Get(base.isServer).SetFlag(Flags.Busy, b: false);
 		}
-		if ((Object)(object)ioEntity != (Object)null)
-		{
-			ioEntity.SetFlag(Flags.Busy, b: false);
-			ioEntity.SendChangedToRoot(forceUpdate: true);
-		}
 		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
 		{
 			elevatorEnt.SetFlag(Flags.Busy, b: false);
@@ -8604,8 +9365,6 @@ public class Elevator : IOEntity, IFlagNotify
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		if (isTop)
 		{
 			if (!liftEntity.IsValid(base.isServer))
@@ -8626,42 +9385,13 @@ public class Elevator : IOEntity, IFlagNotify
 					liftEntity.Get(base.isServer).SetParent(null, worldPositionStays: true);
 				}
 				liftEntity.Get(base.isServer).SetOwnerElevator(this);
-				liftEntity.Get(base.isServer).SetFlag(Flags.Reserved5, HasFlag(Flags.Reserved2) || IsStatic);
-			}
-			if ((Object)(object)ioEntity == (Object)null)
-			{
-				FindExistingIOChild();
-			}
-			if ((Object)(object)ioEntity == (Object)null && IoEntityPrefab.isValid)
-			{
-				ioEntity = GameManager.server.CreateEntity(IoEntityPrefab.resourcePath, IoEntitySpawnPoint.position, IoEntitySpawnPoint.rotation) as IOEntity;
-				ioEntity.SetParent(this, worldPositionStays: true);
-				ioEntity.Spawn();
+				liftEntity.Get(base.isServer).SetFlag(Flags.Reserved5, IsPowered() || IsStatic);
 			}
 		}
-		else
+		else if (liftEntity.IsValid(base.isServer))
 		{
-			if (liftEntity.IsValid(base.isServer))
-			{
-				liftEntity.Get(base.isServer).Kill();
-				liftEntity.Set(null);
-			}
-			if ((Object)(object)ioEntity != (Object)null)
-			{
-				ioEntity.Kill();
-			}
-		}
-	}
-
-	public void FindExistingIOChild()
-	{
-		foreach (BaseEntity child in children)
-		{
-			if (child is IOEntity iOEntity)
-			{
-				ioEntity = iOEntity;
-				break;
-			}
+			liftEntity.Get(base.isServer).Kill();
+			liftEntity.Set(null);
 		}
 	}
 
@@ -8676,6 +9406,11 @@ public class Elevator : IOEntity, IFlagNotify
 		}
 		info.msg.elevator.floor = Floor;
 		info.msg.elevator.spawnedLift = liftEntity.uid;
+	}
+
+	public override int DesiredPower(int inputIndex = 0)
+	{
+		return 5;
 	}
 
 	public int LiftPositionToFloor()
@@ -8721,6 +9456,8 @@ public class Elevator : IOEntity, IFlagNotify
 		{
 			elevatorInDirection2.Kill(DestroyMode.Gib);
 		}
+		previousPowerAmount[2] = 0;
+		RefreshPowerStatus();
 	}
 
 	public override void PostServerLoad()
@@ -8728,20 +9465,42 @@ public class Elevator : IOEntity, IFlagNotify
 		base.PostServerLoad();
 		SetFlag(Flags.Busy, b: false);
 		UpdateChildEntities(IsTop);
-		if ((Object)(object)ioEntity != (Object)null)
-		{
-			ioEntity.SetFlag(Flags.Busy, b: false);
-		}
 	}
 
 	public override void UpdateHasPower(int inputAmount, int inputSlot)
 	{
-		base.UpdateHasPower(inputAmount, inputSlot);
-		if (inputAmount > 0 && previousPowerAmount[inputSlot] == 0)
+		if (inputAmount > 0 && (inputSlot == 0 || inputSlot == 1) && previousPowerAmount[inputSlot] == 0)
 		{
 			CallElevator();
 		}
+		if (inputSlot == 2 && previousPowerAmount[inputSlot] != inputAmount)
+		{
+			previousPowerAmount[inputSlot] = inputAmount;
+			SetFlag(Flags.Reserved8, inputAmount > 0);
+			RefreshPowerStatus();
+		}
 		previousPowerAmount[inputSlot] = inputAmount;
+	}
+
+	private void RefreshPowerStatus()
+	{
+		bool anyHasPower = false;
+		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		{
+			if (elevatorEnt.HasPowerInput())
+			{
+				anyHasPower = true;
+			}
+		}, (ConstructionSocket socket) => socket.socketType == ConstructionSocket.Type.Elevator);
+		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		{
+			elevatorEnt.SetFlag(Flags.Reserved8, anyHasPower);
+		}, (ConstructionSocket socket) => socket.socketType == ConstructionSocket.Type.Elevator);
+	}
+
+	private bool HasPowerInput()
+	{
+		return previousPowerAmount[2] > 0;
 	}
 
 	private void OnPhysicsNeighbourChanged()
@@ -8812,13 +9571,14 @@ public class Elevator : IOEntity, IFlagNotify
 			ElevatorLift elevatorLift = liftEntity.Get(base.isServer);
 			if ((Object)(object)elevatorLift != (Object)null)
 			{
-				elevatorLift.SetFlag(Flags.Reserved5, HasFlag(Flags.Reserved2) || IsStatic);
+				elevatorLift.SetFlag(Flags.Reserved5, IsPowered() || IsStatic);
 			}
 		}
 		if (old.HasFlag(Flags.Reserved1) != next.HasFlag(Flags.Reserved1) && (Object)(object)FloorBlockerVolume != (Object)null)
 		{
 			FloorBlockerVolume.SetActive(next.HasFlag(Flags.Reserved1));
 		}
+		OnFlagToggled(next.HasFlag(Flags.Reserved8));
 	}
 
 	public void FindExistingLiftChild()
@@ -8835,15 +9595,6 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public void OnFlagToggled(bool state)
 	{
-		if (base.isServer)
-		{
-			SetFlag(Flags.Reserved2, state);
-			ElevatorLift elevatorLift = liftEntity.Get(base.isServer);
-			if ((Object)(object)elevatorLift != (Object)null)
-			{
-				elevatorLift.SetFlag(Flags.Reserved5, HasFlag(Flags.Reserved2) || IsStatic);
-			}
-		}
 	}
 }
 
@@ -8968,7 +9719,7 @@ public class ElevatorStatic : Elevator
 	public override void Spawn()
 	{
 		base.Spawn();
-		SetFlag(Flags.Reserved2, b: true);
+		SetFlag(Flags.Reserved8, b: true);
 		SetFlag(Flags.Reserved1, StaticTop);
 		if (!Application.isLoadingSave)
 		{
@@ -10117,22 +10868,22 @@ public class LaserDetector : BaseDetector
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		PooledList<RaycastHit> val = Pool.Get<PooledList<RaycastHit>>();
 		try
 		{
@@ -10141,9 +10892,9 @@ public class LaserDetector : BaseDetector
 			foreach (RaycastHit item in (List<RaycastHit>)(object)val)
 			{
 				BaseEntity entity = item.GetEntity();
-				if (!((Object)(object)entity == (Object)null) && !entity.isClient && (Object)(object)entity == (Object)(object)ent)
+				if (!((Object)(object)entity == (Object)null) && !entity.isClient)
 				{
-					return true;
+					return (Object)(object)entity == (Object)(object)ent;
 				}
 			}
 			if (!(ent is BaseVehicle))
@@ -10171,6 +10922,15 @@ public class LaserDetector : BaseDetector
 		finally
 		{
 			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public override void UpdateHasPower(int inputAmount, int inputSlot)
+	{
+		base.UpdateHasPower(inputAmount, inputSlot);
+		if (inputAmount == 0)
+		{
+			SetFlag(Flags.Reserved12, b: false);
 		}
 	}
 }
@@ -11734,8 +12494,8 @@ public class NPCVendingOrder : ScriptableObject
 		[Tooltip("Maximum price for the currency item")]
 		public int maxPrice;
 
-		[Range(0f, 1f)]
 		[Tooltip("Chance for a very low price to occur (0 to 1)")]
+		[Range(0f, 1f)]
 		public float veryLowPriceChance;
 
 		[Tooltip("Minimum very low price")]
@@ -11866,8 +12626,8 @@ public struct EntryRandom
 	[Tooltip("Maximum price for the currency item")]
 	public int maxPrice;
 
-	[Range(0f, 1f)]
 	[Tooltip("Chance for a very low price to occur (0 to 1)")]
+	[Range(0f, 1f)]
 	public float veryLowPriceChance;
 
 	[Tooltip("Minimum very low price")]
@@ -12993,6 +13753,8 @@ public class ElectricWindmill : IOEntity
 	public int maxPowerGeneration = 100;
 
 	public Transform vaneRot;
+
+	public Transform sailsRot;
 
 	public SoundDefinition wooshSound;
 
@@ -15119,6 +15881,7 @@ public class DiveSiteBuoy : BaseEntity
 		{
 			((FacepunchBehaviour)this).CancelInvoke(updateAction);
 		}
+		ToggleNetworkPositionTick(flag);
 	}
 
 	private void UpdateMovement()
@@ -15354,6 +16117,10 @@ public class EggHuntEvent : BaseHuntEvent
 			for (int i = initialSpawnIndex; i < playerList.Count; i++)
 			{
 				BasePlayer basePlayer = playerList[i];
+				if (basePlayer.isInvisible)
+				{
+					continue;
+				}
 				int num = Random.Range(4, 6) + Mathf.RoundToInt(basePlayer.eggVision);
 				Vector3 position = ((Component)basePlayer).transform.position;
 				for (int j = 0; j < num; j++)
@@ -16205,6 +16972,8 @@ public class JunkPileWater : JunkPile
 
 	public float VehicleCheckRadius = 5f;
 
+	public Rigidbody Body;
+
 	private Quaternion baseRotation = Quaternion.identity;
 
 	private bool first = true;
@@ -16256,66 +17025,73 @@ public class JunkPileWater : JunkPile
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
 		if (TimeUntil.op_Implicit(nextPlayerCheck) <= 0f)
 		{
 			nextPlayerCheck = TimeUntil.op_Implicit(Random.Range(0.5f, 1f));
@@ -16325,8 +17101,6 @@ public class JunkPileWater : JunkPile
 		{
 			return;
 		}
-		float waterSurface = WaterLevel.GetWaterSurface(((Component)this).transform.position, waves: true, volumes: false);
-		((Component)this).transform.position = new Vector3(((Component)this).transform.position.x, waterSurface, ((Component)this).transform.position.z);
 		if (buoyancyPoints != null && buoyancyPoints.Length >= 3)
 		{
 			Vector3 position = ((Component)this).transform.position;
@@ -16352,7 +17126,25 @@ public class JunkPileWater : JunkPile
 				baseRotation = Quaternion.Euler(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
 				first = false;
 			}
-			((Component)this).transform.SetPositionAndRotation(val4, val7 * baseRotation);
+			if (!Object.op_Implicit((Object)(object)Body))
+			{
+				((Component)this).transform.SetPositionAndRotation(val4, val7 * baseRotation);
+				return;
+			}
+			Body.MovePosition(val4);
+			Body.MoveRotation(val7 * baseRotation);
+		}
+		else
+		{
+			float waterSurface = WaterLevel.GetWaterSurface(((Component)this).transform.position, waves: true, volumes: false);
+			if (!Object.op_Implicit((Object)(object)Body))
+			{
+				((Component)this).transform.position = new Vector3(((Component)this).transform.position.x, waterSurface, ((Component)this).transform.position.z);
+			}
+			else
+			{
+				Body.MovePosition(new Vector3(Body.position.x, waterSurface, Body.position.z));
+			}
 		}
 	}
 
@@ -16360,6 +17152,7 @@ public class JunkPileWater : JunkPile
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		hasPlayersNearby = BaseNetworkable.HasCloseConnections(((Component)this).transform.position, updateCullRange);
+		ToggleNetworkPositionTick(hasPlayersNearby);
 	}
 }
 
@@ -17868,10 +18661,10 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 	public override void PlayerDismounted(BasePlayer player, BaseMountable seat)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		base.PlayerDismounted(player, seat);
 		if (collisionDeath)
 		{
@@ -20036,9 +20829,9 @@ public class ItemModOpenWrapped : ItemMod
 
 	public override void ServerCommand(Item item, string command, BasePlayer player)
 	{
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		if (!(command == "open") || item.amount <= 0)
 		{
 			return;
@@ -20403,7 +21196,7 @@ public class HalloweenDungeon : BasePortal
 	public EntityRef<ProceduralDynamicDungeon> dungeonInstance;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
-	public static float population = 1f;
+	public static float population = 0f;
 
 	[ServerVar(Help = "How long each active dungeon should last before dying", ShowInAdminUI = true)]
 	public static float lifetime = 600f;
@@ -21053,8 +21846,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 		}
 	}
 
-	[ContextMenu("Test Grid")]
 	[ExecuteInEditMode]
+	[ContextMenu("Test Grid")]
 	public void GenerateGrid()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -22861,6 +23654,8 @@ public class VehicleSpawner : BaseEntity
 
 	public float occupyRadius = 5f;
 
+	public TriggerBase additionalNudgeTrigger;
+
 	public SpawnPair[] objectsToSpawn;
 
 	public Transform spawnOffset;
@@ -22932,6 +23727,7 @@ public class VehicleSpawner : BaseEntity
 			component.SetupOwner(newOwner, ((Component)spawnOffset).transform.position, safeRadius);
 		}
 		VehicleSpawnPoint.AddStartingFuel(component);
+		VehicleSpawnPoint.AddStartingFlares(((Component)baseEntity).GetComponent<ICanFireHelicopterFlares>());
 		if ((Object)(object)newOwner != (Object)null)
 		{
 			Analytics.Azure.OnVehiclePurchased(newOwner, baseEntity);
@@ -22968,27 +23764,27 @@ public class VehicleSpawner : BaseEntity
 	public void NudgePlayersInRadius(float radius)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
 		Vis.Entities(((Component)spawnOffset).transform.position, radius, list, 131072, (QueryTriggerInteraction)2);
 		foreach (BasePlayer item in list)
 		{
-			if (!item.IsNpc && !item.isMounted && item.IsConnected)
+			if ((!Object.op_Implicit((Object)(object)additionalNudgeTrigger) || (additionalNudgeTrigger.HasAnyEntityContents && additionalNudgeTrigger.entityContents.Contains(item))) && !item.IsNpc && !item.isMounted && item.IsConnected)
 			{
 				Vector3 position = ((Component)spawnOffset).transform.position;
 				position += Vector3Ex.Direction2D(((Component)item).transform.position, ((Component)spawnOffset).transform.position) * radius;
@@ -23938,23 +24734,9 @@ public class BasePath : MonoBehaviour, IAIPath
 
 	private float? cachedLength;
 
-	public ReadOnlySpan<IAIPathInterestNode> InterestNodes
-	{
-		get
-		{
-			IAIPathInterestNode[] internalArrayUnsafe = UnsafeListAccess.GetInternalArrayUnsafe<PathInterestNode>(interestZones);
-			return internalArrayUnsafe;
-		}
-	}
+	public ReadOnlySpan<IAIPathInterestNode> InterestNodes => UnsafeListAccess.ListAsReadOnlySpanOf<PathInterestNode, IAIPathInterestNode>(interestZones);
 
-	public ReadOnlySpan<IAIPathSpeedZone> SpeedZones
-	{
-		get
-		{
-			IAIPathSpeedZone[] internalArrayUnsafe = UnsafeListAccess.GetInternalArrayUnsafe<PathSpeedZone>(speedZones);
-			return internalArrayUnsafe;
-		}
-	}
+	public ReadOnlySpan<IAIPathSpeedZone> SpeedZones => UnsafeListAccess.ListAsReadOnlySpanOf<PathSpeedZone, IAIPathSpeedZone>(speedZones);
 
 	private void AddChildren()
 	{
@@ -26842,6 +27624,10 @@ public class WireColorSettings : BaseScriptableObject
 			}
 		}
 		WireColorSettings wireColorSettings = FileSystem.Load<WireColorSettings>($"Assets/Prefabs/Tools/Wire/{type} Color Settings.asset", true);
+		if (wireColorSettings == null)
+		{
+			return null;
+		}
 		settings.Add(wireColorSettings);
 		return wireColorSettings;
 	}
@@ -30876,8 +31662,8 @@ public class BasePet : NPCPlayer, IThinker
 	[ServerVar]
 	public static bool onlyQueueBaseNavMovements = true;
 
-	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	public static float movementupdatebudgetms = 1f;
 
 	public float BaseAttackRate = 2f;
@@ -31021,6 +31807,12 @@ public class BasePet : NPCPlayer, IThinker
 		{
 			Brain.Navigator.ForceToGround();
 		}
+	}
+
+	public override void OnMedicalToolApplied(BasePlayer fromPlayer, ItemDefinition itemDef, ItemModConsumable consumable, MedicalTool medicalToolEntity, bool canRevive)
+	{
+		base.OnMedicalToolApplied(fromPlayer, itemDef, consumable, medicalToolEntity, canRevive);
+		SendNetworkUpdateImmediate();
 	}
 }
 
@@ -31246,456 +32038,6 @@ public class GingerbreadBrain : BaseAIBrain
 	{
 		base.OnDestroy();
 	}
-}
-
-
-using UnityEngine;
-
-public class AttackState : BasicAIState
-{
-	private IAIAttack attack;
-
-	private float originalStoppingDistance;
-
-	public AttackState()
-		: base(AIState.Attack)
-	{
-		base.AgrresiveState = true;
-	}
-
-	public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
-	{
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		entity.SetFlag(BaseEntity.Flags.Reserved3, b: true);
-		originalStoppingDistance = brain.Navigator.StoppingDistance;
-		brain.Navigator.Agent.stoppingDistance = 1f;
-		brain.Navigator.StoppingDistance = 1f;
-		base.StateEnter(brain, entity);
-		attack = entity as IAIAttack;
-		BaseEntity baseEntity = brain.Events.Memory.Entity.Get(brain.Events.CurrentInputMemorySlot);
-		if ((Object)(object)baseEntity != (Object)null)
-		{
-			Vector3 aimDirection = GetAimDirection(((Component)brain.Navigator).transform.position, ((Component)baseEntity).transform.position);
-			brain.Navigator.SetFacingDirectionOverride(aimDirection);
-			if (attack.CanAttack(baseEntity))
-			{
-				StartAttacking(baseEntity);
-			}
-			brain.Navigator.SetDestination(((Component)baseEntity).transform.position, BaseNavigator.NavigationSpeed.Fast);
-		}
-	}
-
-	public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
-	{
-		base.StateLeave(brain, entity);
-		entity.SetFlag(BaseEntity.Flags.Reserved3, b: false);
-		brain.Navigator.Agent.stoppingDistance = originalStoppingDistance;
-		brain.Navigator.StoppingDistance = originalStoppingDistance;
-		brain.Navigator.ClearFacingDirectionOverride();
-		brain.Navigator.Stop();
-		StopAttacking();
-	}
-
-	private void StopAttacking()
-	{
-		attack.StopAttacking();
-	}
-
-	public override StateStatus StateThink(float delta, BaseAIBrain brain, BaseEntity entity)
-	{
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		base.StateThink(delta, brain, entity);
-		BaseEntity baseEntity = brain.Events.Memory.Entity.Get(brain.Events.CurrentInputMemorySlot);
-		if (attack == null)
-		{
-			return StateStatus.Error;
-		}
-		if ((Object)(object)baseEntity == (Object)null)
-		{
-			brain.Navigator.ClearFacingDirectionOverride();
-			StopAttacking();
-			return StateStatus.Finished;
-		}
-		if (brain.Senses.ignoreSafeZonePlayers)
-		{
-			BasePlayer basePlayer = baseEntity as BasePlayer;
-			if ((Object)(object)basePlayer != (Object)null && basePlayer.InSafeZone())
-			{
-				return StateStatus.Error;
-			}
-		}
-		Vector3Ex.Direction2D(((Component)baseEntity).transform.position, ((Component)entity).transform.position);
-		Vector3 position = ((Component)baseEntity).transform.position;
-		if (!brain.Navigator.SetDestination(position, BaseNavigator.NavigationSpeed.Fast, 0.2f))
-		{
-			return StateStatus.Error;
-		}
-		Vector3 aimDirection = GetAimDirection(((Component)brain.Navigator).transform.position, ((Component)baseEntity).transform.position);
-		brain.Navigator.SetFacingDirectionOverride(aimDirection);
-		if (attack.CanAttack(baseEntity))
-		{
-			StartAttacking(baseEntity);
-		}
-		else
-		{
-			StopAttacking();
-		}
-		return StateStatus.Running;
-	}
-
-	private static Vector3 GetAimDirection(Vector3 from, Vector3 target)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return Vector3Ex.Direction2D(target, from);
-	}
-
-	private void StartAttacking(BaseEntity entity)
-	{
-		attack.StartAttacking(entity);
-	}
-}
-
-
-using UnityEngine;
-
-public class RoamState : BasicAIState
-{
-	private StateStatus status = StateStatus.Error;
-
-	public RoamState()
-		: base(AIState.Roam)
-	{
-	}
-
-	public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
-	{
-		base.StateLeave(brain, entity);
-		Stop();
-	}
-
-	public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
-	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		base.StateEnter(brain, entity);
-		status = StateStatus.Error;
-		if (brain.PathFinder == null)
-		{
-			return;
-		}
-		ScarecrowNPC scarecrowNPC = entity as ScarecrowNPC;
-		if (!((Object)(object)scarecrowNPC == (Object)null))
-		{
-			Vector3 val = brain.Events.Memory.Position.Get(4);
-			Vector3 val2 = val;
-			val2 = ((!scarecrowNPC.RoamAroundHomePoint) ? brain.PathFinder.GetBestRoamPosition(brain.Navigator, ((Component)brain.Navigator).transform.position, brain.Events.Memory.Position.Get(4), 10f, brain.Navigator.BestRoamPointMaxDistance) : brain.PathFinder.GetBestRoamPositionFromAnchor(brain.Navigator, val, val, 1f, brain.Navigator.BestRoamPointMaxDistance));
-			if (brain.Navigator.SetDestination(val2, BaseNavigator.NavigationSpeed.Slow))
-			{
-				status = StateStatus.Running;
-			}
-			else
-			{
-				status = StateStatus.Error;
-			}
-		}
-	}
-
-	private void Stop()
-	{
-		brain.Navigator.Stop();
-	}
-
-	public override StateStatus StateThink(float delta, BaseAIBrain brain, BaseEntity entity)
-	{
-		base.StateThink(delta, brain, entity);
-		if (status == StateStatus.Error)
-		{
-			return status;
-		}
-		if (brain.Navigator.Moving)
-		{
-			return StateStatus.Running;
-		}
-		return StateStatus.Finished;
-	}
-}
-
-
-using ConVar;
-using ProtoBuf;
-using UnityEngine;
-
-public class GingerbreadNPC : HumanNPC, IClientBrainStateListener
-{
-	public GameObjectRef OverrideCorpseMale;
-
-	public GameObjectRef OverrideCorpseFemale;
-
-	public PhysicMaterial HitMaterial;
-
-	public bool RoamAroundHomePoint;
-
-	protected override string CorpsePath => CorpseResourcePath;
-
-	protected override string OverrideCorpseName => "Gingerbread";
-
-	protected override bool ShouldCorpseTakeChildren => false;
-
-	protected override bool KeepCorpseClothingIntact => false;
-
-	protected override bool CopyInventoryToCorpse => false;
-
-	protected string CorpseResourcePath
-	{
-		get
-		{
-			bool flag = GetFloatBasedOnUserID(userID, 4332uL) > 0.5f;
-			if (OverrideCorpseMale.isValid && !flag)
-			{
-				return OverrideCorpseMale.resourcePath;
-			}
-			if (OverrideCorpseFemale.isValid && flag)
-			{
-				return OverrideCorpseFemale.resourcePath;
-			}
-			return "assets/prefabs/npc/murderer/murderer_corpse.prefab";
-			static float GetFloatBasedOnUserID(ulong steamid, ulong seed)
-			{
-				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-				//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-				State state = Random.state;
-				Random.InitState((int)(seed + steamid));
-				float result = Random.Range(0f, 1f);
-				Random.state = state;
-				return result;
-			}
-		}
-	}
-
-	public override void OnAttacked(HitInfo info)
-	{
-		base.OnAttacked(info);
-		info.HitMaterial = Global.GingerbreadMaterialID();
-	}
-
-	public override string Categorize()
-	{
-		return "Gingerbread";
-	}
-
-	public override bool ShouldDropActiveItem()
-	{
-		return false;
-	}
-
-	public override void AttackerInfo(DeathInfo info)
-	{
-		base.AttackerInfo(info);
-		info.inflictorName = base.inventory.containerBelt.GetSlot(0).info.shortname;
-		info.attackerName = base.ShortPrefabName;
-	}
-
-	public void OnClientStateChanged(AIState state)
-	{
-	}
-}
-
-
-using System;
-using UnityEngine;
-
-public class AIThinkManager : BaseMonoBehaviour, IServerComponent
-{
-	public enum QueueType
-	{
-		Human,
-		Animal,
-		Pets
-	}
-
-	public static ListHashSet<IThinker> _processQueue = new ListHashSet<IThinker>();
-
-	public static ListHashSet<IThinker> _removalQueue = new ListHashSet<IThinker>();
-
-	public static ListHashSet<IThinker> _animalProcessQueue = new ListHashSet<IThinker>();
-
-	public static ListHashSet<IThinker> _animalremovalQueue = new ListHashSet<IThinker>();
-
-	public static ListHashSet<IThinker> _petProcessQueue = new ListHashSet<IThinker>();
-
-	public static ListHashSet<IThinker> _petRemovalQueue = new ListHashSet<IThinker>();
-
-	[Help("How many miliseconds to budget for processing AI entities per server frame")]
-	[ServerVar]
-	public static float framebudgetms = 2.5f;
-
-	[ServerVar]
-	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
-	public static float animalframebudgetms = 2.5f;
-
-	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
-	[ServerVar]
-	public static float petframebudgetms = 1f;
-
-	private static int lastIndex = 0;
-
-	private static int lastAnimalIndex = 0;
-
-	private static int lastPetIndex;
-
-	public static void ProcessQueue(QueueType queueType)
-	{
-		if (queueType != 0)
-		{
-			_ = 2;
-		}
-		switch (queueType)
-		{
-		case QueueType.Human:
-			DoRemoval(_removalQueue, _processQueue);
-			AIInformationZone.BudgetedTick();
-			break;
-		case QueueType.Pets:
-			DoRemoval(_petRemovalQueue, _petProcessQueue);
-			break;
-		default:
-			DoRemoval(_animalremovalQueue, _animalProcessQueue);
-			break;
-		}
-		switch (queueType)
-		{
-		case QueueType.Human:
-			DoProcessing(_processQueue, framebudgetms / 1000f, ref lastIndex);
-			break;
-		case QueueType.Pets:
-			DoProcessing(_petProcessQueue, petframebudgetms / 1000f, ref lastPetIndex);
-			break;
-		default:
-			DoProcessing(_animalProcessQueue, animalframebudgetms / 1000f, ref lastAnimalIndex);
-			break;
-		}
-	}
-
-	private static void DoRemoval(ListHashSet<IThinker> removal, ListHashSet<IThinker> process)
-	{
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		if (removal.Count <= 0)
-		{
-			return;
-		}
-		Enumerator<IThinker> enumerator = removal.GetEnumerator();
-		try
-		{
-			while (enumerator.MoveNext())
-			{
-				IThinker current = enumerator.Current;
-				process.Remove(current);
-			}
-		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to .constrained prefix*/).Dispose();
-		}
-		removal.Clear();
-	}
-
-	private static void DoProcessing(ListHashSet<IThinker> process, float budgetSeconds, ref int last)
-	{
-		float realtimeSinceStartup = Time.realtimeSinceStartup;
-		while (last < process.Count && Time.realtimeSinceStartup < realtimeSinceStartup + budgetSeconds)
-		{
-			IThinker thinker = process[last];
-			if (thinker != null)
-			{
-				try
-				{
-					thinker.TryThink();
-				}
-				catch (Exception ex)
-				{
-					Debug.LogWarning((object)ex);
-				}
-			}
-			last++;
-		}
-		if (last >= process.Count)
-		{
-			last = 0;
-		}
-	}
-
-	public static void Add(IThinker toAdd)
-	{
-		_processQueue.Add(toAdd);
-	}
-
-	public static void Remove(IThinker toRemove)
-	{
-		_removalQueue.Add(toRemove);
-	}
-
-	public static void AddAnimal(IThinker toAdd)
-	{
-		_animalProcessQueue.Add(toAdd);
-	}
-
-	public static void RemoveAnimal(IThinker toRemove)
-	{
-		_animalremovalQueue.Add(toRemove);
-	}
-
-	public static void AddPet(IThinker toAdd)
-	{
-		_petProcessQueue.Add(toAdd);
-	}
-
-	public static void RemovePet(IThinker toRemove)
-	{
-		_petRemovalQueue.Add(toRemove);
-	}
-}
-
-
-public enum QueueType
-{
-	Human,
-	Animal,
-	Pets
-}
-
-
-public class BanditGuard : HumanNPC
-{
 }
 
 
