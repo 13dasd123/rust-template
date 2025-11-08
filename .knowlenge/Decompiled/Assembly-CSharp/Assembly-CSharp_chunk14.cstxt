@@ -11666,9 +11666,9 @@ public enum FishingTag
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(PostOpaqueDepth))]
 public class WaterCamera : MonoBehaviour
 {
@@ -13079,8 +13079,8 @@ public struct FogSettings
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
+[ExecuteInEditMode]
 public class AtmosphereVolumeRenderer : MonoBehaviour
 {
 	public FogMode Mode = (FogMode)3;
@@ -13272,9 +13272,9 @@ public struct ScreenSpaceRefractionParams
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 public class DeferredExtension : MonoBehaviour
 {
 	public ExtendGBufferParams extendGBuffer = ExtendGBufferParams.Default;
@@ -13305,8 +13305,8 @@ public class DeferredExtensionMesh : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(Camera))]
 public class DeferredIndirectLightingPass : MonoBehaviour
 {
@@ -13741,8 +13741,8 @@ private struct SubsurfaceProfileEntry
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Renderer))]
+[ExecuteInEditMode]
 public class DeferredMeshDecal : MonoBehaviour, IClientComponent
 {
 }
@@ -13759,8 +13759,8 @@ public class DeferredMeshDecalRenderer : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 public class DeployGuideCamera : SingletonComponent<DeployGuideCamera>
 {
 	public DeployGuideMaterial GoodMaterial;
@@ -14028,9 +14028,9 @@ public static class GraphicsMemory
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
+[ExecuteInEditMode]
 public class Impostor : MonoBehaviour, IClientComponent, IPrefabPreProcess
 {
 	public ImpostorAsset asset;
@@ -14649,8 +14649,8 @@ public class ObjectMotionVectorFix : MonoBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(CommandBufferManager))]
 public class PostOpaqueDepth : MonoBehaviour
 {
 	public RenderTexture postOpaqueDepth;
@@ -15463,8 +15463,8 @@ public class SpatialEnvironmentVolumeRendererFeature : RustRendererFeature
 
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [ExecuteAlways]
+[RequireComponent(typeof(Camera))]
 public class SpatialBiomeFog : SingletonComponent<SpatialBiomeFog>
 {
 	public ComputeShader FogMarchShader;
@@ -16470,8 +16470,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 
 	public Color comfortedColor;
 
-	[ClientVar(Name = "static")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[ClientVar(Name = "static")]
 	public static void ConVar_Static(Arg args)
 	{
 	}

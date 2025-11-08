@@ -7144,19 +7144,17 @@ public static class ServerOcclusion
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = arg.GetVector3(0, default(Vector3)) + PlayerEyes.EyeOffset;
 		Vector3 val2 = arg.GetVector3(1, default(Vector3)) + PlayerEyes.EyeOffset;
 		SubGrid subGrid = GetSubGrid(val);
 		SubGrid subGrid2 = GetSubGrid(val2);
 		if (subGrid.Equals(default(SubGrid)) || subGrid2.Equals(default(SubGrid)))
 		{
-			return $"Invalid grid(s), positions provided: {val} - {val2}";
+			return "Path not blocked due to one of positions being outside of grid";
 		}
 		NativeList<(int3, Color)> cells = default(NativeList<(int3, Color)>);
 		cells..ctor(AllocatorHandle.op_Implicit((Allocator)2));
@@ -9025,8 +9023,8 @@ public class RadialBlur : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Range(0f, 3f)]
 	[Header("Blur Quality")]
+	[Range(0f, 3f)]
 	public FixedIntParameter downsample = new FixedIntParameter
 	{
 		value = 1

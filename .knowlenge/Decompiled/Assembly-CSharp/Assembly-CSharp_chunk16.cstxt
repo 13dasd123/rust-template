@@ -1574,10 +1574,10 @@ public class FXAAPostEffectsBase : MonoBehaviour
 using System;
 using UnityEngine;
 
-[AddComponentMenu("KriptoFX/Explosion_Bloom")]
-[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
+[ImageEffectAllowedInSceneView]
 [RequireComponent(typeof(Camera))]
+[AddComponentMenu("KriptoFX/Explosion_Bloom")]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
@@ -1588,8 +1588,8 @@ public class Explosion_Bloom : MonoBehaviour
 		public float threshold;
 
 		[SerializeField]
-		[Range(0f, 1f)]
 		[Tooltip("Makes transition between under/over-threshold gradual.")]
+		[Range(0f, 1f)]
 		public float softKnee;
 
 		[Range(1f, 7f)]
@@ -1652,8 +1652,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Shader m_Shader;
 
 	private Material m_Material;
@@ -1859,8 +1859,8 @@ public struct Settings
 	public float threshold;
 
 	[SerializeField]
-	[Range(0f, 1f)]
 	[Tooltip("Makes transition between under/over-threshold gradual.")]
+	[Range(0f, 1f)]
 	public float softKnee;
 
 	[Range(1f, 7f)]
@@ -2714,8 +2714,8 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 using ConVar;
 using UnityEngine;
 
-[RequireComponent(typeof(Light))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Light))]
 public class NGSS_Directional : MonoBehaviour
 {
 	public enum SAMPLER_COUNT
@@ -2726,20 +2726,20 @@ public class NGSS_Directional : MonoBehaviour
 		SAMPLERS_64
 	}
 
-	[Range(0f, 0.02f)]
 	[Tooltip("Overall softness for both PCF and PCSS shadows.\nRecommended value: 0.01.")]
+	[Range(0f, 0.02f)]
 	public float PCSS_GLOBAL_SOFTNESS = 0.01f;
 
-	[Range(0f, 1f)]
 	[Tooltip("PCSS softness when shadows is close to caster.\nRecommended value: 0.05.")]
+	[Range(0f, 1f)]
 	public float PCSS_FILTER_DIR_MIN = 0.05f;
 
-	[Range(0f, 0.5f)]
 	[Tooltip("PCSS softness when shadows is far from caster.\nRecommended value: 0.25.\nIf too high can lead to visible artifacts when early bailout is enabled.")]
+	[Range(0f, 0.5f)]
 	public float PCSS_FILTER_DIR_MAX = 0.25f;
 
-	[Range(0f, 10f)]
 	[Tooltip("Amount of banding or noise. Example: 0.0 gives 100 % Banding and 10.0 gives 100 % Noise.")]
+	[Range(0f, 10f)]
 	public float BANDING_NOISE_AMOUNT = 1f;
 
 	[Tooltip("Recommended values: Mobile = 16, Consoles = 25, Desktop Low = 32, Desktop High = 64")]
@@ -6083,9 +6083,9 @@ public struct Sphere
 using UnityEngine;
 using UnityEngine.Rendering;
 
+[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
 [AddComponentMenu("Image Effects/Sonic Ether/SE Screen-Space Shadows")]
-[RequireComponent(typeof(Camera))]
 public class SEScreenSpaceShadows : SingletonComponent<SEScreenSpaceShadows>, IClientComponent
 {
 	private CommandBuffer blendShadowsCommandBuffer;
@@ -6976,9 +6976,9 @@ public class VertexStreamChildrenRebuilder : MonoBehaviour
 using System;
 using UnityEngine;
 
-[ExecuteInEditMode]
-[ImageEffectAllowedInSceneView]
 [AddComponentMenu("Rendering/Visualize Texture Density")]
+[ImageEffectAllowedInSceneView]
+[ExecuteInEditMode]
 public class VisualizeTexelDensity : MonoBehaviour
 {
 	public Shader shader;

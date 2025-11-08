@@ -1640,8 +1640,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -1656,8 +1656,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve suspensionUpAngleDeltaGain;
 
-	[SerializeField]
 	[Header("Tires")]
+	[SerializeField]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -1689,8 +1689,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float brakeHissCooldown = 2f;
 
-	[SerializeField]
 	[Header("Misc")]
+	[SerializeField]
 	private SoundDefinition angryHornSoundDef;
 
 	[SerializeField]
@@ -5311,8 +5311,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Range(0f, 1f)]
 	[Header("Parameters")]
+	[Range(0f, 1f)]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]
@@ -8995,8 +8995,8 @@ public class CatapultSounds : GroundVehicleAudio
 
 	public SoundDefinition reloadStopDef;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -10062,8 +10062,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	public GameObjectRef watersurfaceExplosionEffect;
 
-	[Min(0f)]
 	[Header("Water")]
+	[Min(0f)]
 	public float underwaterExplosionDepth = 1f;
 
 	[Tooltip("Optional: Will fall back to underwaterExplosionEffect or explosionEffect if not assigned.")]
@@ -12032,8 +12032,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[Header("Engine")]
 	private EngineAudioSet engineAudioSet;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -12042,8 +12042,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[SerializeField]
 	[Header("Tires")]
+	[SerializeField]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -12058,8 +12058,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[Header("Skid")]
 	[SerializeField]
+	[Header("Skid")]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -12183,8 +12183,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[ServerVar]
 	[Help("Shore drift speed in metres per second")]
+	[ServerVar]
 	public static float drift_speed = 1f;
 
 	[NonSerialized]
@@ -12201,8 +12201,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	[ServerVar]
+	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	public static int seconds_until_shore_drift(Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -12919,9 +12919,9 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	[Range(0f, 3f)]
 	public float underwaterDrag = 2f;
 
-	[Range(0f, 1f)]
-	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
 	[FormerlySerializedAs("flatWaterLerp")]
+	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
+	[Range(0f, 1f)]
 	public float wavesEffect = 1f;
 
 	public Action<bool> SubmergedChanged;
@@ -13826,9 +13826,9 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
 	private float maxHornTime;
 
-	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
 	[SerializeField]
 	[Min(0f)]
+	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
 	private int hornTokenCapacity = 3;
 
 	[SerializeField]
@@ -13906,8 +13906,8 @@ public class CarSettings
 
 	public bool disableHandbrakes;
 
-	[Header("Front/Rear Vehicle Balance")]
 	[Range(0f, 1f)]
+	[Header("Front/Rear Vehicle Balance")]
 	public float handlingBias = 0.5f;
 }
 
@@ -15027,8 +15027,8 @@ public class DamageRenderer : MonoBehaviour, IClientComponent
 	[HideInInspector]
 	private List<DamageShowingRenderer> damageShowingRenderers;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private List<GlassPane> damageShowingGlassRenderers;
 }
 
@@ -15055,8 +15055,8 @@ using UnityEngine;
 
 public class DiverPropulsionVehicleAudio : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -15464,8 +15464,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float overallVolume = 1f;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterSplashSoundDef;
 
 	[SerializeField]
@@ -15474,8 +15474,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float waterSoundsMaxSpeed = 10f;
 
-	[SerializeField]
 	[Header("Brakes")]
+	[SerializeField]
 	private SoundDefinition brakeSoundDef;
 
 	[SerializeField]
@@ -15737,8 +15737,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[Header("Helicopter")]
 	[SerializeField]
+	[Header("Helicopter")]
 	public float engineThrustMax;
 
 	[SerializeField]
@@ -15765,17 +15765,17 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[SerializeField]
 	public GameObjectRef crashEffect;
 
-	[Range(0.1f, 0.95f)]
-	[SerializeField]
 	[Tooltip("Lower values mean more lift is produced at high angles.")]
+	[SerializeField]
+	[Range(0.1f, 0.95f)]
 	public float liftDotMax = 0.75f;
 
 	[SerializeField]
 	[Range(0.1f, 0.95f)]
 	public float altForceDotMin = 0.85f;
 
-	[SerializeField]
 	[Range(0.1f, 0.95f)]
+	[SerializeField]
 	public float liftFraction = 0.25f;
 
 	[SerializeField]
@@ -18819,15 +18819,15 @@ using UnityEngine;
 
 public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[Header("Scrap Transport Helicopter Specific")]
 	[SerializeField]
+	[Header("Scrap Transport Helicopter Specific")]
 	private Transform searchlightEye;
 
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[Header("Damage Effects")]
 	[SerializeField]
+	[Header("Damage Effects")]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]
@@ -19414,8 +19414,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	public LegsAnimator legsAnimator;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform backHipTransform;
 
 	[SerializeField]
@@ -19424,9 +19424,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
-	[Header("Head")]
 	[Range(0f, 1f)]
 	[SerializeField]
+	[Header("Head")]
 	private float headBlend = 1f;
 
 	[ReadOnly]
@@ -19448,9 +19448,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public Vector3 headLookOffset = Vector3.zero;
 
+	[Range(0f, 1f)]
 	[SerializeField]
 	[Header("Spine")]
-	[Range(0f, 1f)]
 	private float spineBlend = 0.5f;
 
 	[ReadOnly]
@@ -19462,20 +19462,20 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public float spineYawInertiaFactor = 150f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Quaternion[] targetNeckRotations;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Quaternion[] targetSpineRotations;
 
 	[SerializeField]
 	[ReadOnly]
 	private Vector3[] localSpinePositions;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3 originalHipPosition;
 
 	[ReadOnly]
@@ -19500,8 +19500,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private Animator animator;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	public SoundPlayer breathingSound;
 
 	[SerializeField]
@@ -19516,8 +19516,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private AnimationCurve saddleMovementGainCurve;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private MaterialEffect footstepEffects;
 
 	[SerializeField]
@@ -20437,8 +20437,8 @@ using UnityEngine;
 
 public abstract class BaseModularVehicle : GroundVehicle, IPrefabPreProcess, PlayerInventory.ICanMoveFrom
 {
-	[SerializeField]
 	[Header("Modular Vehicle")]
+	[SerializeField]
 	public List<ModularVehicleSocket> moduleSockets;
 
 	[SerializeField]
@@ -22518,8 +22518,8 @@ public class SnowmobileAudio : GroundVehicleAudio
 	[SerializeField]
 	private SoundDefinition skiSlideWaterSoundDef;
 
-	[Header("Movement")]
 	[SerializeField]
+	[Header("Movement")]
 	private AnimationCurve movementGainCurve;
 
 	[SerializeField]
@@ -22932,8 +22932,8 @@ using UnityEngine;
 
 public class SubmarineAudio : MonoBehaviour
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -22948,8 +22948,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve engineLoopPitchCurve;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition underwaterLoopDef;
 
 	[SerializeField]
@@ -22998,8 +22998,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private GameObject dashboardAudioPoint;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private SoundDefinition climbOrDiveLoopSound;
 
 	[SerializeField]
@@ -24877,8 +24877,8 @@ using UnityEngine;
 
 public class TrainCarAudio : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Train Car Audio")]
+	[SerializeField]
 	private TrainCar trainCar;
 
 	[SerializeField]
@@ -25418,8 +25418,8 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private Transform hornSoundPosition;
 
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -30540,6 +30540,16 @@ public class PuzzleReset : FacepunchBehaviour
 		{
 			ResetTimer();
 		}
+		ApplyMidWipeModifications();
+	}
+
+	private void ApplyMidWipeModifications()
+	{
+		MonumentInfo closestMonumentInfo = GetClosestMonumentInfo();
+		if ((Object)(object)closestMonumentInfo != (Object)null && closestMonumentInfo.displayPhrase.token == "airfield_display_name")
+		{
+			ignoreAboveGroundPlayers = true;
+		}
 	}
 
 	public void ResetTimer()
@@ -30597,9 +30607,9 @@ public class PuzzleReset : FacepunchBehaviour
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
 		AIInformationZone aIZone = GetAIZone();
 		if (!ConVar.Server.drawpuzzleresets || !((Object)(object)aIZone != (Object)null))
 		{
@@ -30628,7 +30638,7 @@ public class PuzzleReset : FacepunchBehaviour
 				if (((OBB)(ref areaBox)).Contains(((Component)item).transform.position))
 				{
 					item.SendConsoleCommand(DDrawCommand.Box(aIZone.areaBox.position, 10f, Color.green, aIZone.areaBox.extents * 2f, aIZone.areaBox.rotation, distanceFade: false));
-					item.SendConsoleCommand(DDrawCommand.Box(aIZone.areaBox.position, 10f, Color.green, aIZone.areaBox.extents * 2f * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, aIZone.areaBox.rotation, distanceFade: false));
+					item.SendConsoleCommand(DDrawCommand.Box(aIZone.areaBox.position, 10f, Color.yellow, ScaleSizeByConVar(aIZone.areaBox.extents * 2f), aIZone.areaBox.rotation, distanceFade: false));
 				}
 			}
 		}
@@ -30734,7 +30744,7 @@ public class PuzzleReset : FacepunchBehaviour
 					if (ConVar.Server.drawpuzzleresets && current.IsAdmin)
 					{
 						current.SendConsoleCommand(DDrawCommand.Sphere(origin.position, 10f, Color.green, radius, distanceFade: false));
-						current.SendConsoleCommand(DDrawCommand.Sphere(origin.position, 10f, Color.yellow, radius * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, distanceFade: false));
+						current.SendConsoleCommand(DDrawCommand.Sphere(origin.position, 10f, Color.yellow, ScaleRadiusByConVar(radius), distanceFade: false));
 					}
 					return true;
 				}
@@ -30782,7 +30792,7 @@ public class PuzzleReset : FacepunchBehaviour
 				timeSpentBlocked += num;
 				hasPlayerEnteredRange = true;
 			}
-			else if (lastNormalizedRadiation == 1f)
+			else if (lastNormalizedRadiation > 0f)
 			{
 				timeSpentEmptyWithRads += num;
 			}
@@ -30821,7 +30831,7 @@ public class PuzzleReset : FacepunchBehaviour
 				((IDisposable)val)?.Dispose();
 			}
 		}
-		static void NotifyRadiationZone(TriggerRadiation r, List<BasePlayer> sentPlayers)
+		void NotifyRadiationZone(TriggerRadiation r, List<BasePlayer> sentPlayers)
 		{
 			if (r.entityContents == null)
 			{
@@ -30829,7 +30839,7 @@ public class PuzzleReset : FacepunchBehaviour
 			}
 			foreach (BaseEntity entityContent in r.entityContents)
 			{
-				if (entityContent is BasePlayer { IsNpc: false } basePlayer && !sentPlayers.Contains(basePlayer))
+				if (entityContent is BasePlayer { IsNpc: false } basePlayer && !sentPlayers.Contains(basePlayer) && (!ignoreAboveGroundPlayers || basePlayer.IsUnderground()))
 				{
 					sentPlayers.Add(basePlayer);
 					basePlayer.ShowToast(GameTip.Styles.Error, BlockedWarningPhrase, false);
@@ -30992,33 +31002,59 @@ public class PuzzleReset : FacepunchBehaviour
 			normalisedAmount = 0f;
 		}
 		InitialiseRadiationTriggers();
-		if (!((Object)(object)radiationZone == (Object)null))
+		if ((Object)(object)radiationZone == (Object)null)
 		{
-			((Component)radiationZone).gameObject.SetActive(normalisedAmount > 0f);
-			radiationZone.SetRadiationLevel(normalisedAmount * ConVar.Server.monumentPuzzleResetRadiationAmount, 10f);
-			radiationZone.SetBypassArmor(state: true);
-			lastNormalizedRadiation = normalisedAmount;
+			return;
+		}
+		((Component)radiationZone).gameObject.SetActive(normalisedAmount > 0f);
+		radiationZone.SetRadiationLevel(normalisedAmount * ConVar.Server.monumentPuzzleResetRadiationAmount, normalisedAmount * 10f);
+		radiationZone.SetBypassArmor(state: true);
+		radiationZone.SetIgnoreAboveGroundPlayers(ignoreAboveGroundPlayers);
+		lastNormalizedRadiation = normalisedAmount;
+		if (!(normalisedAmount >= 1f) || radiationZone.InnerRadiation.entityContents == null)
+		{
+			return;
+		}
+		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
+		try
+		{
+			((List<BaseEntity>)(object)val).AddRange((IEnumerable<BaseEntity>)radiationZone.InnerRadiation.entityContents);
+			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
+			{
+				if (item is BasePlayer basePlayer && (!ignoreAboveGroundPlayers || basePlayer.IsUnderground()))
+				{
+					basePlayer.Hurt(25f, DamageType.Radiation, null, useProtection: false);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
 	private void InitialiseRadiationTriggers()
 	{
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
@@ -31050,13 +31086,15 @@ public class PuzzleReset : FacepunchBehaviour
 		}
 		if (CheckSleepingAIZForPlayers)
 		{
-			radiationZone.Apply(new Bounds(zone.areaBox.position, zone.areaBox.extents * 2f), new Bounds(zone.areaBox.position, zone.areaBox.extents * 2f * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier));
+			Vector3 val3 = ScaleSizeByConVar(zone.areaBox.extents * 2f);
+			Vector3 val4 = ((Component)this).transform.InverseTransformPoint(zone.areaBox.position);
+			radiationZone.Apply(new Bounds(val4, zone.areaBox.extents * 2f), new Bounds(val4, val3));
 			((Component)radiationZone).transform.rotation = zone.areaBox.rotation;
 		}
 		else
 		{
 			((Component)radiationZone).transform.localPosition = playerDetectionOrigin.localPosition;
-			radiationZone.Apply(playerDetectionRadius, playerDetectionRadius * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier);
+			radiationZone.Apply(playerDetectionRadius, ScaleRadiusByConVar(playerDetectionRadius));
 		}
 	}
 
@@ -31106,6 +31144,50 @@ public class PuzzleReset : FacepunchBehaviour
 				readout.Add("Player has entered range, ticking...");
 			}
 		}
+	}
+
+	public MonumentInfo GetClosestMonumentInfo()
+	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)TerrainMeta.Path != (Object)null && TerrainMeta.Path.Monuments != null)
+		{
+			float num = float.MaxValue;
+			MonumentInfo result = null;
+			{
+				foreach (MonumentInfo monument in TerrainMeta.Path.Monuments)
+				{
+					float num2 = Vector3.Distance(((Component)this).transform.position, ((Component)monument).transform.position);
+					if (num2 < num)
+					{
+						num = num2;
+						result = monument;
+					}
+				}
+				return result;
+			}
+		}
+		return null;
+	}
+
+	private static float ScaleRadiusByConVar(float radius)
+	{
+		return Mathf.Min(radius * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, radius + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease);
+	}
+
+	private static Vector3 ScaleSizeByConVar(Vector3 size)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		size.x = Mathf.Min(size.x * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, size.x + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease * 2f);
+		size.y = Mathf.Min(size.y * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, size.y + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease * 2f);
+		size.z = Mathf.Min(size.z * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, size.z + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease * 2f);
+		return size;
 	}
 }
 

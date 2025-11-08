@@ -3545,8 +3545,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar]
+	[ClientVar(ClientAdmin = true)]
 	public static void dump(Arg args)
 	{
 		if (Directory.Exists("diagnostics"))
@@ -6167,40 +6167,40 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 
 	public bool CopyWaterMap = true;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private bool _hasCopied;
 
 	[SerializeField]
 	[HideInInspector]
 	private bool _isUndo;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 _copySize;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _heightMapRect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _heightMapData;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private RectInt _splat0Rect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _splat0Data;
 
 	[SerializeField]
 	[HideInInspector]
 	private RectInt _splat1Rect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _splat1Data;
 
 	[HideInInspector]
@@ -6211,16 +6211,16 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[HideInInspector]
 	private Color[] _biomeData;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _alphaRect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _alphaData;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _topologyRect;
 
 	[SerializeField]
@@ -6231,8 +6231,8 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[HideInInspector]
 	private RectInt _waterRect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _waterData;
 
 	public bool HasCopied => _hasCopied;
@@ -8474,8 +8474,8 @@ public class TransformLineRenderer : MonoBehaviour, IClientComponent
 {
 	internal struct LineRendererUpdateJob : IJobParallelForTransform
 	{
-		[NativeMatchesParallelForLength]
 		[WriteOnly]
+		[NativeMatchesParallelForLength]
 		public NativeArray<Vector3> ResultWorldPositions;
 
 		public void Execute(int index, [ReadOnly] TransformAccess transform)
@@ -8502,8 +8502,8 @@ using UnityEngine.Jobs;
 
 internal struct LineRendererUpdateJob : IJobParallelForTransform
 {
-	[NativeMatchesParallelForLength]
 	[WriteOnly]
+	[NativeMatchesParallelForLength]
 	public NativeArray<Vector3> ResultWorldPositions;
 
 	public void Execute(int index, [ReadOnly] TransformAccess transform)
@@ -14266,8 +14266,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float sampleIntervalSeconds = 1f;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private int minInitialPoints = 5;
 
 	[SerializeField]
@@ -14279,8 +14279,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float wiggleIntensity = 1f;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private LineRenderer[] lineRenderers;
 
 	[SerializeField]
@@ -16901,9 +16901,9 @@ public class Compass : HeldEntity
 
 	private const string ADMIRE_ANIMEVENT_TAP2 = "AdmireTap2";
 
-	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
-	[SerializeField]
 	[Header("Compass")]
+	[SerializeField]
+	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	private float needleYawAngleOffset;
 
 	[Min(0f)]
@@ -16918,8 +16918,8 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float maxAcceleration = 1500f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float maxSpeed = 360f;
 
 	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
@@ -16933,9 +16933,9 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float wiggleFrequency = 1.5f;
 
+	[Tooltip("Velocity change when the admire animation taps the needle")]
 	[Min(0f)]
 	[SerializeField]
-	[Tooltip("Velocity change when the admire animation taps the needle")]
 	private float admireTapNeedleVelocity = 300f;
 }
 
@@ -17828,8 +17828,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IEntity, NetworkHandl
 		Gib
 	}
 
-	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[Header("BaseNetworkable")]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -19417,8 +19417,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[SerializeField]
 	[Header("Ragdolling")]
+	[SerializeField]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]
@@ -21236,8 +21236,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	[SerializeField]
 	private FlagCheck flagCheck;
 
-	[SerializeField]
 	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
+	[SerializeField]
 	private BaseEntity.Flags notFlag;
 
 	[SerializeField]
@@ -27255,8 +27255,8 @@ public class CardTable : BaseCardGameEntity
 		}
 	}
 
-	[Header("Card Table")]
 	[SerializeField]
+	[Header("Card Table")]
 	private ViewModel viewModel;
 
 	[SerializeField]

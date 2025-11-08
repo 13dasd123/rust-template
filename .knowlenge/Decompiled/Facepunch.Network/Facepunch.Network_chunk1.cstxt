@@ -3595,42 +3595,41 @@ public class Networkable : IPooled
 			ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
 			SubStrategy.GatherSubscriptions(this, val2);
 			ListHashSet<Group>.Compare(subscriber.subscribed, val2, list, list2, (List<Group>)null);
-			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)list2) != null)
+			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)list2) == null)
 			{
-				/*Error: Could not find block for branch target IL_0140*/;
-			}
-			for (int i = 0; i < list2.Count; i++)
-			{
-				Group group = list2[i];
-				if (removeLimit > 0)
+				for (int i = 0; i < list2.Count; i++)
 				{
-					subscriber.Unsubscribe(group);
-					if (handler != null)
+					Group group = list2[i];
+					if (removeLimit > 0)
 					{
-						handler.OnNetworkGroupLeave(group);
+						subscriber.Unsubscribe(group);
+						if (handler != null)
+						{
+							handler.OnNetworkGroupLeave(group);
+						}
+						removeLimit -= group.networkables.Count;
 					}
-					removeLimit -= group.networkables.Count;
-				}
-				else
-				{
-					updateSubscriptions = true;
-				}
-			}
-			for (int j = 0; j < list.Count; j++)
-			{
-				Group group2 = list[j];
-				if (addLimit > 0)
-				{
-					subscriber.Subscribe(group2);
-					if (handler != null)
+					else
 					{
-						handler.OnNetworkGroupEnter(group2);
+						updateSubscriptions = true;
 					}
-					addLimit -= group2.networkables.Count;
 				}
-				else
+				for (int j = 0; j < list.Count; j++)
 				{
-					updateSubscriptions = true;
+					Group group2 = list[j];
+					if (addLimit > 0)
+					{
+						subscriber.Subscribe(group2);
+						if (handler != null)
+						{
+							handler.OnNetworkGroupEnter(group2);
+						}
+						addLimit -= group2.networkables.Count;
+					}
+					else
+					{
+						updateSubscriptions = true;
+					}
 				}
 			}
 			Pool.FreeUnmanaged<Group>(ref list);
@@ -3657,17 +3656,16 @@ public class Networkable : IPooled
 			ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
 			SubStrategy.GatherHighPrioSubscriptions(this, val2);
 			ListHashSet<Group>.Compare(subscriber.subscribed, val2, list, (List<Group>)null, (List<Group>)null);
-			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)null) != null)
+			if (Interface.CallHook("OnNetworkSubscriptionsUpdate", (object)this, (object)list, (object)null) == null)
 			{
-				/*Error: Could not find block for branch target IL_00a2*/;
-			}
-			for (int i = 0; i < list.Count; i++)
-			{
-				Group group = list[i];
-				subscriber.Subscribe(group);
-				if (handler != null)
+				for (int i = 0; i < list.Count; i++)
 				{
-					handler.OnNetworkGroupEnter(group);
+					Group group = list[i];
+					subscriber.Subscribe(group);
+					if (handler != null)
+					{
+						handler.OnNetworkGroupEnter(group);
+					}
 				}
 			}
 			Pool.FreeUnmanaged<Group>(ref list);

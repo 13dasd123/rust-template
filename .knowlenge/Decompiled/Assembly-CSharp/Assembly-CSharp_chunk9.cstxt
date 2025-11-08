@@ -21512,9 +21512,9 @@ public class Socket_Free_Snappable : Socket_Free
 	[ClientVar]
 	public static bool DebugSnapping = false;
 
-	[Header("Snapping - General")]
 	[SerializeField]
 	[Range(-1f, 1f)]
+	[Header("Snapping - General")]
 	private float generalPadding;
 
 	[Header("Snapping - Walls")]
@@ -21526,16 +21526,16 @@ public class Socket_Free_Snappable : Socket_Free
 	[SerializeField]
 	private bool allowSnappingToCorners = true;
 
-	[Range(-1f, 1f)]
 	[SerializeField]
+	[Range(-1f, 1f)]
 	private float cornerPadding = -0.01f;
 
-	[SerializeField]
 	[Header("Snapping - Same Deployable")]
+	[SerializeField]
 	private bool allowSnappingToSameDeployable = true;
 
-	[Range(-1f, 1f)]
 	[SerializeField]
+	[Range(-1f, 1f)]
 	private float sameDeployablePadding;
 
 	private BaseEntity staticEntity;
@@ -23389,8 +23389,8 @@ public class GameObjectToggleState : StateMachineBehaviour
 {
 	public bool UseCurve;
 
-	[MinMax(0f, 1f)]
 	[Tooltip("The normalised range in the animation in which to apply the TargetState")]
+	[MinMax(0f, 1f)]
 	public Vector2 ValidNormalisedRange;
 
 	public AnimationCurve CurveRange = AnimationCurve.Linear(0f, 0f, 1f, 0f);
@@ -23937,8 +23937,8 @@ public class OxygenOverlay : MonoBehaviour
 	[SerializeField]
 	private float smoothTime = 1f;
 
-	[Tooltip("If true, only show this effect when the player is mounted in a submarine.")]
 	[SerializeField]
+	[Tooltip("If true, only show this effect when the player is mounted in a submarine.")]
 	private bool submarinesOnly;
 }
 

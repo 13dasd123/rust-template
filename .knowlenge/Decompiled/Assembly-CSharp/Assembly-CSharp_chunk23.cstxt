@@ -1,3 +1,178 @@
+using Rust.Water5;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using UnityEngine;
+
+[BurstCompile]
+internal struct GetHeightsJobIndirect : IJob
+{
+	[WriteOnly]
+	public NativeArray<float> Heights;
+
+	[ReadOnly]
+	public ReadOnly<Vector3> Pos;
+
+	[ReadOnly]
+	public ReadOnly<float> ShoreDists;
+
+	[ReadOnly]
+	public ReadOnly<float> TerrainHeights;
+
+	[ReadOnly]
+	public ReadOnly<int> Indices;
+
+	[ReadOnly]
+	public float OneOverOctave0Scale;
+
+	[ReadOnly]
+	public NativeOceanDisplacementShort3 SimData;
+
+	[ReadOnly]
+	public int Spectrum0;
+
+	[ReadOnly]
+	public int Spectrum1;
+
+	[ReadOnly]
+	public int Frame0;
+
+	[ReadOnly]
+	public int Frame1;
+
+	[ReadOnly]
+	public float SpectrumBlend;
+
+	[ReadOnly]
+	public float FrameBlend;
+
+	[ReadOnly]
+	public float DistanceAttenuationFactor;
+
+	[ReadOnly]
+	public float DepthAttenuationFactor;
+
+	public void Execute()
+	{
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < Indices.Length; i++)
+		{
+			int num = Indices[i];
+			float heightRaw = GetHeightRaw(float3.op_Implicit(Pos[num]));
+			Heights[num] = heightRaw * GetHeightAttenuation(ShoreDists[num], TerrainHeights[num]);
+		}
+	}
+
+	private float GetHeightRaw(float3 position)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		float3 zero = float3.zero;
+		zero = float3.op_Implicit(GetDisplacement(position));
+		zero = float3.op_Implicit(GetDisplacement(position - zero));
+		zero = float3.op_Implicit(GetDisplacement(position - zero));
+		return GetDisplacement(position - zero).y;
+	}
+
+	private Vector3 GetDisplacement(float3 position)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		float normX = position.x * OneOverOctave0Scale;
+		float normZ = position.z * OneOverOctave0Scale;
+		return float3.op_Implicit(GetDisplacement(normX, normZ));
+	}
+
+	private float3 GetDisplacement(float normX, float normZ)
+	{
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		normX -= math.floor(normX);
+		normZ -= math.floor(normZ);
+		float num = normX * 256f - 0.5f;
+		float num2 = normZ * 256f - 0.5f;
+		int num3 = (int)math.floor(num);
+		int num4 = (int)math.floor(num2);
+		float num5 = num - (float)num3;
+		float num6 = num2 - (float)num4;
+		int num7 = num3 % 256;
+		int num8 = num4 % 256;
+		int x = (num7 + 256) % 256;
+		int z = (num8 + 256) % 256;
+		int x2 = (num7 + 1 + 256) % 256;
+		int z2 = (num8 + 1 + 256) % 256;
+		float3 displacementFromSimData = GetDisplacementFromSimData(x, z);
+		float3 displacementFromSimData2 = GetDisplacementFromSimData(x2, z);
+		float3 displacementFromSimData3 = GetDisplacementFromSimData(x, z2);
+		float3 displacementFromSimData4 = GetDisplacementFromSimData(x2, z2);
+		float3 val = math.lerp(displacementFromSimData, displacementFromSimData2, num5);
+		float3 val2 = math.lerp(displacementFromSimData3, displacementFromSimData4, num5);
+		return math.lerp(val, val2, num6);
+	}
+
+	private float3 GetDisplacementFromSimData(int x, int z)
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		int z2 = x * 256 + z;
+		float3 val = math.lerp((float3)SimData[Spectrum0, Frame0, z2], (float3)SimData[Spectrum1, Frame0, z2], SpectrumBlend);
+		float3 val2 = math.lerp((float3)SimData[Spectrum0, Frame1, z2], (float3)SimData[Spectrum1, Frame1, z2], SpectrumBlend);
+		return math.lerp(val, val2, FrameBlend);
+	}
+
+	public float GetHeightAttenuation(float shore, float terrainHeight)
+	{
+		float num = Mathf.Clamp01(shore / DistanceAttenuationFactor);
+		float num2 = Mathf.Clamp01(Mathf.Abs(terrainHeight) / DepthAttenuationFactor);
+		return num * num2;
+	}
+}
+
+
 using System;
 
 [Serializable]
@@ -578,8 +753,8 @@ public class ModularCarAudio : GroundVehicleAudio
 {
 	public bool showDebug;
 
-	[Header("Skid")]
 	[SerializeField]
+	[Header("Skid")]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -625,8 +800,8 @@ public class ModularCarAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionLurchMinTimeBetweenSounds = 0.25f;
 
-	[Header("Wheels")]
 	[SerializeField]
+	[Header("Wheels")]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]
@@ -10674,8 +10849,8 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	[SerializeField]
 	private NavMeshAgent agent;
 
-	[SerializeField]
 	[Header("Speed")]
+	[SerializeField]
 	private float sneakSpeed = 0.6f;
 
 	[SerializeField]
@@ -13880,8 +14055,8 @@ public class UI_RustButtonGroup : MonoBehaviour
 	[SerializeField]
 	protected bool _unpressSiblings;
 
-	[SerializeField]
 	[Tooltip("This button will appear 'pressed' at the beginning.")]
+	[SerializeField]
 	private RustButton _defaultButton;
 
 	[SerializeField]
@@ -14646,8 +14821,8 @@ public class UI_MenuManager : SingletonComponent<UI_MenuManager>
 	[Header("Drops")]
 	private UI_DropsController _dropsController;
 
-	[SerializeField]
 	[Header("Background Image Settings")]
+	[SerializeField]
 	private CanvasGroup _homeVideoOverlay;
 
 	[SerializeField]
@@ -14784,8 +14959,8 @@ using UnityEngine.UI;
 
 public class UI_Hero_InfoBox : FacepunchBehaviour
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	protected RustText _title;
 
 	[SerializeField]
@@ -14937,8 +15112,8 @@ using UnityEngine;
 
 public class UI_NotificationEntry : MonoBehaviour
 {
-	[Header("Icons")]
 	[SerializeField]
+	[Header("Icons")]
 	private RustIcon _basicIcon;
 
 	[SerializeField]
@@ -14950,8 +15125,8 @@ public class UI_NotificationEntry : MonoBehaviour
 	[SerializeField]
 	private RustIcon _warningIcon;
 
-	[Header("UI Elements")]
 	[SerializeField]
+	[Header("UI Elements")]
 	private GameObject _linkIcon;
 
 	[SerializeField]
@@ -15102,8 +15277,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private List<ServerBrowserCategoryData> _categories;
 
-	[SerializeField]
 	[Header("Headers")]
+	[SerializeField]
 	private List<ServerBrowserHeader> _headers;
 
 	[Header("Filters")]
@@ -15293,8 +15468,8 @@ using UnityEngine;
 
 public class UI_ServerEntry : MonoBehaviour
 {
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private RustButton _button;
 
 	[SerializeField]
@@ -15321,15 +15496,15 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private GameObject _favouritingParticlesPrefab;
 
-	[Header("References - Last Played")]
 	[SerializeField]
+	[Header("References - Last Played")]
 	private RustText _lastPlayedText;
 
 	[SerializeField]
 	private GameObject _lastPlayedObject;
 
-	[Header("References - Friends")]
 	[SerializeField]
+	[Header("References - Friends")]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -15355,8 +15530,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private RectTransform _favouritesSpawnPoint;
 
-	[SerializeField]
 	[Header("References - Styles")]
+	[SerializeField]
 	private StyleAsset _evenStyle;
 
 	[SerializeField]
@@ -15365,8 +15540,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private bool _joinOnClick;
 
 	public static Phrase LastJoinedPhrase = (Phrase)(object)new TokenisedPhrase("serverentry.lastplayed.ago", "{0} ago");
@@ -15598,8 +15773,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RectTransform))]
 public class UI_FoilShaderMouseFollow : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Foil Shader Settings")]
+	[SerializeField]
 	private RawImage _rawImage;
 
 	[SerializeField]
@@ -15719,8 +15894,8 @@ public class UI_MenuNavigationGroup : UI_RustButtonGroup
 		public string Path;
 	}
 
-	[Header("Navigation Groups (IGNORE BUTTON GROUPS - Just Add Here)")]
 	[SerializeField]
+	[Header("Navigation Groups (IGNORE BUTTON GROUPS - Just Add Here)")]
 	private List<TabButton> _navigationGroups = new List<TabButton>();
 }
 
@@ -15895,8 +16070,8 @@ public class UI_SteamInventoryCraftingModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	private MaterialGroup clothGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject craftOK;
 
 	[SerializeField]
@@ -16037,8 +16212,8 @@ public class UI_SteamInventoryPlayerItemModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	protected UI_SteamInventoryCraftingModal.MaterialGroup clothGroup;
 
-	[SerializeField]
 	[Header("Breakdown Controls")]
+	[SerializeField]
 	private GameObject breakdownButtonGroup;
 
 	[SerializeField]
@@ -16104,8 +16279,8 @@ public class UI_SteamInventoryCrafting : MonoBehaviour
 	[SerializeField]
 	private RustText metalAmountText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject craftingLoading;
 
 	[SerializeField]
@@ -16201,8 +16376,8 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private RawImage videoRawTexture;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject deleteButton;
 }
 
@@ -16283,12 +16458,12 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -16307,8 +16482,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Canvas buttonListCanvas;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject hoveredGestureTexts;
 
 	[SerializeField]
@@ -16857,8 +17032,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private UI_SearchBar searchBar;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gestureGroup;
 
 	[SerializeField]
@@ -17123,8 +17298,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform itemParent;
 
 	[SerializeField]
@@ -17169,8 +17344,8 @@ public class UI_StoreGeneralSubTabButton : BaseMonoBehaviour
 	[SerializeField]
 	private FlexTransition transition;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private FlexElement flexElement;
 
 	[SerializeField]
@@ -17212,8 +17387,8 @@ using UnityEngine;
 
 public class UI_StoreFeaturedTab : UI_StoreTabBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCountdown countdown;
 }
 
@@ -17280,8 +17455,8 @@ using UnityEngine.UI;
 
 public class UI_StoreLimitedTab : UI_StoreTabBase
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemGrid itemGrid;
 
 	[SerializeField]
@@ -17359,8 +17534,8 @@ public class UI_Store : UI_Page
 
 	private const string CART_KEY = "STORE_CART_ITEMS";
 
-	[Header("Search")]
 	[SerializeField]
+	[Header("Search")]
 	private UI_StoreItemGrid searchGrid;
 
 	[SerializeField]
@@ -17459,8 +17634,8 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private RustText discountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
@@ -17589,8 +17764,8 @@ public class UI_StoreCartButtonAnimation : BaseMonoBehaviour
 	[SerializeField]
 	private GameObject addToCartGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private FlexElement inCartGroup;
 
 	[SerializeField]
@@ -17626,8 +17801,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gaugeParent;
 
 	[SerializeField]
@@ -17671,8 +17846,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -17699,9 +17874,9 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private UI_StoreTakeover localTakeovers;
 
+	[Header("Skin Viewer")]
 	[SerializeField]
 	[Space]
-	[Header("Skin Viewer")]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -17716,8 +17891,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[Header("Intro Sequence")]
 	[SerializeField]
+	[Header("Intro Sequence")]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]
@@ -17862,8 +18037,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private StoreSource source;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -18089,9 +18264,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
-	[SerializeField]
-	[Header("Page Content")]
 	[Space]
+	[Header("Page Content")]
+	[SerializeField]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -18105,6 +18280,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 
 	[SerializeField]
 	private UI_BackgroundAspectRatioFitter coverBackground;
+
+	[SerializeField]
+	private Canvas backButtonCanvas;
 
 	[SerializeField]
 	private GameObject textContainerGroup;
@@ -18161,8 +18339,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private float autoCycleInterval = 10f;
 
-	[SerializeField]
 	[Header("Skin Viewer")]
+	[SerializeField]
 	private UI_SkinViewerControls skinViewerControls;
 
 	[SerializeField]
@@ -18171,8 +18349,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private UI_StoreCarrouselButton carouselButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private PageContent pageContent;
 }
 
@@ -18275,8 +18453,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private RustText itemTypeText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private CanvasGroup imageGroup;
 
 	[SerializeField]
@@ -18288,9 +18466,9 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	public CoverImage coverImage;
 
+	[SerializeField]
 	[Header("Header")]
 	[Space]
-	[SerializeField]
 	private GameObject headerTextGroup;
 
 	[SerializeField]
@@ -18302,8 +18480,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject ownedOverlay;
 
 	[SerializeField]
@@ -18586,16 +18764,16 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[Header("Window - Canvas")]
 	[SerializeField]
+	[Header("Window - Canvas")]
 	protected CanvasGroup _group;
 
 	[SerializeField]
 	[Header("Window - Escape Capture")]
 	protected UIEscapeCapture _escape;
 
-	[Header("Window - Flex Element")]
 	[SerializeField]
+	[Header("Window - Flex Element")]
 	private FlexElement _flex;
 
 	protected bool _firstTimeOpened = true;
