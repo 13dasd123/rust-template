@@ -11332,8 +11332,8 @@ public class TexasHoldEmUI : MonoBehaviour
 	[SerializeField]
 	private Image[] holeCardBackings;
 
-	[SerializeField]
 	[FormerlySerializedAs("flopCardImages")]
+	[SerializeField]
 	private Image[] communityCardImages;
 
 	[SerializeField]
@@ -17741,8 +17741,8 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 
 	public bool ShowDebugData;
 
-	[ReadOnly]
 	[Tooltip("Automatically filled in by prefab preprocess")]
+	[ReadOnly]
 	public EntityNameToItemDefinition[] EntityNameToItemDefinitions;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => true;
@@ -18414,8 +18414,8 @@ public class LoadingScreen : SingletonComponent<LoadingScreen>
 	[Header("Loading Screen References - Audio")]
 	public AudioSource music;
 
-	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	[Header("Loading Screen References - Settings")]
+	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	public int minPingDiffToShowWarning = 50;
 
 	[Tooltip("Ping must be this many times higher than the server browser ping")]
@@ -20210,8 +20210,8 @@ public class UnreadMessages : SingletonComponent<UnreadMessages>
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteAlways]
 [RequireComponent(typeof(RawImage))]
+[ExecuteAlways]
 public class RawImagePreserveAspect : MonoBehaviour, IClientComponent
 {
 	public RawImage rawImage;
@@ -36544,8 +36544,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[NonSerialized]
@@ -36566,8 +36566,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]

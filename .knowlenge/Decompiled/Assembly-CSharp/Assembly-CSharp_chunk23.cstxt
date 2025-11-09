@@ -512,8 +512,8 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public VehicleModuleEngineItems allEngineItems;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public int accelerationBoostSlots;
 
 	[ReadOnly]
@@ -753,8 +753,8 @@ public class ModularCarAudio : GroundVehicleAudio
 {
 	public bool showDebug;
 
-	[SerializeField]
 	[Header("Skid")]
+	[SerializeField]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -10849,8 +10849,8 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	[SerializeField]
 	private NavMeshAgent agent;
 
-	[Header("Speed")]
 	[SerializeField]
+	[Header("Speed")]
 	private float sneakSpeed = 0.6f;
 
 	[SerializeField]
@@ -14048,8 +14048,8 @@ using UnityEngine.Events;
 
 public class UI_RustButtonGroup : MonoBehaviour
 {
-	[Header("Button Group")]
 	[SerializeField]
+	[Header("Button Group")]
 	protected List<RustButton> _buttons = new List<RustButton>();
 
 	[SerializeField]
@@ -16462,8 +16462,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -16472,8 +16472,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private UI_SettingsGesturePack packPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	public RectTransform dragAndDropCanvas;
 
 	[SerializeField]
@@ -16868,8 +16868,8 @@ using UnityEngine;
 
 public class UI_SafeModeWarning : UI_Popup, IClientComponent
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject yesButton;
 
 	[SerializeField]
@@ -17032,8 +17032,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private UI_SearchBar searchBar;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gestureGroup;
 
 	[SerializeField]
@@ -17054,8 +17054,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private CoverVideo tooltipVideo;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ScrollRect scrollRect;
 
 	[SerializeField]
@@ -17276,8 +17276,8 @@ public class UI_StoreCart : UI_Window
 
 	public static readonly Phrase CartPhrase = new Phrase("store.cart.items", "Cart ({0})");
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private StyleAsset emptyStyle;
 
 	[SerializeField]
@@ -17455,8 +17455,8 @@ using UnityEngine.UI;
 
 public class UI_StoreLimitedTab : UI_StoreTabBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemGrid itemGrid;
 
 	[SerializeField]
@@ -17641,8 +17641,8 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private UI_StoreCartButtonAnimation animationSequence;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Rust.UI.SteamInventoryItem autoInitItem;
 }
 
@@ -17794,15 +17794,15 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private RustText subtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private CoverImage takeoverImage;
 
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gaugeParent;
 
 	[SerializeField]
@@ -17839,8 +17839,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RustText itemSubtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCheckoutResultButton carrouselButtonPrefab;
 
 	[SerializeField]
@@ -18037,8 +18037,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private StoreSource source;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -18349,8 +18349,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private UI_StoreCarrouselButton carouselButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 }
 

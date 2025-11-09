@@ -4701,8 +4701,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && item != null && allowPickup && CanOpenInSafeZone(msg.player))
@@ -4764,8 +4764,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (item == null || item.contents == null)
@@ -12484,8 +12484,8 @@ public class NPCVendingOrder : ScriptableObject
 	{
 		public bool useRandom;
 
-		[Tooltip("The higher this number, the more likely this will be chosen")]
 		[Range(0f, 1f)]
+		[Tooltip("The higher this number, the more likely this will be chosen")]
 		public float weight;
 
 		[Tooltip("Minimum price for the currency item")]
@@ -12494,8 +12494,8 @@ public class NPCVendingOrder : ScriptableObject
 		[Tooltip("Maximum price for the currency item")]
 		public int maxPrice;
 
-		[Range(0f, 1f)]
 		[Tooltip("Chance for a very low price to occur (0 to 1)")]
+		[Range(0f, 1f)]
 		public float veryLowPriceChance;
 
 		[Tooltip("Minimum very low price")]
@@ -12616,8 +12616,8 @@ public struct EntryRandom
 {
 	public bool useRandom;
 
-	[Tooltip("The higher this number, the more likely this will be chosen")]
 	[Range(0f, 1f)]
+	[Tooltip("The higher this number, the more likely this will be chosen")]
 	public float weight;
 
 	[Tooltip("Minimum price for the currency item")]
@@ -12626,8 +12626,8 @@ public struct EntryRandom
 	[Tooltip("Maximum price for the currency item")]
 	public int maxPrice;
 
-	[Range(0f, 1f)]
 	[Tooltip("Chance for a very low price to occur (0 to 1)")]
+	[Range(0f, 1f)]
 	public float veryLowPriceChance;
 
 	[Tooltip("Minimum very low price")]
@@ -16984,8 +16984,8 @@ public class JunkPileWater : JunkPile
 
 	public static JunkpileWaterWorkQueue junkpileWaterWorkQueue = new JunkpileWaterWorkQueue();
 
-	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	public static float framebudgetms = 0.25f;
 
 	public override void Spawn()
@@ -27709,8 +27709,8 @@ public class EffectParent : EntityComponent<BaseEntity>, IClientComponent
 	[Tooltip("If true the effect isn't our direct child and is in another hierarchy - USE WITH CAUTION")]
 	public bool separatedEffect;
 
-	[Header("USING COLLIDERS? - COLLIDER SAFETY")]
 	[Tooltip("If true the effect will be forced to the safe layer that doesn't interact with player colliders")]
+	[Header("USING COLLIDERS? - COLLIDER SAFETY")]
 	public bool forceSafePlayerCollisionLayer;
 }
 
@@ -28659,8 +28659,8 @@ using UnityEngine.UI;
 
 public class HomingLauncherUIDialog : UIDialog
 {
-	[SerializeField]
 	[Header("Homing Launcher")]
+	[SerializeField]
 	private Canvas canvas;
 
 	[SerializeField]

@@ -6191,12 +6191,12 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private RectInt _splat0Rect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _splat0Data;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private RectInt _splat1Rect;
 
 	[HideInInspector]
@@ -20237,14 +20237,14 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 
 	public GameObject decayingGroup;
 
-	[Space]
 	[Header("UPKEEP")]
+	[Space]
 	public VirtualItemIcon[] costIcons;
 
 	public RustText[] paginationTexts;
 
-	[Space]
 	[Header("BLOCKS")]
+	[Space]
 	public GameObject[] blocksType;
 
 	public RustText blockCountText;
@@ -20296,8 +20296,8 @@ using UnityEngine;
 
 public class DoorWithLock : Door
 {
-	[Header("Lock Settings")]
 	[ItemSelector]
+	[Header("Lock Settings")]
 	public GameObjectRef lockObject;
 }
 

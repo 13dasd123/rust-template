@@ -11667,9 +11667,9 @@ public enum FishingTag
 using UnityEngine;
 
 [ExecuteInEditMode]
+[RequireComponent(typeof(PostOpaqueDepth))]
 [RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(CommandBufferManager))]
-[RequireComponent(typeof(PostOpaqueDepth))]
 public class WaterCamera : MonoBehaviour
 {
 }
@@ -13079,8 +13079,8 @@ public struct FogSettings
 
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
 public class AtmosphereVolumeRenderer : MonoBehaviour
 {
 	public FogMode Mode = (FogMode)3;
@@ -13189,8 +13189,8 @@ public enum DeferredDecalQueue
 
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Renderer))]
+[ExecuteInEditMode]
 public class BindRendererBounds : MonoBehaviour, IClientComponent
 {
 }
@@ -16386,8 +16386,8 @@ public class ClothWindModify : FacepunchBehaviour
 
 using UnityEngine;
 
-[RequireComponent(typeof(WindZone))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(WindZone))]
 public class WindZoneEx : MonoBehaviour
 {
 }
@@ -16476,8 +16476,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 	{
 	}
 
-	[ClientVar(Name = "pulse")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[ClientVar(Name = "pulse")]
 	public static void ConVar_Pulse(Arg args)
 	{
 	}

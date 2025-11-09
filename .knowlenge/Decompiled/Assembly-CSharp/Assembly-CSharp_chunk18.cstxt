@@ -13154,8 +13154,8 @@ using UnityEngine;
 
 public class FBasic_FreeCameraBehaviour : MonoBehaviour
 {
-	[Tooltip("How fast camera should fly")]
 	[Header("> Hold right mouse button to rotate camera <")]
+	[Tooltip("How fast camera should fly")]
 	public float SpeedMultiplier = 10f;
 
 	[Tooltip("Value of acceleration smoothness")]
@@ -13940,8 +13940,8 @@ public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
 	[Space(10f)]
 	[Tooltip("Texture identificator in shader")]
-	[Header("something in script to apply")]
 	[Header("When you scale object change")]
+	[Header("something in script to apply")]
 	public string TextureProperty = "_MainTex";
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]

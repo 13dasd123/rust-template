@@ -874,8 +874,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IMedicalToolTarget,
 
 	public float equipmentSpeedMod;
 
-	[Header("Horse")]
 	[SerializeField]
+	[Header("Horse")]
 	private Animator animator;
 
 	[SerializeField]
@@ -944,8 +944,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IMedicalToolTarget,
 	[SerializeField]
 	private float minCollisionDamageForce = 20000f;
 
-	[SerializeField]
 	[Tooltip("Cap max magnitude so unusual events can't cause mega damage")]
+	[SerializeField]
 	private float maxCollisionDamageForce = 2500000f;
 
 	[SerializeField]
@@ -1016,8 +1016,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IMedicalToolTarget,
 
 	public Sprite SwapToDoubleIcon;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -1054,8 +1054,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IMedicalToolTarget,
 	[HideInInspector]
 	public float normalVariation;
 
-	[Min(0f)]
 	[Header("Healing")]
+	[Min(0f)]
 	public float healingMultiplier = 4f;
 
 	[Tooltip("How much stamina to replenish when healing. Value is not final - scaled further if we have a high stamina core.")]
@@ -1229,8 +1229,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IMedicalToolTarget,
 	[HideInInspector]
 	private float baseDrag;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private float baseAngularDrag;
 
 	private HorseAvoidanceState currentAvoidanceState;
@@ -11694,8 +11694,8 @@ using UnityEngine.Assertions;
 
 public class Snowmobile : GroundVehicle, VehicleChassisVisuals<Snowmobile>.IClientWheelUser, IPrefabPreProcess, CarPhysics<Snowmobile>.ICar, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[SerializeField]
 	[Header("Snowmobile")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -16570,8 +16570,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[SerializeField]
 	[Header("Line Generation Settings")]
+	[SerializeField]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]
@@ -20595,8 +20595,8 @@ public class TrainCar : BaseVehicle, ITrainCollidable, IPrefabPreProcess, Trigge
 		Other
 	}
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -20674,8 +20674,8 @@ public class TrainCar : BaseVehicle, ITrainCollidable, IPrefabPreProcess, Trigge
 	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
-	[SerializeField]
 	[FormerlySerializedAs("rearCoupleFx")]
+	[SerializeField]
 	public ParticleSystem rearCouplingChangedFx;
 
 	[SerializeField]
@@ -21132,8 +21132,8 @@ public class TrainCar : BaseVehicle, ITrainCollidable, IPrefabPreProcess, Trigge
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -21738,8 +21738,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[SerializeField]
 	[Header("Train Car Unloadable")]
+	[SerializeField]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]
@@ -21757,8 +21757,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float vacuumStretchPercent = 0.5f;
 
 	[SerializeField]
@@ -22151,8 +22151,8 @@ public class TrainCarUnloadable : TrainCar
 		return num;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -22216,8 +22216,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 		Fwd_Hi
 	}
 
-	[SerializeField]
 	[Header("Train Engine")]
+	[SerializeField]
 	public Transform leftHandLever;
 
 	[SerializeField]
@@ -22280,8 +22280,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private VehicleLight[] movingForwardLights;
 
-	[FormerlySerializedAs("movingBackwardsLights")]
 	[SerializeField]
+	[FormerlySerializedAs("movingBackwardsLights")]
 	private VehicleLight[] movingBackwardLights;
 
 	[SerializeField]
@@ -23145,8 +23145,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public SoundPlayer BuySound;
 
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private VisualCarWheel wheelFL;
 
 	[SerializeField]
@@ -26285,8 +26285,8 @@ public class TreeManager : BaseEntity
 		RustLog.Log(RustLog.EntryType.Network, 1, ((Component)player).gameObject, "Took {0}ms to send {1} global trees to {2}", stopwatch.Elapsed.TotalMilliseconds, values.Count, player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(0uL)]
+	[RPC_Server]
 	private void SERVER_RequestTrees(RPCMessage msg)
 	{
 		if (EnableTreeStreaming)
@@ -28113,20 +28113,20 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
 	[SerializeField]
 	[HideInInspector]
 	private Vector3 accelAngle;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 brakeAngle;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 speedometerAngle;
 
 	[HideInInspector]
@@ -28384,8 +28384,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_DestroyLock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -28819,8 +28819,8 @@ using UnityEngine.Assertions;
 
 public class VehicleModuleTaxi : VehicleModuleStorage
 {
-	[Header("Taxi")]
 	[SerializeField]
+	[Header("Taxi")]
 	private SoundDefinition kickButtonSound;
 
 	[SerializeField]
@@ -30729,8 +30729,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Broadcast(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
