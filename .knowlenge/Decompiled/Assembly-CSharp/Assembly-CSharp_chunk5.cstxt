@@ -3497,8 +3497,8 @@ public class BuildingBlock : StabilityEntity
 		base.health = MaxHealth();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoUpgradeToGrade(RPCMessage msg)
 	{
 		//IL_02a9: Unknown result type (might be due to invalid IL or missing references)
@@ -3922,8 +3922,8 @@ public class BuildingBlock : StabilityEntity
 		return !player.IsBuildingBlocked(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoRotation(RPCMessage msg)
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
@@ -4212,8 +4212,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))
@@ -5000,8 +5000,8 @@ public class BuildingPrivlidge : StorageContainer
 		return baseLock.OnTryToOpen(player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))
@@ -5050,8 +5050,8 @@ public class BuildingPrivlidge : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Rotate(RPCMessage msg)
 	{
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -5703,8 +5703,8 @@ public class CameraTool : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server]
+	[RPC_Server.FromOwner(false)]
 	private void SVNoteScreenshot(RPCMessage msg)
 	{
 	}
@@ -6045,8 +6045,8 @@ public class CardReader : IOEntity
 		Effect.server.Run(accessGrantedEffect.resourcePath, audioPosition.position, Vector3.up);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ServerCardSwiped(RPCMessage msg)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
@@ -6459,8 +6459,8 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))
@@ -6606,8 +6606,8 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 	}
 
 	[RPC_Server.MaxDistance(5f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void UpdateSign(RPCMessage msg)
 	{
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
@@ -7603,8 +7603,8 @@ public class Catapult : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_WantsFire(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -7679,9 +7679,9 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
@@ -7694,9 +7694,9 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
@@ -8913,8 +8913,8 @@ public class Chainsaw : BaseMelee
 		GetItem()?.MarkDirty();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void DoReload(RPCMessage msg)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
@@ -9009,8 +9009,8 @@ public class Chainsaw : BaseMelee
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void Server_StopEngine(RPCMessage msg)
 	{
 		SetEngineStatus(status: false);
@@ -9337,8 +9337,8 @@ public class Chandelier : IOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SERVER_AdjustChandelierLength(RPCMessage msg)
 	{
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
@@ -9804,8 +9804,8 @@ public class ChickenCoop : StorageContainer
 		((ObjectWorkQueue<ChickenCoop>)CoopWorkQueue).Add(this);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SubmitEggForHatching(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -9988,9 +9988,9 @@ public class ChickenCoop : StorageContainer
 		SetFlag(Flags.Reserved3, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
@@ -10232,8 +10232,8 @@ public class ChristmasLights : StringLights
 		return 5;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void SERVER_SetAnimationStyle(RPCMessage msg)
 	{
@@ -11393,8 +11393,8 @@ public class ClanManager : BaseEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_CreateClan(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11424,8 +11424,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_GetLogs(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11458,8 +11458,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_GetInvitations(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11497,8 +11497,8 @@ public class ClanManager : BaseEntity
 		ClientRPCPlayer<ClanActionResult>(null, msg.player, "Client_ReceiveActionResult", BuildActionResult(requestId, result, null, hasClanInfo: false));
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_SetLogo(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11521,8 +11521,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_SetColor(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11575,8 +11575,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_Invite(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11632,8 +11632,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_CancelInvitation(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11651,8 +11651,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_Kick(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11670,8 +11670,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_SetPlayerRole(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11690,8 +11690,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_SetPlayerNotes(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11716,8 +11716,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public async void Server_CreateRole(RPCMessage msg)
 	{
 		int requestId = msg.read.Int32();
@@ -11991,8 +11991,8 @@ public class ClanManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public async void Server_GetClanMetadata(RPCMessage msg)
 	{
 		long clanId = msg.read.Int64();
@@ -12564,8 +12564,8 @@ public class CodeLock : BaseLock, ISprayCallback
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void RPC_ChangeCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract())
@@ -12613,8 +12613,8 @@ public class CodeLock : BaseLock, ISprayCallback
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void TryLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && !IsLocked() && code.Length == 4 && Interface.CallHook("CanLock", (object)rpc.player, (object)this) == null && whitelistPlayers.Contains(rpc.player.userID))
@@ -12861,8 +12861,8 @@ public class CollectableEasterEgg : BaseEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_PickUp(RPCMessage msg)
 	{
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
@@ -13108,8 +13108,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		Kill();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Pickup(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
@@ -13118,8 +13118,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void PickupEat(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
@@ -13382,10 +13382,10 @@ public class CommandBlock : IOEntity
 		return 0;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -13399,9 +13399,9 @@ public class CommandBlock : IOEntity
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void RPC_SetCommand(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -14783,8 +14783,8 @@ public class ConfettiCannon : DecayEntity, IIgniteable
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void Blast(RPCMessage msg)
 	{
 		if (!IsBusy())
@@ -15326,8 +15326,8 @@ public class ContainerCorpse : ConstructableEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_RequestOwnerData(RPCMessage msg)
 	{
@@ -15663,8 +15663,8 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		StorageContainer.DropItems(this, initiator);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)
@@ -16120,8 +16120,8 @@ public class CustomDoorManipulator : DoorManipulator
 		return null;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_DoPair(RPCMessage msg)
 	{
 		Door door = targetDoor;
@@ -16301,8 +16301,8 @@ public class CustomTimerSwitch : TimerSwitch
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_SetTime(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -16933,8 +16933,8 @@ public class DecayEntity : BaseCombatEntity
 		return player.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanDemolish(msg.player) && Interface.CallHook("OnStructureDemolish", (object)this, (object)msg.player, (object)false) == null)
@@ -16948,8 +16948,8 @@ public class DecayEntity : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoImmediateDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && msg.player.IsAdmin && Interface.CallHook("OnStructureDemolish", (object)this, (object)msg.player, (object)true) == null)
@@ -17244,16 +17244,16 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 		return base.CalculateCurrentEnergy(inputAmount, inputSlot);
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		BoxController.ServerTogglePlay(msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
 	public void Server_UpdateRadioIP(RPCMessage msg)
 	{
@@ -17377,8 +17377,8 @@ public class DeployedFigurine : BaseCombatEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void Server_Poke(RPCMessage msg)
 	{
 		if (CanWobble() && !((Object)(object)msg.player == (Object)null))
@@ -17498,9 +17498,9 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		bool play = ((Stream)(object)msg.read).ReadByte() == 1;
@@ -18354,8 +18354,8 @@ public class DieselEngine : StorageContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnDieselEngineToggle", (object)this, (object)msg.player) != null)
@@ -18687,9 +18687,9 @@ public class DigitalClock : IOEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SetAlarms(RPCMessage msg)
 	{
 		if (!CanPlayerAdmin(msg.player))
@@ -18909,9 +18909,9 @@ public class DigitSendCodeLock : CodeLock
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.CallsPerSecond(4uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(4uL)]
 	private void OnDigitEntered(RPCMessage rpc)
 	{
 		int num = rpc.read.Int16();
@@ -19073,8 +19073,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float maxRollDegrees = 30f;
 
-	[SerializeField]
 	[Header("DPV - UI")]
+	[SerializeField]
 	private Canvas dashboardCanvas;
 
 	[SerializeField]
@@ -19774,12 +19774,12 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public Menu.Option UpgradeMenu;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float openAnimLength = 4f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float closeAnimLength = 4f;
 
 	public const Flags ReverseOpen = Flags.Reserved1;
@@ -20538,8 +20538,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_CloseDoor(RPCMessage rpc)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -20570,8 +20570,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_KnockDoor(RPCMessage rpc)
 	{
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -22292,8 +22292,8 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		Pool.Free<Item>(ref list, false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)
@@ -22781,8 +22781,8 @@ public class EasterBasket : AttackEntity
 		GetAmmo()?.UseItem();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void ThrowEgg(RPCMessage msg)
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
@@ -22969,8 +22969,8 @@ public class ElectricalBranch : IOEntity
 		return 0;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetBranchOffPower(RPCMessage msg)
 	{
@@ -23173,8 +23173,8 @@ public class ElectricSwitch : IOEntity
 		SetSwitch(!IsOn());
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Switch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnSwitchToggle", (object)this, (object)msg.player) == null)
@@ -23592,8 +23592,8 @@ public class EngineSwitch : BaseEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void StopEngine(RPCMessage msg)
 	{
 		MiningQuarry miningQuarry = GetParentEntity() as MiningQuarry;
@@ -23814,8 +23814,8 @@ public class EntityPrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract())
@@ -24175,8 +24175,8 @@ public class ExcavatorArm : BaseEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StopMining(RPCMessage msg)
 	{
 	}
@@ -24401,9 +24401,9 @@ public class ExcavatorSignalComputer : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RequestSupplies(RPCMessage rpc)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -24921,8 +24921,8 @@ public class FarmableAnimal : BaseCombatEntity
 		AnimalSunlight = Random.Range(20f, 40f);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerPetChicken(RPCMessage msg)
 	{
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
@@ -24972,8 +24972,8 @@ public class FarmableAnimal : BaseCombatEntity
 		data.animalName = AnimalName;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		if (msg.player.CanBuild(cached: true))
@@ -25228,8 +25228,8 @@ public class FishMount : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void UseFish(RPCMessage msg)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -25585,8 +25585,8 @@ public class FlameThrower : AttackEntity
 		info.msg.baseProjectile.primaryMagazine.contents = ammo;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void SetFiring(RPCMessage msg)
 	{
 		bool flameState = msg.read.Bit();
@@ -26410,8 +26410,8 @@ public class Food : BaseMelee
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner(false)]
 	public void Consume()
 	{
 		if (base.isServer)
@@ -26448,8 +26448,8 @@ using UnityEngine;
 
 public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 {
-	[Header("Frankenstein")]
 	[ServerVar(Help = "How long before a Frankenstein Pet dies un controlled and not asleep on table")]
+	[Header("Frankenstein")]
 	public static float decayminutes = 180f;
 
 	[Header("Audio")]
@@ -26993,8 +26993,8 @@ public class FrankensteinTable : StorageContainer
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void CreateFrankenstein(RPCMessage msg)
 	{
 	}
@@ -27042,8 +27042,8 @@ public class FrankensteinTable : StorageContainer
 		ItemManager.DoRemoves();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RequestWakeFrankenstein(RPCMessage msg)
 	{
 		WakeFrankenstein(msg.player);
@@ -27394,8 +27394,8 @@ public class FreeableLootContainer : LootContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_FreeCrateTimer(RPCMessage msg)
 	{
 		if (IsTiedDown())
@@ -28096,8 +28096,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	public TimeCachedValue<float> artificialTemperatureExposure;
 
-	[Help("How many miliseconds to budget for processing growable quality updates per frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing growable quality updates per frame")]
 	public static float framebudgetms = 0.25f;
 
 	public const Flags GodSpawn = Flags.Reserved1;
@@ -29320,17 +29320,17 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TakeClone(RPCMessage msg)
 	{
 		TakeClones(msg.player);
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_TakeCloneAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -29473,25 +29473,25 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_PickFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_EatFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player, eat: true);
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	public void RPC_PickFruitAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -29513,8 +29513,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		PickFruit(msg.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RemoveDying(RPCMessage msg)
 	{
 		RemoveDying(msg.player);
@@ -29641,8 +29641,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		Pool.FreeUnmanaged<GrowableEntity>(ref list);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_RequestQualityUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)
@@ -30769,9 +30769,9 @@ public class Handcuffs : BaseMelee
 		}
 	}
 
+	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
-	[RPC_Server.FromOwner(false)]
 	private void RPC_ReqCancelUnlockMiniGame(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -30786,9 +30786,9 @@ public class Handcuffs : BaseMelee
 		InterruptUnlockMiniGame();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner(false)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqCompleteUnlockMiniGame(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -30806,8 +30806,8 @@ public class Handcuffs : BaseMelee
 		Effect.server.Run(escapeEffect.resourcePath, player, 0u, Vector3.zero, Vector3.zero);
 	}
 
-	[RPC_Server.FromOwner(false)]
 	[RPC_Server]
+	[RPC_Server.FromOwner(false)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqLock(RPCMessage rpc)
 	{
@@ -31294,17 +31294,17 @@ public class HeldBoomBox : HeldEntity, ICassettePlayer
 		BoxController.HurtCallback = HurtCallback;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		BoxController.ServerTogglePlay(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	private void Server_UpdateRadioIP(RPCMessage msg)
 	{
 		BoxController.Server_UpdateRadioIP(msg);
@@ -32054,8 +32054,8 @@ using UnityEngine;
 
 public class HelicopterFlares : StorageContainer
 {
-	[Header("Helicopter Flares")]
 	[SerializeField]
+	[Header("Helicopter Flares")]
 	private ItemDefinition flareItemDef;
 
 	[SerializeField]
@@ -32853,8 +32853,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnHotAirBalloonToggle", (object)this, (object)msg.player) != null)

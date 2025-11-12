@@ -1574,10 +1574,10 @@ public class FXAAPostEffectsBase : MonoBehaviour
 using System;
 using UnityEngine;
 
-[ExecuteInEditMode]
 [ImageEffectAllowedInSceneView]
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("KriptoFX/Explosion_Bloom")]
+[ExecuteInEditMode]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
@@ -1592,9 +1592,9 @@ public class Explosion_Bloom : MonoBehaviour
 		[Range(0f, 1f)]
 		public float softKnee;
 
+		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 		[Range(1f, 7f)]
 		[SerializeField]
-		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 		public float radius;
 
 		[SerializeField]
@@ -1863,9 +1863,9 @@ public struct Settings
 	[Range(0f, 1f)]
 	public float softKnee;
 
+	[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 	[Range(1f, 7f)]
 	[SerializeField]
-	[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 	public float radius;
 
 	[SerializeField]
@@ -2714,8 +2714,8 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 using ConVar;
 using UnityEngine;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(Light))]
+[ExecuteInEditMode]
 public class NGSS_Directional : MonoBehaviour
 {
 	public enum SAMPLER_COUNT
@@ -2726,8 +2726,8 @@ public class NGSS_Directional : MonoBehaviour
 		SAMPLERS_64
 	}
 
-	[Tooltip("Overall softness for both PCF and PCSS shadows.\nRecommended value: 0.01.")]
 	[Range(0f, 0.02f)]
+	[Tooltip("Overall softness for both PCF and PCSS shadows.\nRecommended value: 0.01.")]
 	public float PCSS_GLOBAL_SOFTNESS = 0.01f;
 
 	[Tooltip("PCSS softness when shadows is close to caster.\nRecommended value: 0.05.")]
@@ -6084,8 +6084,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-[ExecuteInEditMode]
 [AddComponentMenu("Image Effects/Sonic Ether/SE Screen-Space Shadows")]
+[ExecuteInEditMode]
 public class SEScreenSpaceShadows : SingletonComponent<SEScreenSpaceShadows>, IClientComponent
 {
 	private CommandBuffer blendShadowsCommandBuffer;

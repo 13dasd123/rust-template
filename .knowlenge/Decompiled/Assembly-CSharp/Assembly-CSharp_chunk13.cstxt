@@ -2690,8 +2690,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Missions/OBJECTIVES/CookItem")]
 public class MissionObjective_CookItem : MissionObjective
 {
-	[ItemSelector]
 	[Tooltip("The cooked result that this objective is looking for (eg cooked chicken, not raw)")]
+	[ItemSelector]
 	public ItemDefinition targetItem;
 
 	public int targetItemAmount;
@@ -9577,8 +9577,8 @@ public class UnderwaterPostEffect : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Header("Blur")]
 	[Range(0f, 2f)]
+	[Header("Blur")]
 	public FixedIntParameter downsample = new FixedIntParameter
 	{
 		value = 0

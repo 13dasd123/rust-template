@@ -7439,8 +7439,8 @@ public class LevelInfo : SingletonComponent<LevelInfo>
 	[Tooltip("A background image to be shown when loading the map")]
 	public Texture2D image;
 
-	[Space(10f)]
 	[Tooltip("You should incrememnt this version when you make changes to the map that will invalidate old saves")]
+	[Space(10f)]
 	public int version = 1;
 }
 
@@ -11774,9 +11774,9 @@ using UnityEngine.Serialization;
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
 	[Header("Spawn Info")]
-	[Tooltip("Usually per square km")]
-	[SerializeField]
 	[FormerlySerializedAs("TargetDensity")]
+	[SerializeField]
+	[Tooltip("Usually per square km")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -12764,9 +12764,9 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 
 	public SpawnPointType spawnPointType;
 
-	[SerializeField]
-	[Tooltip("Min distance between the spawn area and any human players")]
 	[Range(1f, 25f)]
+	[Tooltip("Min distance between the spawn area and any human players")]
+	[SerializeField]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();
@@ -17840,9 +17840,9 @@ public class TriggerRadiation : TriggerBase
 
 	public bool BypassArmor;
 
-	[Space]
 	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	[Min(0f)]
+	[Space]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
@@ -17850,8 +17850,8 @@ public class TriggerRadiation : TriggerBase
 	public Vector3 falloffPerAxis;
 
 	[Space]
-	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	[FormerlySerializedAs("UseColliderRadius")]
+	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -18644,8 +18644,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Range(3f, 64f)]
 	[Header("Settings")]
+	[Range(3f, 64f)]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;
@@ -19097,6 +19097,29 @@ public abstract class TwoTierRadiationZone : MonoBehaviour
 	{
 		InnerRadiation.IgnoreAboveGroundPlayers = state;
 		OuterRadiation.IgnoreAboveGroundPlayers = state;
+	}
+
+	public bool HasPlayersInRange()
+	{
+		if (!CheckRadZone(InnerRadiation))
+		{
+			return CheckRadZone(OuterRadiation);
+		}
+		return true;
+		static bool CheckRadZone(TriggerRadiation r)
+		{
+			if ((Object)(object)r != (Object)null && r.entityContents != null)
+			{
+				foreach (BaseEntity entityContent in r.entityContents)
+				{
+					if (entityContent is BasePlayer { IsNpc: false })
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }
 
@@ -21347,8 +21370,8 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 	[Header("First Person Legs")]
 	public bool HideInFirstPerson;
 
-	[Range(0f, 5f)]
 	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
+	[Range(0f, 5f)]
 	public float ExtraLeanBack;
 
 	[Tooltip("Enable this to check for BoneRetargets which need to be preserved in first person view")]
@@ -28053,8 +28076,8 @@ public class ItemDefinition : MonoBehaviour
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Header("Spawn Tables")]
 	[Tooltip("How rare this item is and how much it costs to research")]
+	[Header("Spawn Tables")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;

@@ -1640,8 +1640,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -5311,8 +5311,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Header("Parameters")]
 	[Range(0f, 1f)]
+	[Header("Parameters")]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]
@@ -8590,8 +8590,8 @@ public class Ballista : BaseSiegeWeapon
 
 	public Transform dismountPositionsParent;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private GameObjectRef fireEffectPrefab;
 
 	public override float DriveWheelVelocity { get; }
@@ -9021,8 +9021,8 @@ public class CatapultSounds : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[Header("Movement")]
 	[SerializeField]
+	[Header("Movement")]
 	private SoundDefinition movementLoopDef;
 
 	[SerializeField]
@@ -12042,8 +12042,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -12058,8 +12058,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[SerializeField]
 	[Header("Skid")]
+	[SerializeField]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -12920,8 +12920,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	public float underwaterDrag = 2f;
 
 	[FormerlySerializedAs("flatWaterLerp")]
-	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
 	[Range(0f, 1f)]
+	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
 	public float wavesEffect = 1f;
 
 	public Action<bool> SubmergedChanged;
@@ -13700,8 +13700,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float soundCullDistanceSq;
 
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineLoopDef;
 
 	private Sound engineLoop;
@@ -13734,8 +13734,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Transform bridgeControlsTransform;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterIdleDef;
 
 	[SerializeField]
@@ -13783,8 +13783,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector3 sideSoundLineBow;
 
-	[SerializeField]
 	[Header("Ambient")]
+	[SerializeField]
 	private SoundDefinition ambientActiveLoopDef;
 
 	private Sound ambientActiveSound;
@@ -13822,18 +13822,18 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	private SoundDefinition hornStop;
 
 	[SerializeField]
-	[Min(0f)]
 	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
+	[Min(0f)]
 	private float maxHornTime;
 
-	[SerializeField]
-	[Min(0f)]
 	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
+	[Min(0f)]
+	[SerializeField]
 	private int hornTokenCapacity = 3;
 
+	[Tooltip("Used for rate limiting. This defines how quickly a new token regenerates, permitting another horn honk.")]
 	[SerializeField]
 	[Min(0f)]
-	[Tooltip("Used for rate limiting. This defines how quickly a new token regenerates, permitting another horn honk.")]
 	private float hornTokenRegenerationTime = 1f;
 
 	private Line leftSoundLine;
@@ -13906,8 +13906,8 @@ public class CarSettings
 
 	public bool disableHandbrakes;
 
-	[Range(0f, 1f)]
 	[Header("Front/Rear Vehicle Balance")]
+	[Range(0f, 1f)]
 	public float handlingBias = 0.5f;
 }
 
@@ -15023,12 +15023,12 @@ public class DamageRenderer : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float maxDamageOpacity = 0.9f;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<DamageShowingRenderer> damageShowingRenderers;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<GlassPane> damageShowingGlassRenderers;
 }
 
@@ -15074,8 +15074,8 @@ public class DiverPropulsionVehicleAudio : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition engineActiveLoopDef;
 
-	[Header("Propeller")]
 	[SerializeField]
+	[Header("Propeller")]
 	private SoundDefinition propellerLoopSoundDef;
 
 	[SerializeField]
@@ -15118,8 +15118,8 @@ using UnityEngine;
 
 public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntity, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[SerializeField]
 	[Header("GroundVehicle")]
+	[SerializeField]
 	public GroundVehicleAudio gvAudio;
 
 	[SerializeField]
@@ -15445,8 +15445,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected GroundVehicle groundVehicle;
 
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -15474,8 +15474,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float waterSoundsMaxSpeed = 10f;
 
-	[Header("Brakes")]
 	[SerializeField]
+	[Header("Brakes")]
 	private SoundDefinition brakeSoundDef;
 
 	[SerializeField]
@@ -15737,8 +15737,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[SerializeField]
 	[Header("Helicopter")]
+	[SerializeField]
 	public float engineThrustMax;
 
 	[SerializeField]
@@ -15774,8 +15774,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[Range(0.1f, 0.95f)]
 	public float altForceDotMin = 0.85f;
 
-	[Range(0.1f, 0.95f)]
 	[SerializeField]
+	[Range(0.1f, 0.95f)]
 	public float liftFraction = 0.25f;
 
 	[SerializeField]
@@ -18819,15 +18819,15 @@ using UnityEngine;
 
 public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[SerializeField]
 	[Header("Scrap Transport Helicopter Specific")]
+	[SerializeField]
 	private Transform searchlightEye;
 
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[SerializeField]
 	[Header("Damage Effects")]
+	[SerializeField]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]
@@ -19414,8 +19414,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	public LegsAnimator legsAnimator;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Transform backHipTransform;
 
 	[SerializeField]
@@ -19424,9 +19424,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
+	[Header("Head")]
 	[Range(0f, 1f)]
 	[SerializeField]
-	[Header("Head")]
 	private float headBlend = 1f;
 
 	[ReadOnly]
@@ -19448,9 +19448,9 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public Vector3 headLookOffset = Vector3.zero;
 
+	[Header("Spine")]
 	[Range(0f, 1f)]
 	[SerializeField]
-	[Header("Spine")]
 	private float spineBlend = 0.5f;
 
 	[ReadOnly]
@@ -19462,12 +19462,12 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public float spineYawInertiaFactor = 150f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetNeckRotations;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetSpineRotations;
 
 	[SerializeField]
@@ -19500,8 +19500,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private Animator animator;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	public SoundPlayer breathingSound;
 
 	[SerializeField]
@@ -19516,15 +19516,15 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private AnimationCurve saddleMovementGainCurve;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private MaterialEffect footstepEffects;
 
 	[SerializeField]
 	private Transform[] feet;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObjectRef swimmingSloshEffect;
 
 	[SerializeField]
@@ -22518,8 +22518,8 @@ public class SnowmobileAudio : GroundVehicleAudio
 	[SerializeField]
 	private SoundDefinition skiSlideWaterSoundDef;
 
-	[SerializeField]
 	[Header("Movement")]
+	[SerializeField]
 	private AnimationCurve movementGainCurve;
 
 	[SerializeField]
@@ -22948,8 +22948,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve engineLoopPitchCurve;
 
-	[Header("Water")]
 	[SerializeField]
+	[Header("Water")]
 	private SoundDefinition underwaterLoopDef;
 
 	[SerializeField]
@@ -24816,8 +24816,8 @@ using UnityEngine;
 
 public class LocomotiveExtraVisuals : MonoBehaviour
 {
-	[Header("Gauges")]
 	[SerializeField]
+	[Header("Gauges")]
 	private TrainEngine trainEngine;
 
 	[SerializeField]
@@ -25418,8 +25418,8 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private Transform hornSoundPosition;
 
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -25459,15 +25459,15 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private float reflectionRayOffset = 0.5f;
 
-	[SerializeField]
 	[Header("Horn")]
+	[SerializeField]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]
 	private SoundDefinition hornStart;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private SoundDefinition lightsToggleSound;
 
 	[SerializeField]
@@ -30576,6 +30576,10 @@ public class PuzzleReset : FacepunchBehaviour
 		{
 			if (CheckSleepingAIZForPlayers)
 			{
+				if (radiationReset && (Object)(object)radiationZone != (Object)null && lastNormalizedRadiation > 0f)
+				{
+					return !radiationZone.HasPlayersInRange();
+				}
 				bool num = AIZSleeping();
 				if (!num)
 				{
@@ -30632,7 +30636,7 @@ public class PuzzleReset : FacepunchBehaviour
 		}
 		foreach (BasePlayer item in triggerWakeAIZ.entityContents.OfType<BasePlayer>())
 		{
-			if (!item.IsAdmin)
+			if (item.IsAdmin)
 			{
 				OBB areaBox = aIZone.areaBox;
 				if (((OBB)(ref areaBox)).Contains(((Component)item).transform.position))

@@ -516,12 +516,12 @@ public class EngineStorage : StorageContainer
 	[ReadOnly]
 	public int accelerationBoostSlots;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public int topSpeedBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int fuelEconomyBoostSlots;
 
 	public bool isUsable { get; set; }
@@ -800,8 +800,8 @@ public class ModularCarAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionLurchMinTimeBetweenSounds = 0.25f;
 
-	[SerializeField]
 	[Header("Wheels")]
+	[SerializeField]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]
@@ -2712,8 +2712,8 @@ using UnityEngine.AI;
 [DefaultExecutionOrder(-103)]
 public class AiManager : SingletonComponent<AiManager>, IServerComponent
 {
-	[Header("Cover System")]
 	[SerializeField]
+	[Header("Cover System")]
 	public bool UseCover = true;
 
 	public float CoverPointVolumeCellSize = 20f;
@@ -10849,8 +10849,8 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	[SerializeField]
 	private NavMeshAgent agent;
 
-	[SerializeField]
 	[Header("Speed")]
+	[SerializeField]
 	private float sneakSpeed = 0.6f;
 
 	[SerializeField]
@@ -14048,15 +14048,15 @@ using UnityEngine.Events;
 
 public class UI_RustButtonGroup : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Button Group")]
+	[SerializeField]
 	protected List<RustButton> _buttons = new List<RustButton>();
 
 	[SerializeField]
 	protected bool _unpressSiblings;
 
-	[Tooltip("This button will appear 'pressed' at the beginning.")]
 	[SerializeField]
+	[Tooltip("This button will appear 'pressed' at the beginning.")]
 	private RustButton _defaultButton;
 
 	[SerializeField]
@@ -14981,8 +14981,8 @@ public class UI_Hero_InfoBox : FacepunchBehaviour
 	[SerializeField]
 	protected Image _blackout;
 
-	[Header("Settings")]
 	[SerializeField]
+	[Header("Settings")]
 	private Phrase _titlePhrase;
 
 	[SerializeField]
@@ -15060,8 +15060,8 @@ using UnityEngine.Video;
 
 public class UI_Hero_Store : UI_Hero_InfoBox
 {
-	[SerializeField]
 	[Header("Hero Store")]
+	[SerializeField]
 	private VideoPlayer _video;
 
 	[SerializeField]
@@ -15112,8 +15112,8 @@ using UnityEngine;
 
 public class UI_NotificationEntry : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Icons")]
+	[SerializeField]
 	private RustIcon _basicIcon;
 
 	[SerializeField]
@@ -15468,8 +15468,8 @@ using UnityEngine;
 
 public class UI_ServerEntry : MonoBehaviour
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private RustButton _button;
 
 	[SerializeField]
@@ -15540,8 +15540,8 @@ public class UI_ServerEntry : MonoBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private bool _joinOnClick;
 
 	public static Phrase LastJoinedPhrase = (Phrase)(object)new TokenisedPhrase("serverentry.lastplayed.ago", "{0} ago");
@@ -15731,8 +15731,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[SerializeField]
 	[Header("Info Box References")]
+	[SerializeField]
 	private RustText _playerCount;
 
 	[SerializeField]
@@ -15894,8 +15894,8 @@ public class UI_MenuNavigationGroup : UI_RustButtonGroup
 		public string Path;
 	}
 
-	[SerializeField]
 	[Header("Navigation Groups (IGNORE BUTTON GROUPS - Just Add Here)")]
+	[SerializeField]
 	private List<TabButton> _navigationGroups = new List<TabButton>();
 }
 
@@ -16070,8 +16070,8 @@ public class UI_SteamInventoryCraftingModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	private MaterialGroup clothGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject craftOK;
 
 	[SerializeField]
@@ -16128,8 +16128,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	private UI_BackgroundAspectRatioFitter background;
 
-	[SerializeField]
 	[Header("Marketable Tag")]
+	[SerializeField]
 	private GameObject marketablePriceGroup;
 
 	[SerializeField]
@@ -16295,8 +16295,8 @@ public class UI_SteamInventoryCrafting : MonoBehaviour
 	[SerializeField]
 	private UI_SteamInventoryCraftingModal craftingModal;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SteamInventoryPlayerItemModal bagOpeningModal;
 
 	[SerializeField]
@@ -16353,8 +16353,8 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private StyleAsset lockedStyle;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject boundLine;
 
 	[SerializeField]
@@ -16376,8 +16376,8 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private RawImage videoRawTexture;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject deleteButton;
 }
 
@@ -16448,8 +16448,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform wheelCenter;
 
 	[SerializeField]
@@ -16458,12 +16458,12 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -16505,8 +16505,8 @@ public class UI_SettingsGestureWidget : UI_SettingsGestureDraggable
 	[SerializeField]
 	private StyleAsset emptyStyle;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Image gestureIcon;
 
 	[SerializeField]
@@ -17298,8 +17298,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform itemParent;
 
 	[SerializeField]
@@ -17387,8 +17387,8 @@ using UnityEngine;
 
 public class UI_StoreFeaturedTab : UI_StoreTabBase
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreCountdown countdown;
 }
 
@@ -17424,8 +17424,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 	[SerializeField]
 	private FlexElement scrollRectContentFlex;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Section[] sections;
 
 	[SerializeField]
@@ -17534,8 +17534,8 @@ public class UI_Store : UI_Page
 
 	private const string CART_KEY = "STORE_CART_ITEMS";
 
-	[SerializeField]
 	[Header("Search")]
+	[SerializeField]
 	private UI_StoreItemGrid searchGrid;
 
 	[SerializeField]
@@ -17634,8 +17634,8 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private RustText discountText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Animator animator;
 
 	[SerializeField]
@@ -17764,8 +17764,8 @@ public class UI_StoreCartButtonAnimation : BaseMonoBehaviour
 	[SerializeField]
 	private GameObject addToCartGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private FlexElement inCartGroup;
 
 	[SerializeField]
@@ -17794,23 +17794,23 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private RustText subtitleText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private CoverImage takeoverImage;
 
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gaugeParent;
 
 	[SerializeField]
 	private Image gaugeImage;
 
 	[Space]
-	[Header("Animation")]
 	[SerializeField]
+	[Header("Animation")]
 	private CanvasGroup canvasGroup;
 }
 
@@ -17823,8 +17823,8 @@ using UnityEngine.UI;
 
 public class UI_StoreCheckoutResultPage : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private FlexTransition crossFadeTransition;
 
 	[SerializeField]
@@ -17846,8 +17846,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -17875,8 +17875,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	private UI_StoreTakeover localTakeovers;
 
 	[Header("Skin Viewer")]
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -17891,8 +17891,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[SerializeField]
 	[Header("Intro Sequence")]
+	[SerializeField]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]
@@ -18050,12 +18050,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private int maxCellCount;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	public int cellWidth;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	public int cellHeight;
 
 	public bool fixedGrid;
@@ -18349,8 +18349,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private UI_StoreCarrouselButton carouselButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private PageContent pageContent;
 }
 
@@ -18453,8 +18453,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private RustText itemTypeText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private CanvasGroup imageGroup;
 
 	[SerializeField]
@@ -18480,8 +18480,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject ownedOverlay;
 
 	[SerializeField]
@@ -18757,15 +18757,15 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[SerializeField]
 	[Header("Window - Transitions")]
+	[SerializeField]
 	private FlexTransition _openTransition;
 
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[SerializeField]
 	[Header("Window - Canvas")]
+	[SerializeField]
 	protected CanvasGroup _group;
 
 	[SerializeField]

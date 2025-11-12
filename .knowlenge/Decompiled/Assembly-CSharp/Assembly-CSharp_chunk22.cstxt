@@ -8262,8 +8262,8 @@ public static class RuntimeProfiler
 	[RconVar(Help = "How often to flush pooling stats in seconds")]
 	public static int runtime_profiling_pool_flush_interval { get; set; } = 300;
 
-	[ServerVar]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar]
 	public static void dump_profile_recorders(Arg arg)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
@@ -9182,20 +9182,20 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -9210,14 +9210,14 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
 
-	[Tooltip("Final Radius parameter.")]
 	[Range(0f, 32f)]
+	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius = 2f;
 
 	[Tooltip("Final PowerExponent parameter.")]
@@ -9307,9 +9307,9 @@ public class ModelViewer_MainCameraParameters
 
 	public float followLag;
 
+	[Header("Lens")]
 	[Range(0.01f, 360f)]
 	[Header("                ")]
-	[Header("Lens")]
 	public float fieldOfView = 15f;
 
 	public float nearPlane = 0.05f;
@@ -9324,8 +9324,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio = 3f;
 
-	[Header("Focus")]
 	[Header("                ")]
+	[Header("Focus")]
 	public bool depthOfField;
 
 	public float focalLength = 3f;
@@ -9338,13 +9338,13 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Header("Motion Blur")]
-	[Header("                ")]
 	[Range(0f, 360f)]
+	[Header("                ")]
+	[Header("Motion Blur")]
 	public float shutterAngle;
 
-	[Header("Distortion")]
 	[Header("                ")]
+	[Header("Distortion")]
 	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
@@ -9438,8 +9438,8 @@ using UnityEngine;
 [Serializable]
 public class ModelViewer_SkyParameters
 {
-	[Header("Sky")]
 	[Range(0f, 1f)]
+	[Header("Sky")]
 	public float skyBrightness = 1f;
 
 	[Tooltip("Current hour of the day.")]
@@ -9453,24 +9453,24 @@ public class ModelViewer_SkyParameters
 	[Tooltip("Current month of the year.")]
 	public int Month = 5;
 
-	[TOD_Range(1f, 9999f)]
 	[Tooltip("Current year.")]
+	[TOD_Range(1f, 9999f)]
 	public int Year = 2000;
 
-	[Range(-90f, 90f)]
 	[Tooltip("Latitude of the current location in degrees.")]
+	[Range(-90f, 90f)]
 	public float Latitude = -10f;
 
-	[Range(-180f, 180f)]
 	[Tooltip("Longitude of the current location in degrees.")]
+	[Range(-180f, 180f)]
 	public float Longitude = -25f;
 
 	[Tooltip("UTC/GMT time zone of the current location in hours.")]
 	[Range(-14f, 14f)]
 	public float UTC;
 
-	[Header("Atmosphere")]
 	[Header("                ")]
+	[Header("Atmosphere")]
 	public float skyContrast = 1.2f;
 
 	public float skyFogginess = 0.2f;
@@ -9497,8 +9497,8 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 	public ModelViewer_SkyParameters Sky;
 
 	[Header("                ")]
-	[Header("                ")]
 	[Header("Junk to clean up:")]
+	[Header("                ")]
 	public GameObject ruleOfThirds;
 
 	public GameObject goldenRatio;
@@ -12993,16 +12993,16 @@ private enum EntityAssociationType
 [Factory("antihack")]
 public class AntiHack : ConsoleSystem
 {
-	[Help("collider margin when checking for noclipping on dismount")]
 	[ReplicatedVar(Default = "0.22")]
+	[Help("collider margin when checking for noclipping on dismount")]
 	public static float noclip_margin_dismount = 0.22f;
 
 	[Help("collider backtracking when checking for noclipping")]
 	[ReplicatedVar(Default = "0.01")]
 	public static float noclip_backtracking = 0.01f;
 
-	[Help("report violations to the anti cheat backend")]
 	[ServerVar]
+	[Help("report violations to the anti cheat backend")]
 	public static bool reporting = false;
 
 	[Help("are admins allowed to use their admin cheat")]
@@ -13013,40 +13013,40 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static bool objectplacement = true;
 
-	[ServerVar]
 	[Help("use antihack to verify model state sent by players")]
+	[ServerVar]
 	public static bool modelstate = true;
 
-	[ServerVar]
 	[Help("whether or not to force the position on the client")]
+	[ServerVar]
 	public static bool forceposition = true;
 
 	[ServerVar]
 	[Help("0 == allow RPCs from stalled players, 1 == ignore RPCs from currently stalled players, 2 == ignore RPCs from recently stalled players")]
 	public static int rpcstallmode = 1;
 
-	[Help("time in seconds before player is no longer treated as wasStalled")]
 	[ServerVar]
+	[Help("time in seconds before player is no longer treated as wasStalled")]
 	public static float rpcstallfade = 2.5f;
 
 	[ServerVar]
 	[Help("time in seconds we can receive no ticks for before player is considered stalling")]
 	public static float rpcstallthreshold = 0.8f;
 
-	[ServerVar]
 	[Help("0 == users, 1 == admins, 2 == developers")]
+	[ServerVar]
 	public static int userlevel = 2;
 
 	[Help("0 == no enforcement, 1 == kick, 2 == ban (DISABLED)")]
 	[ServerVar]
 	public static int enforcementlevel = 1;
 
-	[ServerVar]
 	[Help("max allowed client desync, lower value = more false positives")]
+	[ServerVar]
 	public static float maxdesync = 0.8f;
 
-	[ServerVar]
 	[Help("max allowed client tick interval delta time, lower value = more false positives")]
+	[ServerVar]
 	public static float maxdeltatime = 1f;
 
 	[Help("for how many seconds to keep a tick history to use for distance checks")]
@@ -13057,12 +13057,12 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static float tickhistoryforgiveness = 0.1f;
 
-	[Help("the rate at which violation values go back down")]
 	[ServerVar]
+	[Help("the rate at which violation values go back down")]
 	public static float relaxationrate = 0.1f;
 
-	[ServerVar]
 	[Help("the time before violation values go back down")]
+	[ServerVar]
 	public static float relaxationpause = 10f;
 
 	[ServerVar]
@@ -13073,28 +13073,28 @@ public class AntiHack : ConsoleSystem
 	[Help("0 == disabled, 1 == enabled")]
 	public static int terrain_protection = 1;
 
-	[Help("how many slices to subdivide players into for the terrain check")]
 	[ServerVar]
+	[Help("how many slices to subdivide players into for the terrain check")]
 	public static int terrain_timeslice = 64;
 
-	[Help("how far to penetrate the terrain before violating")]
 	[ServerVar]
+	[Help("how far to penetrate the terrain before violating")]
 	public static float terrain_padding = 0.3f;
 
-	[Help("violation penalty to hand out when terrain is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when terrain is detected")]
 	public static float terrain_penalty = 100f;
 
-	[Help("whether or not to kill the player when terrain is detected")]
 	[ServerVar]
+	[Help("whether or not to kill the player when terrain is detected")]
 	public static bool terrain_kill = true;
 
 	[ServerVar]
 	[Help("whether or not to check for player inside geometry like rocks as well as base terrain")]
 	public static bool terrain_check_geometry = false;
 
-	[Help("0 == disabled, 1 == ray, 2 == sphere, 3 == curve")]
 	[ServerVar]
+	[Help("0 == disabled, 1 == ray, 2 == sphere, 3 == curve")]
 	public static int noclip_protection = 3;
 
 	[ServerVar]
@@ -13109,40 +13109,40 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static float noclip_margin = 0.09f;
 
-	[ServerVar]
 	[Help("movement curve step size, lower value = less false positives")]
+	[ServerVar]
 	public static float noclip_stepsize = 0.1f;
 
-	[ServerVar]
 	[Help("movement curve max steps, lower value = more false positives")]
+	[ServerVar]
 	public static int noclip_maxsteps = 15;
 
 	[ServerVar]
 	[Help("0 == disabled, 1 == simple, 2 == advanced, 3 == vertical swim protection")]
 	public static int speedhack_protection = 3;
 
-	[ServerVar]
 	[Help("whether or not to reject movement when speedhack is detected")]
+	[ServerVar]
 	public static bool speedhack_reject = true;
 
-	[ServerVar]
 	[Help("violation penalty to hand out when speedhack is detected")]
+	[ServerVar]
 	public static float speedhack_penalty = 0f;
 
-	[ServerVar]
 	[Help("speed threshold to assume speedhacking, lower value = more false positives")]
+	[ServerVar]
 	public static float speedhack_forgiveness = 2f;
 
 	[Help("speed threshold to assume speedhacking, lower value = more false positives")]
 	[ServerVar]
 	public static float speedhack_forgiveness_inertia = 10f;
 
-	[Help("speed forgiveness when moving down slopes, lower value = more false positives")]
 	[ServerVar]
+	[Help("speed forgiveness when moving down slopes, lower value = more false positives")]
 	public static float speedhack_slopespeed = 10f;
 
-	[Help("0 == disabled, 1 == client, 2 == capsule, 3 == curve")]
 	[ServerVar]
+	[Help("0 == disabled, 1 == client, 2 == capsule, 3 == curve")]
 	public static int flyhack_protection = 3;
 
 	[Help("whether or not to reject movement when flyhack is detected")]
@@ -13153,20 +13153,20 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static float flyhack_penalty = 100f;
 
-	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
+	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	public static float flyhack_forgiveness_vertical = 1f;
 
 	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
 	public static float flyhack_forgiveness_vertical_inertia = 7f;
 
-	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
+	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	public static float flyhack_forgiveness_horizontal = 1.5f;
 
-	[ServerVar]
 	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
+	[ServerVar]
 	public static float flyhack_forgiveness_horizontal_inertia = 10f;
 
 	[Help("collider downwards extrusion when checking for flyhacking")]
@@ -13177,28 +13177,28 @@ public class AntiHack : ConsoleSystem
 	[Help("collider margin when checking for flyhacking")]
 	public static float flyhack_margin = 0.1f;
 
-	[ServerVar]
 	[Help("movement curve step size, lower value = less false positives")]
+	[ServerVar]
 	public static float flyhack_stepsize = 0.1f;
 
-	[ServerVar]
 	[Help("movement curve max steps, lower value = more false positives")]
+	[ServerVar]
 	public static int flyhack_maxsteps = 15;
 
 	[Help("Optimizes checks by using cached water info. Originally off")]
 	[ServerVar]
 	public static bool flyhack_usecachedstate = true;
 
-	[ServerVar]
 	[Help("serverside fall damage, requires flyhack_protection >= 2 for proper functionality")]
+	[ServerVar]
 	public static bool serverside_fall_damage = false;
 
 	[Help("0 == disabled, 1 == speed, 2 == speed + entity, 3 == speed + entity + LOS, 4 == speed + entity + LOS + trajectory, 5 == speed + entity + LOS + trajectory + update, 6 == speed + entity + LOS + trajectory + tickhistory")]
 	[ServerVar]
 	public static int projectile_protection = 6;
 
-	[Help("violation penalty to hand out when projectile hack is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when projectile hack is detected")]
 	public static float projectile_penalty = 0f;
 
 	[ServerVar]
@@ -13209,8 +13209,8 @@ public class AntiHack : ConsoleSystem
 	[Help("projectile server frames to include in delay, lower value = more false positives")]
 	public static float projectile_serverframes = 2f;
 
-	[Help("projectile client frames to include in delay, lower value = more false positives")]
 	[ServerVar]
+	[Help("projectile client frames to include in delay, lower value = more false positives")]
 	public static float projectile_clientframes = 2f;
 
 	[ServerVar]
@@ -13225,12 +13225,12 @@ public class AntiHack : ConsoleSystem
 	[Help("projectile penetration angle change, lower value = more false positives")]
 	public static float projectile_anglechange = 60f;
 
-	[ServerVar]
 	[Help("projectile penetration velocity change, lower value = more false positives")]
+	[ServerVar]
 	public static float projectile_velocitychange = 1.1f;
 
-	[Help("projectile desync forgiveness, lower value = more false positives")]
 	[ServerVar]
+	[Help("projectile desync forgiveness, lower value = more false positives")]
 	public static float projectile_desync = 1f;
 
 	[ServerVar]
@@ -13257,48 +13257,48 @@ public class AntiHack : ConsoleSystem
 	[Help("whether or not to include vehicles in the projectile LOS checks")]
 	public static bool projectile_vehiclecheck = true;
 
-	[Help("whether or not to compensate for the client / server vehicle position offset")]
 	[ServerVar]
+	[Help("whether or not to compensate for the client / server vehicle position offset")]
 	public static bool projectile_positionoffset = true;
 
-	[Help("minimum distance before we verify client projectile distance mismatch, lower value = more false positives")]
 	[ServerVar]
+	[Help("minimum distance before we verify client projectile distance mismatch, lower value = more false positives")]
 	public static float projectile_distance_forgiveness_minimum = 25f;
 
-	[ServerVar]
 	[Help("maximum number of projectile updates to allow before rejecting damage")]
+	[ServerVar]
 	public static int projectile_update_limit = 4;
 
 	[Help("0 == disabled, 1 == initiator, 2 == initiator + target, 3 == initiator + target + LOS, 4 == initiator + target + LOS + tickhistory")]
 	[ServerVar]
 	public static int melee_protection = 4;
 
-	[Help("violation penalty to hand out when melee hack is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when melee hack is detected")]
 	public static float melee_penalty = 0f;
 
-	[ServerVar]
 	[Help("melee distance forgiveness in percent, lower value = more false positives")]
+	[ServerVar]
 	public static float melee_forgiveness = 0.5f;
 
-	[ServerVar]
 	[Help("melee server frames to include in delay, lower value = more false positives")]
+	[ServerVar]
 	public static float melee_serverframes = 2f;
 
-	[ServerVar]
 	[Help("melee client frames to include in delay, lower value = more false positives")]
+	[ServerVar]
 	public static float melee_clientframes = 2f;
 
-	[Help("melee backtracking when checking for LOS")]
 	[ServerVar]
+	[Help("melee backtracking when checking for LOS")]
 	public static float melee_backtracking = 0.01f;
 
 	[Help("line of sight directional forgiveness when checking eye or center position")]
 	[ServerVar]
 	public static float melee_losforgiveness = 0.2f;
 
-	[Help("whether or not to include terrain in the melee LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include terrain in the melee LOS checks")]
 	public static bool melee_terraincheck = true;
 
 	[ServerVar]
@@ -13313,12 +13313,12 @@ public class AntiHack : ConsoleSystem
 	[Help("violation penalty to hand out when eye hack is detected")]
 	public static float eye_penalty = 0f;
 
-	[Help("eye distance forgiveness, lower value = more false positives")]
 	[ServerVar]
+	[Help("eye distance forgiveness, lower value = more false positives")]
 	public static float eye_forgiveness = 0.4f;
 
-	[Help("eye distance forgiveness for parented or mounted players, lower value = more false positives")]
 	[ServerVar]
+	[Help("eye distance forgiveness for parented or mounted players, lower value = more false positives")]
 	public static float eye_distance_parented_mounted_forgiveness = 2f;
 
 	[Help("eye server frames to include in delay, lower value = more false positives")]
@@ -13329,16 +13329,16 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static float eye_clientframes = 2f;
 
-	[ServerVar]
 	[Help("whether or not to include terrain in the eye LOS checks")]
+	[ServerVar]
 	public static bool eye_terraincheck = true;
 
 	[ServerVar]
 	[Help("whether or not to include vehicles in the eye LOS checks")]
 	public static bool eye_vehiclecheck = true;
 
-	[ServerVar]
 	[Help("distance at which to start testing eye noclipping")]
+	[ServerVar]
 	public static float eye_noclip_cutoff = 0.06f;
 
 	[ServerVar]
@@ -13361,40 +13361,40 @@ public class AntiHack : ConsoleSystem
 	[Help("how much forgiveness to add when checking the distance between player tick history and player eye history")]
 	public static float eye_history_forgiveness = 0.1f;
 
-	[Help("maximum distance an impact effect can be from the entities bounds")]
 	[ServerVar]
+	[Help("maximum distance an impact effect can be from the entities bounds")]
 	public static float impact_effect_distance_forgiveness = 0.45f;
 
 	[Help("line of sight sphere cast radius, 0 == raycast")]
 	[ServerVar]
 	public static float build_losradius = 0.01f;
 
-	[Help("line of sight sphere cast radius, 0 == raycast")]
 	[ServerVar]
+	[Help("line of sight sphere cast radius, 0 == raycast")]
 	public static float build_losradius_sleepingbag = 0.3f;
 
 	[ServerVar]
 	[Help("whether or not to include terrain in the build LOS checks")]
 	public static bool build_terraincheck = true;
 
-	[ServerVar]
 	[Help("whether or not to include vehicles in the build LOS checks")]
+	[ServerVar]
 	public static bool build_vehiclecheck = true;
 
 	[ServerVar]
 	[Help("whether or not to check for building being done on the wrong side of something (e.g. inside rocks). 0 = Disabled, 1 = Info only, 2 = Enabled")]
 	public static int build_inside_check = 2;
 
-	[Help("the maximum distance we check for for inside mesh")]
 	[ServerVar]
+	[Help("the maximum distance we check for for inside mesh")]
 	public static float mesh_inside_check_distance = 50f;
 
 	[ServerVar]
 	[Help("use the older, simpler is inside check. has several loopholes that aren't properly catered to")]
 	public static bool use_legacy_mesh_inside_check = true;
 
-	[ServerVar]
 	[Help("whether or not to ensure players are always networked to server administrators")]
+	[ServerVar]
 	public static bool server_occlusion_admin_bypass = false;
 
 	[ServerVar]
@@ -13409,8 +13409,8 @@ public class AntiHack : ConsoleSystem
 	[Help("whether to use server occlusion caching")]
 	public static bool server_occlusion_caching = true;
 
-	[ServerVar]
 	[Help("whether to save sub grid for map to a file on first time init, faster subsequent server launching")]
+	[ServerVar]
 	public static bool server_occlusion_save_grid = true;
 
 	[Help("whether to use neighbour threshold limitations")]
@@ -13429,24 +13429,24 @@ public class AntiHack : ConsoleSystem
 	[Help("How far a player is allowed to move in a single tick")]
 	public static float tick_max_distance = 1.1f;
 
-	[ServerVar]
 	[Help("How far a player is allowed to move in a single tick when falling")]
+	[ServerVar]
 	public static float tick_max_distance_falling = 4f;
 
-	[Help("How far a player is allowed to move in a single tick when parented")]
 	[ServerVar]
+	[Help("How far a player is allowed to move in a single tick when parented")]
 	public static float tick_max_distance_parented = 3f;
 
-	[Help("Whether or not to enable additional tick validation measures")]
 	[ServerVar]
+	[Help("Whether or not to enable additional tick validation measures")]
 	public static bool tick_buffer_preventions = true;
 
 	[ServerVar]
 	[Help("How many seconds worth of ticks can be sent before server tick finalizing before we revert to noclip_protection 2")]
 	public static float tick_buffer_noclip_threshold = 2f;
 
-	[ServerVar]
 	[Help("How many seconds worth of ticks can be sent before server tick finalizing before we reject movement")]
+	[ServerVar]
 	public static float tick_buffer_reject_threshold = 3f;
 
 	[Help("How long it should take for a server to process a frame before we decide to skip additional tick validation measures")]
@@ -13460,12 +13460,12 @@ public class AntiHack : ConsoleSystem
 	[ServerVar(Help = "Should explosives parented to vehicles damage deployables")]
 	public static bool explosive_vehicle_parent_damage_deployables = false;
 
-	[Help("How long, in seconds, can the clients progress timer deviate from the servers")]
 	[ServerVar]
+	[Help("How long, in seconds, can the clients progress timer deviate from the servers")]
 	public static float rpc_timer_forgiveness = 1f;
 
-	[Help("0 == silent, 1 == print max violation, 2 == print nonzero violation, 3 == print any violation except noclip, 4 == print any violation")]
 	[ServerVar]
+	[Help("0 == silent, 1 == print max violation, 2 == print nonzero violation, 3 == print any violation except noclip, 4 == print any violation")]
 	public static int debuglevel = 1;
 }
 
@@ -14003,8 +14003,8 @@ public class Chat : ConsoleSystem
 	[ReplicatedVar]
 	public static bool hideChatInTutorial = true;
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool enabled = true;
 
 	[ServerVar(Help = "Number of messages to keep in memory for chat history")]
@@ -14318,8 +14318,8 @@ public class Chat : ConsoleSystem
 		return false;
 	}
 
-	[ServerVar]
 	[Help("Return the last x lines of the console. Default is 200")]
+	[ServerVar]
 	public static IEnumerable<ChatEntry> tail(Arg arg)
 	{
 		int @int = arg.GetInt(0, 200);
@@ -14649,8 +14649,8 @@ public class Console : ConsoleSystem
 [Factory("construct")]
 public class Construct : ConsoleSystem
 {
-	[Help("How many minutes before a placed frame gets destroyed")]
 	[ServerVar]
+	[Help("How many minutes before a placed frame gets destroyed")]
 	public static float frameminutes = 30f;
 }
 
@@ -16017,8 +16017,8 @@ using UnityEngine;
 [Factory("data")]
 public class Data : ConsoleSystem
 {
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void export(Arg args)
 	{
 		string @string = args.GetString(0, "none");
@@ -16122,8 +16122,8 @@ public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool checktriggers = false;
 
 	[ServerVar]
@@ -16171,8 +16171,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar]
 	public static void renderinfo(Arg arg)
 	{
 		RenderInfo.GenerateReport();
@@ -16218,8 +16218,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(@string, (ConsoleColor)@int);
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0, 0f), 0f, 1f);
@@ -17784,8 +17784,8 @@ public class Debugging : ConsoleSystem
 		arg.ReplyWith("Player is not inside any PuzzleResets");
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar]
+	[ClientVar(ClientAdmin = true)]
 	public static void printqueues(Arg arg)
 	{
 		bool flag = arg.HasArg("--json", false);
@@ -18435,8 +18435,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void find_entity(Arg args)
 	{
 		string filter = args.GetString(0, "");
@@ -18473,8 +18473,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void find_group(Arg args)
 	{
 		uint filter = args.GetUInt(0, 0u);
@@ -18490,8 +18490,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void find_parent(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -19447,8 +19447,8 @@ public class FPS : ConsoleSystem
 
 	private static int m_graph;
 
-	[ClientVar(Saved = true)]
 	[ServerVar(Saved = true)]
+	[ClientVar(Saved = true)]
 	public static int limit
 	{
 		get
@@ -19618,8 +19618,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static int incremental_milliseconds
 	{
 		get
@@ -19632,8 +19632,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool enabled
 	{
 		get
@@ -19817,8 +19817,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs(1))
@@ -19892,8 +19892,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void textures(Arg args)
 	{
 		Texture[] array = Object.FindObjectsOfType<Texture>();
@@ -20735,8 +20735,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void free(Arg args)
 	{
 		Pool.clear_prefabs(args);
@@ -20753,15 +20753,15 @@ public class Global : ConsoleSystem
 		arg.ReplyWith($"Protocol: {Protocol.printable}\nBuild Date: {BuildInfo.Current.BuildDate}\nUnity Version: {Application.unityVersion}\nChangeset: {BuildInfo.Current.Scm.ChangeId}\nBranch: {BuildInfo.Current.Scm.Branch}");
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void sysuid(Arg arg)
 	{
 		arg.ReplyWith(SystemInfo.deviceUniqueIdentifier);
@@ -20792,8 +20792,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -21547,8 +21547,8 @@ public class GraphicsSettings : ConsoleSystem
 
 using Development.Attributes;
 
-[Factory("grass")]
 [ResetStaticFields]
+[Factory("grass")]
 public class Grass : ConsoleSystem
 {
 }
@@ -22843,8 +22843,8 @@ public class Inventory : ConsoleSystem
 		arg.ReplyWith(stringBuilder.ToString());
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void defs(Arg arg)
 	{
 		if (SteamInventory.Definitions == null)
@@ -23269,8 +23269,8 @@ using Facepunch;
 
 public class Manifest
 {
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static object PrintManifest()
 	{
 		return Application.Manifest;
@@ -23316,8 +23316,8 @@ public class MemSnap : ConsoleSystem
 		MemoryProfiler.TakeSnapshot(NeedProfileFolder() + "/memdump-" + DateTime.Now.ToString("MM-dd-yyyy-h-mm-ss") + ".snap", (Action<string, bool>)null, (CaptureFlags)2);
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void full(Arg arg)
 	{
 		MemoryProfiler.TakeSnapshot(NeedProfileFolder() + "/memdump-" + DateTime.Now.ToString("MM-dd-yyyy-h-mm-ss") + ".snap", (Action<string, bool>)null, (CaptureFlags)31);
@@ -23792,8 +23792,8 @@ public class Physics : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool autosynctransforms
 	{
 		get
@@ -24074,8 +24074,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool ping_parallel
 	{
 		get
@@ -24088,8 +24088,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static int ping_refresh_interval
 	{
 		get
@@ -24116,8 +24116,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool ping_estimate_logging
 	{
 		get
@@ -24130,8 +24130,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool ping_estimation
 	{
 		get
@@ -24967,12 +24967,12 @@ public class Pool : ConsoleSystem
 	[ServerVar]
 	public static bool enabled = true;
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool debug = false;
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void print_memory(Arg arg)
 	{
 		if (Pool.Directory.Count == 0)
@@ -25099,8 +25099,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void print_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -25185,8 +25185,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void clear_memory(Arg arg)
 	{
 		Pool.Clear(arg.GetString(0, string.Empty));
@@ -25207,8 +25207,8 @@ public class Pool : ConsoleSystem
 		AssetPool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void export_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -25403,8 +25403,8 @@ public class Profile : ConsoleSystem
 	{
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void stop(Arg arg)
 	{
 	}
@@ -25718,8 +25718,8 @@ public class Render : ConsoleSystem
 
 	public static bool IsMultidrawEnabled => multidraw;
 
-	[ClientVar(Name = "print_tree_counts", ClientAdmin = true, Help = "Print off count of trees to ensure server sent them all")]
 	[ServerVar]
+	[ClientVar(Name = "print_tree_counts", ClientAdmin = true, Help = "Print off count of trees to ensure server sent them all")]
 	public static void tree_entities(Arg arg)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
@@ -25795,8 +25795,8 @@ using UnityEngine;
 [Factory("reports")]
 public class reports : ConsoleSystem
 {
-	[ClientVar(Default = "600")]
 	[ServerVar(Default = "600")]
+	[ClientVar(Default = "600")]
 	public static int ExceptionReportMaxLength
 	{
 		get
@@ -28394,8 +28394,8 @@ public static class SystemCommands
 		}
 	}
 
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static void cpu_priority(Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
@@ -28464,8 +28464,8 @@ public class Time : ConsoleSystem
 
 	public const string CLIENT_DEFAULT_TICKS_STR = "32";
 
-	[Help("Pause time while loading")]
 	[ServerVar]
+	[Help("Pause time while loading")]
 	public static bool pausewhileloading = true;
 
 	private static float _missiontimerscale = 1f;
@@ -28518,8 +28518,8 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[ReplicatedVar]
 	[Help("Time scale which only affects mission timers")]
+	[ReplicatedVar]
 	public static float missiontimerscale
 	{
 		get
@@ -28878,38 +28878,38 @@ public class vehicle : ConsoleSystem
 [Factory("vis")]
 public class Vis : ConsoleSystem
 {
-	[ClientVar]
 	[Help("Turns on debug display of lerp")]
+	[ClientVar]
 	public static bool lerp;
 
-	[ServerVar]
 	[Help("Turns on debug display of damages")]
+	[ServerVar]
 	public static bool damage;
 
-	[ServerVar]
-	[ClientVar]
 	[Help("Turns on debug display of attacks")]
+	[ClientVar]
+	[ServerVar]
 	public static bool attack;
 
 	[Help("Turns on debug display of protection")]
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool protection;
 
-	[ServerVar]
 	[Help("Turns on debug display of weakspots")]
+	[ServerVar]
 	public static bool weakspots;
 
 	[ServerVar]
 	[Help("Show trigger entries")]
 	public static bool triggers;
 
-	[ServerVar]
 	[Help("Turns on debug display of hitboxes")]
+	[ServerVar]
 	public static bool hitboxes;
 
-	[Help("Turns on debug display of line of sight checks")]
 	[ServerVar]
+	[Help("Turns on debug display of line of sight checks")]
 	public static bool lineofsight;
 
 	[ServerVar]
@@ -30197,8 +30197,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void load(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -30264,8 +30264,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void list_cloud_configs(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -30281,8 +30281,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static void reset_cloud_config(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -30402,8 +30402,8 @@ using UnityEngine;
 [Factory("world")]
 public class World : ConsoleSystem
 {
-	[ClientVar]
 	[ServerVar]
+	[ClientVar]
 	public static bool cache = true;
 
 	[ClientVar]
